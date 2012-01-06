@@ -1,0 +1,8 @@
+gstreamer0.10 (0.10.34-10slp2+13) unstable; urgency=low
+
+  * Initial Release
+  * Git: pkgs/g/gstreamer0.10
+  * Tag: gstreamer0.10_0.10.34-10slp2+13
+
+ -- Sangchul Lee <sc11.lee@samsung.com>  Wed, 07 Dec 2011 12:10:11 +0900
+

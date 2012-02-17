@@ -61,7 +61,6 @@ typedef struct _GstBaseSrcPrivate GstBaseSrcPrivate;
  */
 #define GST_BASE_SRC_PAD(obj)                 (GST_BASE_SRC_CAST (obj)->srcpad)
 
-//modified QBUF, DQBUF : wh01.cho@samsung.com. 2009-04-11
 #ifndef	_MMCAMCORDER_MODIFIED_DQBUF
 #define	_MMCAMCORDER_MODIFIED_DQBUF
 #endif

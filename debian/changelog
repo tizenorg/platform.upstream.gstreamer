@@ -1,3 +1,19 @@
+gstreamer0.10 (0.10.34-10slp2+15) unstable; urgency=low
+
+  * Fix spec file
+  * Git: pkgs/g/gstreamer0.10
+  * Tag: gstreamer0.10_0.10.34-10slp2+15
+
+ -- YeJin Cho <cho.yejin@samsung.com>  Fri, 06 Apr 2012 14:30:51 +0900
+
+gstreamer0.10 (0.10.34-10slp2+14) unstable; urgency=low
+
+  * Update queue2 for streaming
+  * Git: pkgs/g/gstreamer0.10
+  * Tag: gstreamer0.10_0.10.34-10slp2+14
+
+ -- YeJin Cho <cho.yejin@samsung.com>  Tue, 03 Apr 2012 12:08:51 +0900
+
 gstreamer0.10 (0.10.34-10slp2+13) unstable; urgency=low
 
   * Initial Release

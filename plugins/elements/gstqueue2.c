@@ -109,8 +109,13 @@ enum
 #define DEFAULT_MAX_SIZE_TIME      2 * GST_SECOND       /* 2 seconds */
 #define DEFAULT_USE_BUFFERING      FALSE
 #define DEFAULT_USE_RATE_ESTIMATE  TRUE
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+#define DEFAULT_LOW_PERCENT        10.0
+#define DEFAULT_HIGH_PERCENT       99.0
+#else
 #define DEFAULT_LOW_PERCENT        10
 #define DEFAULT_HIGH_PERCENT       99
+#endif
 #define DEFAULT_TEMP_REMOVE        TRUE
 #ifdef GST_EXT_QUEUE_ENHANCEMENT
 #define DEFAULT_TEMP_UNLINK TRUE
@@ -330,6 +335,18 @@ gst_queue2_class_init (GstQueue2Class * klass)
           "Estimate the bitrate of the stream to calculate time level",
           DEFAULT_USE_RATE_ESTIMATE,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  g_object_class_install_property (gobject_class, PROP_LOW_PERCENT,
+      g_param_spec_double ("low-percent", "Low percent",
+          "Low threshold for buffering to start. Only used if use-buffering is True",
+          0.0, 100.0, DEFAULT_LOW_PERCENT,
+          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property (gobject_class, PROP_HIGH_PERCENT,
+      g_param_spec_double ("high-percent", "High percent",
+          "High threshold for buffering to finish. Only used if use-buffering is True",
+          0.0, 100.0, DEFAULT_HIGH_PERCENT,
+          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+#else
   g_object_class_install_property (gobject_class, PROP_LOW_PERCENT,
       g_param_spec_int ("low-percent", "Low percent",
           "Low threshold for buffering to start. Only used if use-buffering is True",
@@ -340,7 +357,7 @@ gst_queue2_class_init (GstQueue2Class * klass)
           "High threshold for buffering to finish. Only used if use-buffering is True",
           0, 100, DEFAULT_HIGH_PERCENT,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-
+#endif
   g_object_class_install_property (gobject_class, PROP_TEMP_TEMPLATE,
       g_param_spec_string ("temp-template", "Temporary File Template",
           "File template to store temporary files in, should contain directory "
@@ -778,6 +795,10 @@ apply_segment (GstQueue2 * queue, GstEvent * event, GstSegment * segment,
 
   /* segment can update the time level of the queue */
   update_time_level (queue);
+
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  GST_QUEUE2_SIGNAL_ADD(queue);
+#endif
 }
 
 /* take a buffer and update segment, updating the time level of the queue. */
@@ -816,7 +837,11 @@ apply_buffer (GstQueue2 * queue, GstBuffer * buffer, GstSegment * segment,
 static void
 update_buffering (GstQueue2 * queue)
 {
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
   gint64 percent;
+#else
+  gdouble percent;
+#endif
   gboolean post = FALSE;
 
   if (queue->high_percent <= 0)
@@ -1049,8 +1074,16 @@ perform_seek_to_offset (GstQueue2 * queue, guint64 offset)
   res = gst_pad_push_event (queue->sinkpad, event);
   GST_QUEUE2_MUTEX_LOCK (queue);
 
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  if (res) {
+    if (queue->upstream_size > 0 && offset >= queue->upstream_size)
+      queue->current = add_range (queue, offset);
+  }
+#else
   if (res)
     queue->current = add_range (queue, offset);
+#endif
+
 
   return res;
 }
@@ -2186,10 +2219,6 @@ gst_queue2_chain (GstPad * pad, GstBuffer * buffer)
       GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (buffer)),
       GST_TIME_ARGS (GST_BUFFER_DURATION (buffer)));
 
-  GST_LOG_OBJECT (queue,
-      "received buffer %p of size %d"
-      GST_TIME_FORMAT, buffer, GST_BUFFER_SIZE (buffer));
-
   /* we have to lock the queue since we span threads */
   GST_QUEUE2_MUTEX_LOCK_CHECK (queue, queue->sinkresult, out_flushing);
   /* when we received EOS, we refuse more data */
@@ -2205,10 +2234,6 @@ gst_queue2_chain (GstPad * pad, GstBuffer * buffer)
   /* put buffer in queue now */
   gst_queue2_locked_enqueue (queue, buffer, TRUE);
   GST_QUEUE2_MUTEX_UNLOCK (queue);
-
-  GST_LOG_OBJECT (queue,
-      "write buffer %p of size %d"
-      GST_TIME_FORMAT, buffer, GST_BUFFER_SIZE (buffer));
 
   return GST_FLOW_OK;
 
@@ -3052,20 +3077,21 @@ gst_queue2_set_property (GObject * object,
     case PROP_USE_RATE_ESTIMATE:
       queue->use_rate_estimate = g_value_get_boolean (value);
       break;
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+    case PROP_LOW_PERCENT:
+      queue->low_percent = g_value_get_double (value);
+      break;
+    case PROP_HIGH_PERCENT:
+      queue->high_percent = g_value_get_double (value);
+      break;
+#else
     case PROP_LOW_PERCENT:
       queue->low_percent = g_value_get_int (value);
-#ifdef GST_EXT_QUEUE_ENHANCEMENT
-      if (queue->use_buffering)
-        update_buffering (queue);
-#endif
       break;
     case PROP_HIGH_PERCENT:
       queue->high_percent = g_value_get_int (value);
-#ifdef GST_EXT_QUEUE_ENHANCEMENT
-      if (queue->use_buffering)
-        update_buffering (queue);
-#endif
       break;
+#endif
     case PROP_TEMP_TEMPLATE:
       gst_queue2_set_temp_template (queue, g_value_get_string (value));
       break;
@@ -3128,12 +3154,21 @@ gst_queue2_get_property (GObject * object,
     case PROP_USE_RATE_ESTIMATE:
       g_value_set_boolean (value, queue->use_rate_estimate);
       break;
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+    case PROP_LOW_PERCENT:
+      g_value_set_double (value, queue->low_percent);
+      break;
+    case PROP_HIGH_PERCENT:
+      g_value_set_double (value, queue->high_percent);
+      break;
+#else
     case PROP_LOW_PERCENT:
       g_value_set_int (value, queue->low_percent);
       break;
     case PROP_HIGH_PERCENT:
       g_value_set_int (value, queue->high_percent);
       break;
+#endif
     case PROP_TEMP_TEMPLATE:
       g_value_set_string (value, queue->temp_template);
       break;

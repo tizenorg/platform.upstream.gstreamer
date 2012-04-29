@@ -102,8 +102,13 @@ struct _GstQueue2
   gboolean use_buffering;
   gboolean use_rate_estimate;
   GstClockTime buffering_interval;
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  gdouble low_percent;             /* low/high watermarks for buffering */
+  gdouble high_percent;
+#else
   gint low_percent;             /* low/high watermarks for buffering */
   gint high_percent;
+#endif
 
   /* current buffering state */
   gboolean is_buffering;

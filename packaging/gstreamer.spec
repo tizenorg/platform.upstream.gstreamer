@@ -6,6 +6,7 @@ Group:      Applications/Multimedia
 License:    LGPLv2+
 URL:        http://gstreamer.freedesktop.org/
 Source0:    http://gstreamer.freedesktop.org/src/gstreamer/%{name}-%{version}.tar.gz
+Source1001: packaging/gstreamer.manifest 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(glib-2.0)
@@ -53,6 +54,7 @@ with different major/minor versions of GStreamer.
 
 
 %build
+cp %{SOURCE1001} .
 
 
 export CFLAGS+=" -Wall -g -fPIC	-DGST_EXT_COMPANSATE_EOS_HANDLING -DGST_EXT_USE_TINY_REGISTRY -DGST_EXT_TIME_ANALYSIS -DGST_EXT_TA_UNIT_MEXT -DGST_EXT_PAD_LINK_UNCHECKED -DGST_EXT_REDUCE_PLUGIN_NUM -DGST_EXT_USE_PDP_NETWORK	-DGST_EXT_VOLUME_WITHOUT_LIBOIL -DGST_EXT_AUDIOSINK_MUTE -DEXT_AUDIO_FILTER_EFFECT -DGST_EXT_NONBLOCKDQUE -DGST_EXT_RENEGOTIATION -DGST_EXT_MOBILECAMERA -DGST_EXT_ASYNC_DEV -DGST_EXT_AV_RECORDING -DGST_EXT_SWITCH_CAMERA -DGST_EXT_OVERLAYSINK_SQVGA -DGST_EXT_FFMUX_ADD_PROPERTY -DGST_EXT_FFMUX_ENHANCEMENT -DGST_EXT_I_LIKE_DSP -DGST_EXT_CAMCORDER_IPP -DGST_EXT_QUEUE_ENHANCEMENT"
@@ -101,6 +103,7 @@ rm -rf %{buildroot}/tmp/dump
 
 
 %files
+%manifest gstreamer.manifest
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README RELEASE TODO
 %{_libdir}/libgstreamer-0.10.so.*
@@ -127,6 +130,7 @@ rm -rf %{buildroot}/tmp/dump
 
 
 %files devel
+%manifest gstreamer.manifest
 %defattr(-,root,root,-)
 %dir %{_includedir}/gstreamer-0.10
 %dir %{_includedir}/gstreamer-0.10/gst
@@ -151,6 +155,7 @@ rm -rf %{buildroot}/tmp/dump
 %{_libdir}/pkgconfig/gstreamer-net-0.10.pc
 
 %files tools
+%manifest gstreamer.manifest
 %defattr(-,root,root,-)
 %{_bindir}/gst-feedback
 %{_bindir}/gst-inspect

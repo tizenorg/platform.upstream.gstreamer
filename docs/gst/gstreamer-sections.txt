@@ -200,6 +200,9 @@ gst_buffer_is_metadata_writable
 gst_buffer_make_metadata_writable
 gst_buffer_replace
 
+gst_buffer_set_qdata
+gst_buffer_get_qdata
+
 gst_buffer_get_caps
 gst_buffer_set_caps
 
@@ -323,6 +326,7 @@ gst_caps_is_equal
 gst_caps_is_equal_fixed
 gst_caps_is_always_compatible
 gst_caps_is_subset
+gst_caps_is_subset_structure
 gst_caps_can_intersect
 gst_caps_intersect
 gst_caps_intersect_full
@@ -902,14 +906,44 @@ gst_format_get_type
 <SECTION>
 <FILE>gstghostpad</FILE>
 <TITLE>GstGhostPad</TITLE>
+GstProxyPad
 GstGhostPad
+
 gst_ghost_pad_new
 gst_ghost_pad_new_no_target
 gst_ghost_pad_new_from_template
 gst_ghost_pad_new_no_target_from_template
+
 gst_ghost_pad_set_target
 gst_ghost_pad_get_target
+
 gst_ghost_pad_construct
+
+gst_ghost_pad_setcaps_default
+gst_ghost_pad_unlink_default
+gst_ghost_pad_link_default
+gst_ghost_pad_activate_pull_default
+gst_ghost_pad_activate_push_default
+
+gst_ghost_pad_internal_activate_push_default
+gst_ghost_pad_internal_activate_pull_default
+
+gst_proxy_pad_get_internal
+
+gst_proxy_pad_query_type_default
+gst_proxy_pad_event_default
+gst_proxy_pad_query_default
+gst_proxy_pad_iterate_internal_links_default
+gst_proxy_pad_bufferalloc_default
+gst_proxy_pad_chain_default
+gst_proxy_pad_chain_list_default
+gst_proxy_pad_getrange_default
+gst_proxy_pad_checkgetrange_default
+gst_proxy_pad_getcaps_default
+gst_proxy_pad_acceptcaps_default
+gst_proxy_pad_fixatecaps_default
+gst_proxy_pad_setcaps_default
+gst_proxy_pad_unlink_default
 <SUBSECTION Standard>
 GstGhostPadClass
 GST_GHOST_PAD
@@ -925,7 +959,6 @@ GST_PROXY_PAD
 GST_PROXY_PAD_CLASS
 GST_TYPE_PROXY_PAD
 GstGhostPadPrivate
-GstProxyPad
 GstProxyPadClass
 GstProxyPadPrivate
 gst_proxy_pad_get_type
@@ -1313,6 +1346,7 @@ GstMiniObject
 GstMiniObjectFlags
 GstMiniObjectCopyFunction
 GstMiniObjectFinalizeFunction
+GstMiniObjectWeakNotify
 
 GST_MINI_OBJECT_FLAGS
 GST_MINI_OBJECT_FLAG_IS_SET
@@ -1329,6 +1363,9 @@ gst_mini_object_make_writable
 gst_mini_object_ref
 gst_mini_object_unref
 gst_mini_object_replace
+
+gst_mini_object_weak_ref
+gst_mini_object_weak_unref
 
 GstParamSpecMiniObject
 gst_param_spec_mini_object
@@ -1962,6 +1999,8 @@ gst_preset_rename_preset
 gst_preset_delete_preset
 gst_preset_set_meta
 gst_preset_get_meta
+gst_preset_set_app_dir
+gst_preset_get_app_dir
 <SUBSECTION Standard>
 GST_PRESET
 GST_IS_PRESET
@@ -2175,6 +2214,10 @@ gst_structure_foreach
 gst_structure_n_fields
 gst_structure_has_field
 gst_structure_has_field_typed
+gst_structure_is_equal
+gst_structure_is_subset
+gst_structure_can_intersect
+gst_structure_intersect
 gst_structure_id_has_field
 gst_structure_id_has_field_typed
 gst_structure_get_boolean
@@ -2328,8 +2371,11 @@ gst_tag_is_fixed
 gst_tag_list_new
 gst_tag_list_new_full
 gst_tag_list_new_full_valist
+gst_tag_list_new_from_string
+gst_tag_list_to_string
 gst_is_tag_list
 gst_tag_list_is_empty
+gst_tag_list_is_equal
 gst_tag_list_copy
 gst_tag_list_insert
 gst_tag_list_merge

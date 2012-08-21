@@ -229,7 +229,7 @@ gst_child_proxy_lookup (GstObject * object, const gchar * name,
  * @value: (out caller-allocates): a #GValue that should take the result.
  *
  * Gets a single property using the GstChildProxy mechanism.
- * You are responsible for for freeing it by calling g_value_unset()
+ * You are responsible for freeing it by calling g_value_unset()
  */
 void
 gst_child_proxy_get_property (GstObject * object, const gchar * name,
@@ -391,13 +391,9 @@ gst_child_proxy_set_valist (GstObject * object,
     if (!gst_child_proxy_lookup (object, name, &target, &pspec))
       goto not_found;
 
-#if GLIB_CHECK_VERSION(2,23,3)
     G_VALUE_COLLECT_INIT (&value, pspec->value_type, var_args,
         G_VALUE_NOCOPY_CONTENTS, &error);
-#else
-    g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-    G_VALUE_COLLECT (&value, var_args, G_VALUE_NOCOPY_CONTENTS, &error);
-#endif
+
     if (error)
       goto cant_copy;
 

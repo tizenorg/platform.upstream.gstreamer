@@ -81,28 +81,41 @@ typedef gpointer GstClockID;
  */
 #define GST_CLOCK_TIME_IS_VALID(time)	(((GstClockTime)(time)) != GST_CLOCK_TIME_NONE)
 
+/* FIXME: still need to explicitly force types on the defines below */
 /**
  * GST_SECOND:
  *
  * Constant that defines one GStreamer second.
+ * 
+ * Value: 1000000000
+ *
  */
 #define GST_SECOND  (G_USEC_PER_SEC * G_GINT64_CONSTANT (1000))
 /**
  * GST_MSECOND:
  *
  * Constant that defines one GStreamer millisecond.
+ * 
+ * Value: 1000000
+ * 
  */
 #define GST_MSECOND (GST_SECOND / G_GINT64_CONSTANT (1000))
 /**
  * GST_USECOND:
  *
  * Constant that defines one GStreamer microsecond.
+ * 
+ * Value: 1000
+ * 
  */
 #define GST_USECOND (GST_SECOND / G_GINT64_CONSTANT (1000000))
 /**
  * GST_NSECOND:
  *
  * Constant that defines one GStreamer nanosecond
+ * 
+ * Value: 1
+ * 
  */
 #define GST_NSECOND (GST_SECOND / G_GINT64_CONSTANT (1000000000))
 
@@ -205,15 +218,22 @@ G_STMT_START {						\
 /**
  * GST_TIME_FORMAT:
  *
- * A format that can be used in printf like format strings to format
- * a #GstClockTime value.
+ * A string that can be used in printf-like format strings to display a
+ * #GstClockTime value in h:m:s format.  Use GST_TIME_ARGS() to construct
+ * the matching arguments.
+ *
+ * Example:
+ * |[
+ * printf("%" GST_TIME_FORMAT "\n", GST_TIME_ARGS(ts));
+ * ]|
  */
 #define GST_TIME_FORMAT "u:%02u:%02u.%09u"
 /**
  * GST_TIME_ARGS:
  * @t: a #GstClockTime
  *
- * Format @t for the GST_TIME_FORMAT format string.
+ * Format @t for the #GST_TIME_FORMAT format string. Note: @t will be
+ * evaluated more than once.
  */
 #define GST_TIME_ARGS(t) \
         GST_CLOCK_TIME_IS_VALID (t) ? \
@@ -407,7 +427,7 @@ typedef enum {
  * @tv: a #GTimeVal to wait.
  *
  * Wait on the clock until the entries changed or the specified timeout
- * occurred. 
+ * occurred.
  */
 #define GST_CLOCK_TIMED_WAIT(clock,tv)   g_cond_timed_wait(GST_CLOCK_COND(clock),GST_OBJECT_GET_LOCK(clock),tv)
 /**
@@ -430,7 +450,7 @@ struct _GstClock {
   GMutex	*slave_lock; /* order: SLAVE_LOCK, OBJECT_LOCK */
 
   /*< protected >*/ /* with LOCK */
-  GstClockTime	 internal_calibration; 
+  GstClockTime	 internal_calibration;
   GstClockTime	 external_calibration;
   GstClockTime	 rate_numerator;
   GstClockTime	 rate_denominator;
@@ -521,7 +541,7 @@ void			gst_clock_get_calibration	(GstClock *clock, GstClockTime *internal,
 /* master/slave clocks */
 gboolean		gst_clock_set_master		(GstClock *clock, GstClock *master);
 GstClock*		gst_clock_get_master		(GstClock *clock);
-gboolean		gst_clock_add_observation       (GstClock *clock, GstClockTime slave, 
+gboolean		gst_clock_add_observation       (GstClock *clock, GstClockTime slave,
 							 GstClockTime master, gdouble *r_squared);
 
 

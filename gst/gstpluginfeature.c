@@ -65,7 +65,6 @@ gst_plugin_feature_finalize (GObject * object)
 
   GST_DEBUG ("finalizing feature %p: '%s'", feature,
       GST_PLUGIN_FEATURE_NAME (feature));
-  g_free (feature->name);
 
   if (feature->plugin != NULL) {
     g_object_remove_weak_pointer ((GObject *) feature->plugin,
@@ -85,7 +84,7 @@ gst_plugin_feature_finalize (GObject * object)
  * Normally this function is used like this:
  * |[
  * GstPluginFeature *loaded_feature;
- * 
+ *
  * loaded_feature = gst_plugin_feature_load (feature);
  * // presumably, we're no longer interested in the potentially-unloaded feature
  * gst_object_unref (feature);
@@ -157,6 +156,16 @@ not_found:
  *
  * Returns: TRUE if equal.
  */
+#ifndef GST_REMOVE_DEPRECATED
+#ifdef GST_DISABLE_DEPRECATED
+typedef struct
+{
+  const gchar *name;
+  GType type;
+} GstTypeNameData;
+gboolean gst_plugin_feature_type_name_filter (GstPluginFeature * feature,
+    GstTypeNameData * data);
+#endif
 gboolean
 gst_plugin_feature_type_name_filter (GstPluginFeature * feature,
     GstTypeNameData * data)
@@ -167,6 +176,7 @@ gst_plugin_feature_type_name_filter (GstPluginFeature * feature,
       (data->name == NULL
           || !strcmp (data->name, GST_PLUGIN_FEATURE_NAME (feature))));
 }
+#endif /* GST_REMOVE_DEPRECATED */
 
 /**
  * gst_plugin_feature_set_name:
@@ -184,12 +194,12 @@ gst_plugin_feature_set_name (GstPluginFeature * feature, const gchar * name)
   g_return_if_fail (GST_IS_PLUGIN_FEATURE (feature));
   g_return_if_fail (name != NULL);
 
-  if (feature->name) {
+  if (G_UNLIKELY (feature->name)) {
     g_return_if_fail (strcmp (feature->name, name) == 0);
   } else {
-    feature->name = g_strdup (name);
+    gst_object_set_name (GST_OBJECT (feature), name);
+    feature->name = GST_OBJECT_NAME (GST_OBJECT (feature));
   }
-  gst_object_set_name (GST_OBJECT_CAST (feature), feature->name);
 }
 
 /**
@@ -200,7 +210,7 @@ gst_plugin_feature_set_name (GstPluginFeature * feature, const gchar * name)
  *
  * Returns: the name
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_feature_get_name (GstPluginFeature * feature)
 {
   g_return_val_if_fail (GST_IS_PLUGIN_FEATURE (feature), NULL);
@@ -373,7 +383,7 @@ gst_plugin_feature_check_version (GstPluginFeature * feature,
         ret = FALSE;
       else if (micro > min_micro)
         ret = TRUE;
-      /* micro is 1 smaller but we have a nano version, this is the upcomming
+      /* micro is 1 smaller but we have a nano version, this is the upcoming
        * release of the requested version and we're ok then */
       else if (nscan == 4 && nano > 0 && (micro + 1 == min_micro))
         ret = TRUE;

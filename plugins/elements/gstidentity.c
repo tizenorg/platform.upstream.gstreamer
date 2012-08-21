@@ -23,7 +23,7 @@
 /**
  * SECTION:element-identity
  *
- * Dummy element that passes incomming data through unmodified. It has some
+ * Dummy element that passes incoming data through unmodified. It has some
  * useful diagnostic functions, such as offset and timestamp checking.
  */
 
@@ -32,6 +32,7 @@
 #endif
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "../../gst/gst-i18n-lib.h"
 #include "gstidentity.h"
@@ -111,6 +112,8 @@ static GstFlowReturn gst_identity_prepare_output_buffer (GstBaseTransform
     GstBuffer ** out_buf);
 static gboolean gst_identity_start (GstBaseTransform * trans);
 static gboolean gst_identity_stop (GstBaseTransform * trans);
+static GstStateChangeReturn gst_identity_change_state (GstElement * element,
+    GstStateChange transition);
 
 static guint gst_identity_signals[LAST_SIGNAL] = { 0 };
 
@@ -179,9 +182,11 @@ static void
 gst_identity_class_init (GstIdentityClass * klass)
 {
   GObjectClass *gobject_class;
+  GstElementClass *gstelement_class;
   GstBaseTransformClass *gstbasetrans_class;
 
   gobject_class = G_OBJECT_CLASS (klass);
+  gstelement_class = GST_ELEMENT_CLASS (klass);
   gstbasetrans_class = GST_BASE_TRANSFORM_CLASS (klass);
 
   gobject_class->set_property = gst_identity_set_property;
@@ -270,6 +275,9 @@ gst_identity_class_init (GstIdentityClass * klass)
       marshal_VOID__MINIOBJECT, G_TYPE_NONE, 1, GST_TYPE_BUFFER);
 
   gobject_class->finalize = gst_identity_finalize;
+
+  gstelement_class->change_state =
+      GST_DEBUG_FUNCPTR (gst_identity_change_state);
 
   gstbasetrans_class->event = GST_DEBUG_FUNCPTR (gst_identity_event);
   gstbasetrans_class->transform_ip =
@@ -376,6 +384,17 @@ gst_identity_event (GstBaseTransform * trans, GstEvent * event)
   }
 
   ret = parent_class->event (trans, event);
+
+  if (GST_EVENT_TYPE (event) == GST_EVENT_FLUSH_START) {
+    GST_OBJECT_LOCK (identity);
+    if (identity->clock_id) {
+      GST_DEBUG_OBJECT (identity, "unlock clock wait");
+      gst_clock_id_unschedule (identity->clock_id);
+      gst_clock_id_unref (identity->clock_id);
+      identity->clock_id = NULL;
+    }
+    GST_OBJECT_UNLOCK (identity);
+  }
 
   if (identity->single_segment
       && (GST_EVENT_TYPE (event) == GST_EVENT_NEWSEGMENT)) {
@@ -563,19 +582,40 @@ gst_identity_update_last_message_for_buffer (GstIdentity * identity,
     const gchar * action, GstBuffer * buf)
 {
   gchar ts_str[64], dur_str[64];
+  gchar flag_str[100];
 
   GST_OBJECT_LOCK (identity);
 
+  {
+    const char *flag_list[12] = {
+      "ro", "media4", "", "",
+      "preroll", "discont", "incaps", "gap",
+      "delta_unit", "media1", "media2", "media3"
+    };
+    int i;
+    char *end = flag_str;
+    end[0] = '\0';
+    for (i = 0; i < 12; i++) {
+      if (GST_MINI_OBJECT_CAST (buf)->flags & (1 << i)) {
+        strcpy (end, flag_list[i]);
+        end += strlen (end);
+        end[0] = ' ';
+        end[1] = '\0';
+        end++;
+      }
+    }
+  }
+
   g_free (identity->last_message);
-  identity->last_message = g_strdup_printf ("%s   ******* (%s:%s)i "
+  identity->last_message = g_strdup_printf ("%s   ******* (%s:%s) "
       "(%u bytes, timestamp: %s, duration: %s, offset: %" G_GINT64_FORMAT ", "
-      "offset_end: % " G_GINT64_FORMAT ", flags: %d) %p", action,
+      "offset_end: % " G_GINT64_FORMAT ", flags: %d %s) %p", action,
       GST_DEBUG_PAD_NAME (GST_BASE_TRANSFORM_CAST (identity)->sinkpad),
       GST_BUFFER_SIZE (buf),
       print_pretty_time (ts_str, sizeof (ts_str), GST_BUFFER_TIMESTAMP (buf)),
       print_pretty_time (dur_str, sizeof (dur_str), GST_BUFFER_DURATION (buf)),
       GST_BUFFER_OFFSET (buf), GST_BUFFER_OFFSET_END (buf),
-      GST_BUFFER_FLAGS (buf), buf);
+      GST_BUFFER_FLAGS (buf), flag_str, buf);
 
   GST_OBJECT_UNLOCK (identity);
 
@@ -656,7 +696,6 @@ gst_identity_transform_ip (GstBaseTransform * trans, GstBuffer * buf)
       timestamp = runtimestamp + GST_ELEMENT (identity)->base_time;
 
       /* save id if we need to unlock */
-      /* FIXME: actually unlock this somewhere in the state changes */
       identity->clock_id = gst_clock_new_single_shot_id (clock, timestamp);
       GST_OBJECT_UNLOCK (identity);
 
@@ -824,4 +863,47 @@ gst_identity_stop (GstBaseTransform * trans)
   GST_OBJECT_UNLOCK (identity);
 
   return TRUE;
+}
+
+static GstStateChangeReturn
+gst_identity_change_state (GstElement * element, GstStateChange transition)
+{
+  GstStateChangeReturn ret;
+  GstIdentity *identity = GST_IDENTITY (element);
+
+  switch (transition) {
+    case GST_STATE_CHANGE_NULL_TO_READY:
+      break;
+    case GST_STATE_CHANGE_READY_TO_PAUSED:
+      break;
+    case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
+      break;
+    case GST_STATE_CHANGE_PAUSED_TO_READY:
+      GST_OBJECT_LOCK (identity);
+      if (identity->clock_id) {
+        GST_DEBUG_OBJECT (identity, "unlock clock wait");
+        gst_clock_id_unschedule (identity->clock_id);
+        gst_clock_id_unref (identity->clock_id);
+        identity->clock_id = NULL;
+      }
+      GST_OBJECT_UNLOCK (identity);
+      break;
+    default:
+      break;
+  }
+
+  ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
+
+  switch (transition) {
+    case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
+      break;
+    case GST_STATE_CHANGE_PAUSED_TO_READY:
+      break;
+    case GST_STATE_CHANGE_READY_TO_NULL:
+      break;
+    default:
+      break;
+  }
+
+  return ret;
 }

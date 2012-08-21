@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstPad</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstObject.html" title="GstObject">
 <link rel="next" href="GstPadTemplate.html" title="GstPadTemplate">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -61,8 +61,8 @@ enum                <a class="link" href="GstPad.html#GstActivateMode" title="en
 #define             <a class="link" href="GstPad.html#gst-pad-get-name" title="gst_pad_get_name()">gst_pad_get_name</a>                    (pad)
 <a class="link" href="GstPad.html#GstPadDirection" title="enum GstPadDirection"><span class="returnvalue">GstPadDirection</span></a>     <a class="link" href="GstPad.html#gst-pad-get-direction" title="gst_pad_get_direction ()">gst_pad_get_direction</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 #define             <a class="link" href="GstPad.html#gst-pad-get-parent" title="gst_pad_get_parent()">gst_pad_get_parent</a>                  (pad)
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *		      <a class="link" href="GstPad.html#gst-pad-get-parent-element" title="gst_pad_get_parent_element ()">gst_pad_get_parent_element</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="returnvalue">GstPadTemplate</span></a> *		  <a class="link" href="GstPad.html#gst-pad-get-pad-template" title="gst_pad_get_pad_template ()">gst_pad_get_pad_template</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="GstPad.html#gst-pad-get-parent-element" title="gst_pad_get_parent_element ()">gst_pad_get_parent_element</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="returnvalue">GstPadTemplate</span></a> *    <a class="link" href="GstPad.html#gst-pad-get-pad-template" title="gst_pad_get_pad_template ()">gst_pad_get_pad_template</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a class="link" href="GstPad.html#GstPadLinkReturn" title="enum GstPadLinkReturn"><span class="returnvalue">GstPadLinkReturn</span></a>    <a class="link" href="GstPad.html#gst-pad-link" title="gst_pad_link ()">gst_pad_link</a>                        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *srcpad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *sinkpad</code></em>);
 <a class="link" href="GstPad.html#GstPadLinkReturn" title="enum GstPadLinkReturn"><span class="returnvalue">GstPadLinkReturn</span></a>    <a class="link" href="GstPad.html#gst-pad-link-full" title="gst_pad_link_full ()">gst_pad_link_full</a>                   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *srcpad</code></em>,
@@ -73,16 +73,16 @@ enum                <a class="link" href="GstPad.html#GstActivateMode" title="en
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-is-linked" title="gst_pad_is_linked ()">gst_pad_is_linked</a>                   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-can-link" title="gst_pad_can_link ()">gst_pad_can_link</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *srcpad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *sinkpad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-get-caps" title="gst_pad_get_caps ()">gst_pad_get_caps</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-get-caps-reffed" title="gst_pad_get_caps_reffed ()">gst_pad_get_caps_reffed</a>             (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-get-allowed-caps" title="gst_pad_get_allowed_caps ()">gst_pad_get_allowed_caps</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-get-negotiated-caps" title="gst_pad_get_negotiated_caps ()">gst_pad_get_negotiated_caps</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *	    <a class="link" href="GstPad.html#gst-pad-get-pad-template-caps" title="gst_pad_get_pad_template_caps ()">gst_pad_get_pad_template_caps</a>       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-get-caps" title="gst_pad_get_caps ()">gst_pad_get_caps</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-get-caps-reffed" title="gst_pad_get_caps_reffed ()">gst_pad_get_caps_reffed</a>             (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-get-allowed-caps" title="gst_pad_get_allowed_caps ()">gst_pad_get_allowed_caps</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-get-negotiated-caps" title="gst_pad_get_negotiated_caps ()">gst_pad_get_negotiated_caps</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *     <a class="link" href="GstPad.html#gst-pad-get-pad-template-caps" title="gst_pad_get_pad_template_caps ()">gst_pad_get_pad_template_caps</a>       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-set-caps" title="gst_pad_set_caps ()">gst_pad_set_caps</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);
-<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         <a class="link" href="GstPad.html#gst-pad-get-peer" title="gst_pad_get_peer ()">gst_pad_get_peer</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-peer-get-caps" title="gst_pad_peer_get_caps ()">gst_pad_peer_get_caps</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-peer-get-caps-reffed" title="gst_pad_peer_get_caps_reffed ()">gst_pad_peer_get_caps_reffed</a>        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            <a class="link" href="GstPad.html#gst-pad-get-peer" title="gst_pad_get_peer ()">gst_pad_get_peer</a>                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-peer-get-caps" title="gst_pad_peer_get_caps ()">gst_pad_peer_get_caps</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-peer-get-caps-reffed" title="gst_pad_peer_get_caps_reffed ()">gst_pad_peer_get_caps_reffed</a>        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-use-fixed-caps" title="gst_pad_use_fixed_caps ()">gst_pad_use_fixed_caps</a>              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-is-active" title="gst_pad_is_active ()">gst_pad_is_active</a>                   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-set-blocked" title="gst_pad_set_blocked ()">gst_pad_set_blocked</a>                 (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -129,26 +129,26 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-remove-event-probe" title="gst_pad_remove_event_probe ()">gst_pad_remove_event_probe</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> handler_id</code></em>);
 
-<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         <a class="link" href="GstPad.html#gst-pad-new" title="gst_pad_new ()">gst_pad_new</a>                         (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            <a class="link" href="GstPad.html#gst-pad-new" title="gst_pad_new ()">gst_pad_new</a>                         (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadDirection" title="enum GstPadDirection"><span class="type">GstPadDirection</span></a> direction</code></em>);
-<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         <a class="link" href="GstPad.html#gst-pad-new-from-template" title="gst_pad_new_from_template ()">gst_pad_new_from_template</a>           (<em class="parameter"><code><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="type">GstPadTemplate</span></a> *templ</code></em>,
+<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            <a class="link" href="GstPad.html#gst-pad-new-from-template" title="gst_pad_new_from_template ()">gst_pad_new_from_template</a>           (<em class="parameter"><code><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="type">GstPadTemplate</span></a> *templ</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
-<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         <a class="link" href="GstPad.html#gst-pad-new-from-static-template" title="gst_pad_new_from_static_template ()">gst_pad_new_from_static_template</a>    (<em class="parameter"><code><a class="link" href="GstPadTemplate.html#GstStaticPadTemplate" title="struct GstStaticPadTemplate"><span class="type">GstStaticPadTemplate</span></a> *templ</code></em>,
+<a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            <a class="link" href="GstPad.html#gst-pad-new-from-static-template" title="gst_pad_new_from_static_template ()">gst_pad_new_from_static_template</a>    (<em class="parameter"><code><a class="link" href="GstPadTemplate.html#GstStaticPadTemplate" title="struct GstStaticPadTemplate"><span class="type">GstStaticPadTemplate</span></a> *templ</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="GstPad.html#gst-pad-alloc-buffer" title="gst_pad_alloc_buffer ()">gst_pad_alloc_buffer</a>                (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="GstPad.html#gst-pad-alloc-buffer-and-set-caps" title="gst_pad_alloc_buffer_and_set_caps ()">gst_pad_alloc_buffer_and_set_caps</a>   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-bufferalloc-function" title="gst_pad_set_bufferalloc_function ()">gst_pad_set_bufferalloc_function</a>    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadBufferAllocFunction" title="GstPadBufferAllocFunction ()"><span class="type">GstPadBufferAllocFunction</span></a> bufalloc</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       (<a class="link" href="GstPad.html#GstPadBufferAllocFunction" title="GstPadBufferAllocFunction ()">*GstPadBufferAllocFunction</a>)        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);
@@ -164,13 +164,13 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadCheckGetRangeFunction" title="GstPadCheckGetRangeFunction ()"><span class="type">GstPadCheckGetRangeFunction</span></a> check</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (<a class="link" href="GstPad.html#GstPadCheckGetRangeFunction" title="GstPadCheckGetRangeFunction ()">*GstPadCheckGetRangeFunction</a>)      (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="GstPad.html#gst-pad-get-range" title="gst_pad_get_range ()">gst_pad_get_range</a>                   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-getrange-function" title="gst_pad_set_getrange_function ()">gst_pad_set_getrange_function</a>       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadGetRangeFunction" title="GstPadGetRangeFunction ()"><span class="type">GstPadGetRangeFunction</span></a> get</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       (<a class="link" href="GstPad.html#GstPadGetRangeFunction" title="GstPadGetRangeFunction ()">*GstPadGetRangeFunction</a>)           (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-event-function" title="gst_pad_set_event_function ()">gst_pad_set_event_function</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -193,7 +193,7 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-getcaps-function" title="gst_pad_set_getcaps_function ()">gst_pad_set_getcaps_function</a>        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadGetCapsFunction" title="GstPadGetCapsFunction ()"><span class="type">GstPadGetCapsFunction</span></a> getcaps</code></em>);
 <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           (<a class="link" href="GstPad.html#GstPadGetCapsFunction" title="GstPadGetCapsFunction ()">*GstPadGetCapsFunction</a>)            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-proxy-getcaps" title="gst_pad_proxy_getcaps ()">gst_pad_proxy_getcaps</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-proxy-getcaps" title="gst_pad_proxy_getcaps ()">gst_pad_proxy_getcaps</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-setcaps-function" title="gst_pad_set_setcaps_function ()">gst_pad_set_setcaps_function</a>        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadSetCapsFunction" title="GstPadSetCapsFunction ()"><span class="type">GstPadSetCapsFunction</span></a> setcaps</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (<a class="link" href="GstPad.html#GstPadSetCapsFunction" title="GstPadSetCapsFunction ()">*GstPadSetCapsFunction</a>)            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -206,7 +206,7 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadFixateCapsFunction" title="GstPadFixateCapsFunction ()"><span class="type">GstPadFixateCapsFunction</span></a> fixatecaps</code></em>);
 <span class="returnvalue">void</span>                (<a class="link" href="GstPad.html#GstPadFixateCapsFunction" title="GstPadFixateCapsFunction ()">*GstPadFixateCapsFunction</a>)         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         <a class="link" href="GstPad.html#gst-pad-get-fixed-caps-func" title="gst_pad_get_fixed_caps_func ()">gst_pad_get_fixed_caps_func</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="GstPad.html#gst-pad-get-fixed-caps-func" title="gst_pad_get_fixed_caps_func ()">gst_pad_get_fixed_caps_func</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-peer-accept-caps" title="gst_pad_peer_accept_caps ()">gst_pad_peer_accept_caps</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-activate-function" title="gst_pad_set_activate_function ()">gst_pad_set_activate_function</a>       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -226,7 +226,7 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBufferList.html#GstBufferList" title="GstBufferList"><span class="type">GstBufferList</span></a> *list</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-check-pull-range" title="gst_pad_check_pull_range ()">gst_pad_check_pull_range</a>            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="GstPad.html#gst-pad-pull-range" title="gst_pad_pull_range ()">gst_pad_pull_range</a>                  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-activate-pull" title="gst_pad_activate_pull ()">gst_pad_activate_pull</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -245,26 +245,26 @@ const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCap
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstQuery.html#GstQuery" title="struct GstQuery"><span class="type">GstQuery</span></a> *query</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-position" title="gst_pad_query_position ()">gst_pad_query_position</a>              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *cur</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *cur</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-duration" title="gst_pad_query_duration ()">gst_pad_query_duration</a>              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *duration</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *duration</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-convert" title="gst_pad_query_convert ()">gst_pad_query_convert</a>               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> src_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> src_val</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> src_val</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *dest_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *dest_val</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *dest_val</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-peer-position" title="gst_pad_query_peer_position ()">gst_pad_query_peer_position</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *cur</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *cur</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-peer-duration" title="gst_pad_query_peer_duration ()">gst_pad_query_peer_duration</a>         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *duration</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *duration</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-query-peer-convert" title="gst_pad_query_peer_convert ()">gst_pad_query_peer_convert</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> src_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> src_val</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> src_val</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *dest_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *dest_val</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *dest_val</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-query-function" title="gst_pad_set_query_function ()">gst_pad_set_query_function</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadQueryFunction" title="GstPadQueryFunction ()"><span class="type">GstPadQueryFunction</span></a> query</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (<a class="link" href="GstPad.html#GstPadQueryFunction" title="GstPadQueryFunction ()">*GstPadQueryFunction</a>)              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -278,14 +278,14 @@ const <a class="link" href="gstreamer-GstQuery.html#GstQueryType" title="enum Gs
                                                         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadIterIntLinkFunction" title="GstPadIterIntLinkFunction ()"><span class="type">GstPadIterIntLinkFunction</span></a> iterintlink</code></em>);
 <a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *       (<a class="link" href="GstPad.html#GstPadIterIntLinkFunction" title="GstPadIterIntLinkFunction ()">*GstPadIterIntLinkFunction</a>)        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *            <a class="link" href="GstPad.html#gst-pad-iterate-internal-links" title="gst_pad_iterate_internal_links ()">gst_pad_iterate_internal_links</a> (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *            <a class="link" href="GstPad.html#gst-pad-iterate-internal-links-default" title="gst_pad_iterate_internal_links_default ()">gst_pad_iterate_internal_links_default</a>
+<a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *       <a class="link" href="GstPad.html#gst-pad-iterate-internal-links" title="gst_pad_iterate_internal_links ()">gst_pad_iterate_internal_links</a>      (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *       <a class="link" href="GstPad.html#gst-pad-iterate-internal-links-default" title="gst_pad_iterate_internal_links_default ()">gst_pad_iterate_internal_links_default</a>
                                                         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-set-internal-link-function" title="gst_pad_set_internal_link_function ()">gst_pad_set_internal_link_function</a>  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadIntLinkFunction" title="GstPadIntLinkFunction ()"><span class="type">GstPadIntLinkFunction</span></a> intlink</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             (<a class="link" href="GstPad.html#GstPadIntLinkFunction" title="GstPadIntLinkFunction ()">*GstPadIntLinkFunction</a>)            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *			          <a class="link" href="GstPad.html#gst-pad-get-internal-links" title="gst_pad_get_internal_links ()">gst_pad_get_internal_links</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *			          <a class="link" href="GstPad.html#gst-pad-get-internal-links-default" title="gst_pad_get_internal_links_default ()">gst_pad_get_internal_links_default</a>  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="GstPad.html#gst-pad-get-internal-links" title="gst_pad_get_internal_links ()">gst_pad_get_internal_links</a>          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="GstPad.html#gst-pad-get-internal-links-default" title="gst_pad_get_internal_links_default ()">gst_pad_get_internal_links_default</a>  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstPad.html#gst-pad-load-and-link" title="gst_pad_load_and_link ()">gst_pad_load_and_link</a>               (<em class="parameter"><code><span class="type">xmlNodePtr</span> self</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *parent</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstPad.html#gst-pad-dispatcher" title="gst_pad_dispatcher ()">gst_pad_dispatcher</a>                  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
@@ -326,7 +326,7 @@ const <a class="link" href="gstreamer-GstQuery.html#GstQueryType" title="enum Gs
   <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
    +----<a class="link" href="GstObject.html" title="GstObject">GstObject</a>
          +----GstPad
-               +----GstProxyPad
+               +----<a class="link" href="GstGhostPad.html#GstProxyPad">GstProxyPad</a>
 </pre>
 </div>
 <div class="refsect1">
@@ -445,7 +445,11 @@ Last reviewed on 2006-07-06 (0.10.9)
   GstPadQueryFunction		 queryfunc;
 
   /* internal links */
+#ifndef GST_DISABLE_DEPRECATED
   GstPadIntLinkFunction		 intlinkfunc;
+#else
+#endif
+#endif
 
   GstPadBufferAllocFunction      bufferallocfunc;
 
@@ -831,7 +835,7 @@ for linking the pads.
 <td><p><a name="GST-PAD-LINK-CHECK-HIERARCHY:CAPS"></a><span class="term"><code class="literal">GST_PAD_LINK_CHECK_HIERARCHY</code></span></p></td>
 <td>Check the pads have same parents/grandparents.
   Could be omitted if it is already known that the two elements that own the
-  pads are in the same bin. 
+  pads are in the same bin.
 </td>
 </tr>
 <tr>
@@ -854,10 +858,10 @@ for linking the pads.
 <hr>
 <div class="refsect2">
 <a name="GST-PAD-LINK-CHECK-DEFAULT:CAPS"></a><h3>GST_PAD_LINK_CHECK_DEFAULT</h3>
-<pre class="programlisting">#define GST_PAD_LINK_CHECK_DEFAULT (GST_PAD_LINK_CHECK_HIERARCHY | GST_PAD_LINK_CHECK_CAPS)
+<pre class="programlisting">#define GST_PAD_LINK_CHECK_DEFAULT ((GstPadLinkCheck) (GST_PAD_LINK_CHECK_HIERARCHY | GST_PAD_LINK_CHECK_CAPS))
 </pre>
 <p>
-The default checks done when linking pads (i.e. the ones used by 
+The default checks done when linking pads (i.e. the ones used by
 <a class="link" href="GstPad.html#gst-pad-link" title="gst_pad_link ()"><code class="function">gst_pad_link()</code></a>).
 </p>
 <p class="since">Since 0.10.30</p>
@@ -1085,7 +1089,7 @@ MT safe.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-parent-element"></a><h3>gst_pad_get_parent_element ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *		      gst_pad_get_parent_element          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_pad_get_parent_element          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the parent of <em class="parameter"><code>pad</code></em>, cast to a <a class="link" href="GstElement.html" title="GstElement"><span class="type">GstElement</span></a>. If a <em class="parameter"><code>pad</code></em> has no parent or
 its parent is not an element, return NULL.
@@ -1110,7 +1114,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-pad-template"></a><h3>gst_pad_get_pad_template ()</h3>
-<pre class="programlisting"><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="returnvalue">GstPadTemplate</span></a> *		  gst_pad_get_pad_template            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="returnvalue">GstPadTemplate</span></a> *    gst_pad_get_pad_template            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the template for <em class="parameter"><code>pad</code></em>.
 </p>
@@ -1283,7 +1287,7 @@ linked.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-caps"></a><h3>gst_pad_get_caps ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_get_caps                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_get_caps                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities this pad can produce or consume.
 Note that this method doesn't necessarily return the caps set by
@@ -1311,7 +1315,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-caps-reffed"></a><h3>gst_pad_get_caps_reffed ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_get_caps_reffed             (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_get_caps_reffed             (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities this pad can produce or consume. Preferred function if
 one only wants to read or intersect the caps.
@@ -1335,7 +1339,7 @@ one only wants to read or intersect the caps.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-allowed-caps"></a><h3>gst_pad_get_allowed_caps ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_get_allowed_caps            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_get_allowed_caps            (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities of the allowed media types that can flow through
 <em class="parameter"><code>pad</code></em> and its peer.
@@ -1366,7 +1370,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-negotiated-caps"></a><h3>gst_pad_get_negotiated_caps ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_get_negotiated_caps         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_get_negotiated_caps         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities of the media type that currently flows through <em class="parameter"><code>pad</code></em>
 and its peer.
@@ -1397,7 +1401,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-pad-template-caps"></a><h3>gst_pad_get_pad_template_caps ()</h3>
-<pre class="programlisting">const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *	    gst_pad_get_pad_template_caps       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting">const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *     gst_pad_get_pad_template_caps       (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities for <em class="parameter"><code>pad</code></em>'s template.
 </p>
@@ -1453,7 +1457,7 @@ MT safe.</td>
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-peer"></a><h3>gst_pad_get_peer ()</h3>
-<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         gst_pad_get_peer                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            gst_pad_get_peer                    (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the peer of <em class="parameter"><code>pad</code></em>. This function refs the peer pad so
 you need to unref it after use.
@@ -1477,7 +1481,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-peer-get-caps"></a><h3>gst_pad_peer_get_caps ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_peer_get_caps               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_peer_get_caps               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities of the peer connected to this pad. Similar to
 <a class="link" href="GstPad.html#gst-pad-get-caps" title="gst_pad_get_caps ()"><code class="function">gst_pad_get_caps()</code></a>.
@@ -1502,7 +1506,7 @@ returns <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macr
 <hr>
 <div class="refsect2">
 <a name="gst-pad-peer-get-caps-reffed"></a><h3>gst_pad_peer_get_caps_reffed ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_peer_get_caps_reffed        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_peer_get_caps_reffed        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets the capabilities of the peer connected to this pad. Preferred function
 if one only wants to read or intersect the caps.
@@ -1725,7 +1729,8 @@ operation succeeds</td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>TRUE if the pad could be blocked. This function can fail if the
+<td>
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the pad could be blocked. This function can fail if the
 wrong parameters were passed or the pad was already in the requested state.
 MT safe.</td>
 </tr>
@@ -2155,7 +2160,7 @@ Removes an event probe from <em class="parameter"><code>pad</code></em>.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-new"></a><h3>gst_pad_new ()</h3>
-<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         gst_pad_new                         (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            gst_pad_new                         (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstPad.html#GstPadDirection" title="enum GstPadDirection"><span class="type">GstPadDirection</span></a> direction</code></em>);</pre>
 <p>
 Creates a new pad with the given name in the given direction.
@@ -2186,7 +2191,7 @@ MT safe. <span class="annotation">[<acronym title="Free data after the code is d
 <hr>
 <div class="refsect2">
 <a name="gst-pad-new-from-template"></a><h3>gst_pad_new_from_template ()</h3>
-<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         gst_pad_new_from_template           (<em class="parameter"><code><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="type">GstPadTemplate</span></a> *templ</code></em>,
+<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            gst_pad_new_from_template           (<em class="parameter"><code><a class="link" href="GstPadTemplate.html" title="GstPadTemplate"><span class="type">GstPadTemplate</span></a> *templ</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Creates a new pad with the given name from the given template.
@@ -2216,7 +2221,7 @@ This function makes a copy of the name so you can safely free the name.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-new-from-static-template"></a><h3>gst_pad_new_from_static_template ()</h3>
-<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *			         gst_pad_new_from_static_template    (<em class="parameter"><code><a class="link" href="GstPadTemplate.html#GstStaticPadTemplate" title="struct GstStaticPadTemplate"><span class="type">GstStaticPadTemplate</span></a> *templ</code></em>,
+<pre class="programlisting"><a class="link" href="GstPad.html" title="GstPad"><span class="returnvalue">GstPad</span></a> *            gst_pad_new_from_static_template    (<em class="parameter"><code><a class="link" href="GstPadTemplate.html#GstStaticPadTemplate" title="struct GstStaticPadTemplate"><span class="type">GstStaticPadTemplate</span></a> *templ</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Creates a new pad with the given name from the given static template.
@@ -2247,7 +2252,7 @@ This function makes a copy of the name so you can safely free the name.
 <div class="refsect2">
 <a name="gst-pad-alloc-buffer"></a><h3>gst_pad_alloc_buffer ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       gst_pad_alloc_buffer                (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);</pre>
@@ -2302,7 +2307,7 @@ MT safe.</td>
 <div class="refsect2">
 <a name="gst-pad-alloc-buffer-and-set-caps"></a><h3>gst_pad_alloc_buffer_and_set_caps ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       gst_pad_alloc_buffer_and_set_caps   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);</pre>
@@ -2381,7 +2386,7 @@ bufferalloc function can only be set on sinkpads.
 <div class="refsect2">
 <a name="GstPadBufferAllocFunction"></a><h3>GstPadBufferAllocFunction ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       (*GstPadBufferAllocFunction)        (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buf</code></em>);</pre>
@@ -2620,12 +2625,12 @@ if a pad can support random access.
 <div class="refsect2">
 <a name="gst-pad-get-range"></a><h3>gst_pad_get_range ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       gst_pad_get_range                   (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);</pre>
 <p>
 When <em class="parameter"><code>pad</code></em> is flushing this function returns <a class="link" href="GstPad.html#GST-FLOW-WRONG-STATE:CAPS"><span class="type">GST_FLOW_WRONG_STATE</span></a>
-immediatly and <em class="parameter"><code>buffer</code></em> is <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.
+immediately and <em class="parameter"><code>buffer</code></em> is <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.
 </p>
 <p>
 Calls the getrange function of <em class="parameter"><code>pad</code></em>, see <a class="link" href="GstPad.html#GstPadGetRangeFunction" title="GstPadGetRangeFunction ()"><span class="type">GstPadGetRangeFunction</span></a> for a
@@ -2693,7 +2698,7 @@ called to produce a new <a class="link" href="gstreamer-GstBuffer.html#GstBuffer
 <div class="refsect2">
 <a name="GstPadGetRangeFunction"></a><h3>GstPadGetRangeFunction ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       (*GstPadGetRangeFunction)           (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> length</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);</pre>
 <p>
@@ -3061,7 +3066,7 @@ be overridden by elements.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-proxy-getcaps"></a><h3>gst_pad_proxy_getcaps ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_proxy_getcaps               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_proxy_getcaps               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Calls <a class="link" href="GstPad.html#gst-pad-get-allowed-caps" title="gst_pad_get_allowed_caps ()"><code class="function">gst_pad_get_allowed_caps()</code></a> for every other pad belonging to the
 same element as <em class="parameter"><code>pad</code></em>, and returns the intersection of the results.
@@ -3167,7 +3172,7 @@ the proxy setcaps fails. May be used only during negotiation.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>TRUE if sucessful</td>
+<td>TRUE if successful</td>
 </tr>
 </tbody>
 </table></div>
@@ -3225,7 +3230,7 @@ filled in.
 <pre class="programlisting"><span class="returnvalue">void</span>                (*GstPadFixateCapsFunction)         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);</pre>
 <p>
-Given possibly unfixed caps <em class="parameter"><code>caps</code></em>, let <em class="parameter"><code>pad</code></em> use its default prefered
+Given possibly unfixed caps <em class="parameter"><code>caps</code></em>, let <em class="parameter"><code>pad</code></em> use its default preferred
 format to make a fixed caps. <em class="parameter"><code>caps</code></em> should be writable. By default this
 function will pick the first value of any ranges or lists in the caps but
 elements can override this function to perform other behaviour.
@@ -3248,7 +3253,7 @@ elements can override this function to perform other behaviour.
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-fixed-caps-func"></a><h3>gst_pad_get_fixed_caps_func ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *		         gst_pad_get_fixed_caps_func         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           gst_pad_get_fixed_caps_func         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 A helper function you can use as a GetCaps function that
 will return the currently negotiated caps or the padtemplate
@@ -3597,7 +3602,7 @@ MT safe.</td>
 <div class="refsect2">
 <a name="gst-pad-pull-range"></a><h3>gst_pad_pull_range ()</h3>
 <pre class="programlisting"><a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       gst_pad_pull_range                  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> offset</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint64</span> offset</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstBuffer.html#GstBuffer" title="struct GstBuffer"><span class="type">GstBuffer</span></a> **buffer</code></em>);</pre>
 <p>
@@ -3792,7 +3797,7 @@ Multi-sinkpad elements should implement custom event handlers.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>TRUE if the event was sent succesfully.</td>
+<td>TRUE if the event was sent successfully.</td>
 </tr>
 </tbody>
 </table></div>
@@ -3894,7 +3899,7 @@ Multi-sinkpad elements should implement custom query handlers.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>TRUE if the query was performed succesfully.</td>
+<td>TRUE if the query was performed successfully.</td>
 </tr>
 </tbody>
 </table></div>
@@ -3904,7 +3909,7 @@ Multi-sinkpad elements should implement custom query handlers.
 <a name="gst-pad-query-position"></a><h3>gst_pad_query_position ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_position              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *cur</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *cur</code></em>);</pre>
 <p>
 Queries a pad for the stream position.
 </p>
@@ -3938,7 +3943,7 @@ On return contains the <a class="link" href="gstreamer-GstFormat.html#GstFormat"
 <a name="gst-pad-query-duration"></a><h3>gst_pad_query_duration ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_duration              (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *duration</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *duration</code></em>);</pre>
 <p>
 Queries a pad for the total stream duration.
 </p>
@@ -3973,9 +3978,9 @@ duration, or NULL. <span class="annotation">[<acronym title="Parameter for retur
 <a name="gst-pad-query-convert"></a><h3>gst_pad_query_convert ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_convert               (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> src_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> src_val</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> src_val</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *dest_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *dest_val</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *dest_val</code></em>);</pre>
 <p>
 Queries a pad to convert <em class="parameter"><code>src_val</code></em> in <em class="parameter"><code>src_format</code></em> to <em class="parameter"><code>dest_format</code></em>.
 </p>
@@ -4016,7 +4021,7 @@ Queries a pad to convert <em class="parameter"><code>src_val</code></em> in <em 
 <a name="gst-pad-query-peer-position"></a><h3>gst_pad_query_peer_position ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_peer_position         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *cur</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *cur</code></em>);</pre>
 <p>
 Queries the peer of a given sink pad for the stream position.
 </p>
@@ -4052,7 +4057,7 @@ position, or NULL. <span class="annotation">[<acronym title="Parameter for retur
 <a name="gst-pad-query-peer-duration"></a><h3>gst_pad_query_peer_duration ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_peer_duration         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *duration</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *duration</code></em>);</pre>
 <p>
 Queries the peer pad of a given sink pad for the total stream duration.
 </p>
@@ -4087,9 +4092,9 @@ duration, or NULL. <span class="annotation">[<acronym title="Parameter for retur
 <a name="gst-pad-query-peer-convert"></a><h3>gst_pad_query_peer_convert ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_pad_query_peer_convert          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> src_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> src_val</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> src_val</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> *dest_format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *dest_val</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *dest_val</code></em>);</pre>
 <p>
 Queries the peer pad of a given sink pad to convert <em class="parameter"><code>src_val</code></em> in <em class="parameter"><code>src_format</code></em>
 to <em class="parameter"><code>dest_format</code></em>.
@@ -4318,7 +4323,7 @@ Since 0.10.21</td>
 <hr>
 <div class="refsect2">
 <a name="gst-pad-iterate-internal-links"></a><h3>gst_pad_iterate_internal_links ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *            gst_pad_iterate_internal_links (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *       gst_pad_iterate_internal_links      (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Gets an iterator for the pads to which the given pad is linked to inside
 of the parent element.
@@ -4351,7 +4356,7 @@ pad does not have an iterator function configured. Use
 <hr>
 <div class="refsect2">
 <a name="gst-pad-iterate-internal-links-default"></a><h3>gst_pad_iterate_internal_links_default ()</h3>
-<pre class="programlisting"><a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *            gst_pad_iterate_internal_links_default
+<pre class="programlisting"><a class="link" href="gstreamer-GstIterator.html#GstIterator" title="struct GstIterator"><span class="returnvalue">GstIterator</span></a> *       gst_pad_iterate_internal_links_default
                                                         (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <p>
 Iterate the list of pads to which the given pad is linked to inside of
@@ -4435,13 +4440,13 @@ The caller must call <a href="http://library.gnome.org/devel/glib/unstable/glib-
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-internal-links"></a><h3>gst_pad_get_internal_links ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *			          gst_pad_get_internal_links          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             gst_pad_get_internal_links          (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
 <p><code class="literal">gst_pad_get_internal_links</code> is deprecated and should not be used in newly-written code. This function does not ref the pads in the list so that they
 could become invalid by the time the application accesses them. It's also
 possible that the list changes while handling the pads, which the caller of
-this function is unable to know. Use the thread-safe 
+this function is unable to know. Use the thread-safe
 <a class="link" href="GstPad.html#gst-pad-iterate-internal-links" title="gst_pad_iterate_internal_links ()"><code class="function">gst_pad_iterate_internal_links()</code></a> instead.</p>
 </div>
 <p>
@@ -4471,13 +4476,13 @@ of pads, free with <a href="http://library.gnome.org/devel/glib/unstable/glib-Do
 <hr>
 <div class="refsect2">
 <a name="gst-pad-get-internal-links-default"></a><h3>gst_pad_get_internal_links_default ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *			          gst_pad_get_internal_links_default  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             gst_pad_get_internal_links_default  (<em class="parameter"><code><a class="link" href="GstPad.html" title="GstPad"><span class="type">GstPad</span></a> *pad</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
 <p><code class="literal">gst_pad_get_internal_links_default</code> is deprecated and should not be used in newly-written code. This function does not ref the pads in the list so that they
 could become invalid by the time the application accesses them. It's also
 possible that the list changes while handling the pads, which the caller of
-this function is unable to know. Use the thread-safe 
+this function is unable to know. Use the thread-safe
 <a class="link" href="GstPad.html#gst-pad-iterate-internal-links-default" title="gst_pad_iterate_internal_links_default ()"><code class="function">gst_pad_iterate_internal_links_default()</code></a> instead.</p>
 </div>
 <p>
@@ -5029,9 +5034,9 @@ scenarios without additional checks.</p>
 </div>
 <p>
 Macro to test if the given <a class="link" href="GstPad.html#GstFlowReturn" title="enum GstFlowReturn"><span class="type">GstFlowReturn</span></a> value indicates a
-successfull result
+successful result
 This macro is mainly used in elements to decide if the processing
-of a buffer was successfull.
+of a buffer was successful.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -5187,6 +5192,6 @@ Signals that a pad has been unlinked from the peer pad.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

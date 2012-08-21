@@ -205,25 +205,30 @@ void      gst_tag_merge_strings_with_comma (GValue * dest, const GValue * src);
 /* basic tag support */
 gboolean               gst_tag_exists          (const gchar * tag);
 GType                  gst_tag_get_type        (const gchar * tag);
-G_CONST_RETURN gchar * gst_tag_get_nick        (const gchar * tag);
-G_CONST_RETURN gchar * gst_tag_get_description (const gchar * tag);
+const gchar *          gst_tag_get_nick        (const gchar * tag);
+const gchar *          gst_tag_get_description (const gchar * tag);
 GstTagFlag             gst_tag_get_flag        (const gchar * tag);
 gboolean               gst_tag_is_fixed        (const gchar * tag);
 
 /* tag lists */
-GstTagList * gst_tag_list_new               (void);
-GstTagList * gst_tag_list_new_full          (const gchar * tag, ...);
-GstTagList * gst_tag_list_new_full_valist   (va_list var_args);
+GstTagList * gst_tag_list_new               (void) G_GNUC_MALLOC;
+GstTagList * gst_tag_list_new_full          (const gchar * tag, ...) G_GNUC_MALLOC;
+GstTagList * gst_tag_list_new_full_valist   (va_list var_args) G_GNUC_MALLOC;
+
+gchar      * gst_tag_list_to_string         (const GstTagList * list) G_GNUC_MALLOC;
+GstTagList * gst_tag_list_new_from_string   (const gchar      * str) G_GNUC_MALLOC;
 
 gboolean     gst_is_tag_list                (gconstpointer p);
-GstTagList * gst_tag_list_copy              (const GstTagList * list);
+GstTagList * gst_tag_list_copy              (const GstTagList * list) G_GNUC_MALLOC;
 gboolean     gst_tag_list_is_empty          (const GstTagList * list);
+gboolean     gst_tag_list_is_equal          (const GstTagList * list1,
+                                             const GstTagList * list2);
 void         gst_tag_list_insert            (GstTagList       * into,
                                              const GstTagList * from,
                                              GstTagMergeMode    mode);
 GstTagList * gst_tag_list_merge             (const GstTagList * list1,
                                              const GstTagList * list2,
-                                             GstTagMergeMode    mode);
+                                             GstTagMergeMode    mode) G_GNUC_MALLOC;
 void         gst_tag_list_free              (GstTagList       * list);
 guint        gst_tag_list_get_tag_size      (const GstTagList * list,
                                              const gchar      * tag);
@@ -253,7 +258,7 @@ void         gst_tag_list_foreach           (const GstTagList * list,
                                              GstTagForeachFunc  func,
                                              gpointer           user_data);
 
-G_CONST_RETURN GValue *
+const GValue *
              gst_tag_list_get_value_index   (const GstTagList * list,
                                              const gchar      * tag,
                                              guint              index);

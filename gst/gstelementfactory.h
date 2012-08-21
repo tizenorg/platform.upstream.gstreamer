@@ -146,22 +146,22 @@ GType                   gst_element_factory_get_type            (void);
 GstElementFactory *     gst_element_factory_find                (const gchar *name);
 
 GType                   gst_element_factory_get_element_type    (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_longname        (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_klass           (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_description     (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_author          (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_documentation_uri (GstElementFactory *factory);
-G_CONST_RETURN gchar *  gst_element_factory_get_icon_name       (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_longname        (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_klass           (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_description     (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_author          (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_documentation_uri (GstElementFactory *factory);
+const gchar *           gst_element_factory_get_icon_name       (GstElementFactory *factory);
 guint                   gst_element_factory_get_num_pad_templates (GstElementFactory *factory);
-G_CONST_RETURN GList *  gst_element_factory_get_static_pad_templates (GstElementFactory *factory);
+const GList *           gst_element_factory_get_static_pad_templates (GstElementFactory *factory);
 gint                    gst_element_factory_get_uri_type        (GstElementFactory *factory);
 gchar **                gst_element_factory_get_uri_protocols   (GstElementFactory *factory);
 gboolean                gst_element_factory_has_interface       (GstElementFactory *factory,
                                                                  const gchar *interfacename);
 
 GstElement*             gst_element_factory_create              (GstElementFactory *factory,
-                                                                 const gchar *name);
-GstElement*             gst_element_factory_make                (const gchar *factoryname, const gchar *name);
+                                                                 const gchar *name) G_GNUC_MALLOC;
+GstElement*             gst_element_factory_make                (const gchar *factoryname, const gchar *name) G_GNUC_MALLOC;
 
 /* FIXME 0.11: move these two into our private headers */
 void                    __gst_element_factory_add_static_pad_template (GstElementFactory *elementfactory,
@@ -303,12 +303,12 @@ gboolean      gst_element_factory_list_is_type      (GstElementFactory *factory,
 						     GstElementFactoryListType type);
 
 GList *       gst_element_factory_list_get_elements (GstElementFactoryListType type,
-						     GstRank minrank);
+						     GstRank minrank) G_GNUC_MALLOC;
 
 
 GList *       gst_element_factory_list_filter       (GList *list, const GstCaps *caps,
 						     GstPadDirection direction,
-						     gboolean subsetonly);
+						     gboolean subsetonly) G_GNUC_MALLOC;
 G_END_DECLS
 
 #endif /* __GST_ELEMENT_FACTORY_H__ */

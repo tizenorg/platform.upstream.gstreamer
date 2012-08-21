@@ -46,7 +46,7 @@
  * means of doing so is to load every plugin and look at the resulting
  * information that is gathered in the default registry. Clearly, this is a time
  * consuming process, so we cache information in the registry file. The format
- * and location of the cache file is internal to gstreamer. 
+ * and location of the cache file is internal to gstreamer.
  *
  * On startup, plugins are searched for in the plugin search path. The following
  * locations are checked in this order:
@@ -103,7 +103,7 @@
  * different sets of plugins. For various reasons, at init time, the cache is
  * stored in the default registry, and plugins not relevant to the current
  * process are marked with the %GST_PLUGIN_FLAG_CACHED bit. These plugins are
- * removed at the end of intitialization.
+ * removed at the end of initialization.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -175,6 +175,8 @@ extern GList *_priv_gst_plugin_paths;
 
 /* Set to TRUE when the registry cache should be disabled */
 gboolean _gst_disable_registry_cache = FALSE;
+
+static gboolean __registry_reuse_plugin_scanner = TRUE;
 #endif
 
 /* Element signals and args */
@@ -280,7 +282,7 @@ gst_registry_finalize (GObject * object)
     if (feature) {
       GST_LOG_OBJECT (registry, "removing feature %p (%s)",
           feature, gst_plugin_feature_get_name (feature));
-      gst_object_unref (feature);
+      gst_object_unparent (GST_OBJECT_CAST (feature));
     }
     f = g_list_next (f);
   }
@@ -485,7 +487,7 @@ gst_registry_remove_features_for_plugin_unlocked (GstRegistry * registry,
 
       registry->features = g_list_delete_link (registry->features, f);
       g_hash_table_remove (registry->feature_hash, feature->name);
-      gst_object_unref (feature);
+      gst_object_unparent (GST_OBJECT_CAST (feature));
     }
     f = next;
   }
@@ -561,10 +563,10 @@ gst_registry_add_feature (GstRegistry * registry, GstPluginFeature * feature)
   if (G_UNLIKELY (existing_feature)) {
     /* We unref now. No need to remove the feature name from the hash table, it
      * got replaced by the new feature */
-    gst_object_unref (existing_feature);
+    gst_object_unparent (GST_OBJECT_CAST (existing_feature));
   }
 
-  gst_object_ref_sink (feature);
+  gst_object_set_parent (GST_OBJECT_CAST (feature), GST_OBJECT_CAST (registry));
 
   registry->priv->cookie++;
   GST_OBJECT_UNLOCK (registry);
@@ -598,7 +600,8 @@ gst_registry_remove_feature (GstRegistry * registry, GstPluginFeature * feature)
   g_hash_table_remove (registry->feature_hash, feature->name);
   registry->priv->cookie++;
   GST_OBJECT_UNLOCK (registry);
-  gst_object_unref (feature);
+
+  gst_object_unparent ((GstObject *) feature);
 }
 
 /**
@@ -623,21 +626,47 @@ GList *
 gst_registry_plugin_filter (GstRegistry * registry,
     GstPluginFilter filter, gboolean first, gpointer user_data)
 {
-  GList *list;
-  GList *g;
+  GList *list = NULL;
 
   g_return_val_if_fail (GST_IS_REGISTRY (registry), NULL);
 
   GST_OBJECT_LOCK (registry);
-  list = gst_filter_run (registry->plugins, (GstFilterFunc) filter, first,
-      user_data);
-  for (g = list; g; g = g->next) {
-    gst_object_ref (GST_PLUGIN_CAST (g->data));
+  {
+    const GList *walk;
+
+    for (walk = registry->plugins; walk != NULL; walk = walk->next) {
+      GstPlugin *plugin = walk->data;
+
+      if (filter == NULL || filter (plugin, user_data)) {
+        list = g_list_prepend (list, gst_object_ref (plugin));
+
+        if (first)
+          break;
+      }
+    }
   }
   GST_OBJECT_UNLOCK (registry);
 
   return list;
 }
+
+#ifdef GST_DISABLE_DEPRECATED
+typedef struct
+{
+  const gchar *name;
+  GType type;
+} GstTypeNameData;
+static gboolean
+gst_plugin_feature_type_name_filter (GstPluginFeature * feature,
+    GstTypeNameData * data)
+{
+  g_assert (GST_IS_PLUGIN_FEATURE (feature));
+
+  return ((data->type == 0 || data->type == G_OBJECT_TYPE (feature)) &&
+      (data->name == NULL
+          || !strcmp (data->name, GST_PLUGIN_FEATURE_NAME (feature))));
+}
+#endif
 
 /* returns TRUE if the list was changed
  *
@@ -651,16 +680,24 @@ gst_registry_get_feature_list_or_create (GstRegistry * registry,
 
   if (G_UNLIKELY (!*previous || priv->cookie != *cookie)) {
     GstTypeNameData data;
+    const GList *walk;
 
-    if (*previous)
+    if (*previous) {
       gst_plugin_feature_list_free (*previous);
+      *previous = NULL;
+    }
 
     data.type = type;
     data.name = NULL;
-    *previous =
-        gst_filter_run (registry->features,
-        (GstFilterFunc) gst_plugin_feature_type_name_filter, FALSE, &data);
-    g_list_foreach (*previous, (GFunc) gst_object_ref, NULL);
+
+    for (walk = registry->features; walk != NULL; walk = walk->next) {
+      GstPluginFeature *feature = walk->data;
+
+      if (gst_plugin_feature_type_name_filter (feature, &data)) {
+        *previous = g_list_prepend (*previous, gst_object_ref (feature));
+      }
+    }
+
     *cookie = priv->cookie;
     res = TRUE;
   }
@@ -742,16 +779,24 @@ GList *
 gst_registry_feature_filter (GstRegistry * registry,
     GstPluginFeatureFilter filter, gboolean first, gpointer user_data)
 {
-  GList *list;
-  GList *g;
+  GList *list = NULL;
 
   g_return_val_if_fail (GST_IS_REGISTRY (registry), NULL);
 
   GST_OBJECT_LOCK (registry);
-  list = gst_filter_run (registry->features, (GstFilterFunc) filter, first,
-      user_data);
-  for (g = list; g; g = g->next) {
-    gst_object_ref (GST_PLUGIN_FEATURE_CAST (g->data));
+  {
+    const GList *walk;
+
+    for (walk = registry->features; walk != NULL; walk = walk->next) {
+      GstPluginFeature *feature = walk->data;
+
+      if (filter == NULL || filter (feature, user_data)) {
+        list = g_list_prepend (list, gst_object_ref (feature));
+
+        if (first)
+          break;
+      }
+    }
   }
   GST_OBJECT_UNLOCK (registry);
 
@@ -1082,6 +1127,12 @@ gst_registry_scan_plugin_file (GstRegistryScanContext * context,
     gst_object_unref (newplugin);
     changed = TRUE;
   }
+#ifndef GST_DISABLE_REGISTRY
+  if (!__registry_reuse_plugin_scanner) {
+    clear_scan_context (context);
+    context->helper_state = REGISTRY_SCAN_HELPER_NOT_STARTED;
+  }
+#endif
 
   return changed;
 }
@@ -1215,11 +1266,11 @@ gst_registry_scan_path_level (GstRegistryScanContext * context,
       } else {
         GST_INFO_OBJECT (context->registry, "cached info for %s is stale",
             filename);
-        GST_DEBUG_OBJECT (context->registry, "mtime %ld != %ld or size %"
-            G_GINT64_FORMAT " != %" G_GINT64_FORMAT " or external dependency "
-            "env_vars changed: %d or external dependencies changed: %d"
-            " or old path %s != new path %s",
-            plugin->file_mtime, file_status.st_mtime,
+        GST_DEBUG_OBJECT (context->registry, "mtime %" G_GINT64_FORMAT " != %"
+            G_GINT64_FORMAT " or size %" G_GINT64_FORMAT " != %"
+            G_GINT64_FORMAT " or external dependency env_vars changed: %d or"
+            " external dependencies changed: %d or old path %s != new path %s",
+            (gint64) plugin->file_mtime, (gint64) file_status.st_mtime,
             (gint64) plugin->file_size, (gint64) file_status.st_size,
             env_vars_changed, deps_changed, plugin->filename, filename);
         gst_registry_remove_plugin (context->registry, plugin);
@@ -1615,6 +1666,12 @@ ensure_current_registry (GError ** error)
   }
 
   if (do_update) {
+    const gchar *reuse_env;
+
+    if ((reuse_env = g_getenv ("GST_REGISTRY_REUSE_PLUGIN_SCANNER"))) {
+      /* do reuse for any value different from "no" */
+      __registry_reuse_plugin_scanner = (strcmp (reuse_env, "no") != 0);
+    }
     /* now check registry */
     GST_DEBUG ("Updating registry cache");
     scan_and_update_registry (default_registry, registry_file, TRUE, error);

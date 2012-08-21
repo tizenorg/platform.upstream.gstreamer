@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstBaseSink</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Library Reference Manual">
 <link rel="up" href="gstreamer-base.html" title="GStreamer Base and Utillity Classes">
 <link rel="prev" href="GstBaseSrc.html" title="GstBaseSrc">
 <link rel="next" href="GstBaseTransform.html" title="GstBaseTransform">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -65,8 +65,8 @@ struct              <a class="link" href="GstBaseSink.html#GstBaseSinkClass" tit
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> sync</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstBaseSink.html#gst-base-sink-get-sync" title="gst_base_sink_get_sync ()">gst_base_sink_get_sync</a>              (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstBaseSink.html#gst-base-sink-set-max-lateness" title="gst_base_sink_set_max_lateness ()">gst_base_sink_set_max_lateness</a>      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> max_lateness</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              <a class="link" href="GstBaseSink.html#gst-base-sink-get-max-lateness" title="gst_base_sink_get_max_lateness ()">gst_base_sink_get_max_lateness</a>      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> max_lateness</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GstBaseSink.html#gst-base-sink-get-max-lateness" title="gst_base_sink_get_max_lateness ()">gst_base_sink_get_max_lateness</a>      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstBaseSink.html#gst-base-sink-set-qos-enabled" title="gst_base_sink_set_qos_enabled ()">gst_base_sink_set_qos_enabled</a>       (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> enabled</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstBaseSink.html#gst-base-sink-is-qos-enabled" title="gst_base_sink_is_qos_enabled ()">gst_base_sink_is_qos_enabled</a>        (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
@@ -88,9 +88,9 @@ struct              <a class="link" href="GstBaseSink.html#GstBaseSinkClass" tit
 <span class="returnvalue">void</span>                <a class="link" href="GstBaseSink.html#gst-base-sink-set-blocksize" title="gst_base_sink_set_blocksize ()">gst_base_sink_set_blocksize</a>         (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> blocksize</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a class="link" href="GstBaseSink.html#gst-base-sink-get-blocksize" title="gst_base_sink_get_blocksize ()">gst_base_sink_get_blocksize</a>         (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="returnvalue">guint64</span></a>             <a class="link" href="GstBaseSink.html#gst-base-sink-get-throttle-time" title="gst_base_sink_get_throttle_time ()">gst_base_sink_get_throttle_time</a>     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
+<span class="returnvalue">guint64</span>             <a class="link" href="GstBaseSink.html#gst-base-sink-get-throttle-time" title="gst_base_sink_get_throttle_time ()">gst_base_sink_get_throttle_time</a>     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstBaseSink.html#gst-base-sink-set-throttle-time" title="gst_base_sink_set_throttle_time ()">gst_base_sink_set_throttle_time</a>     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> throttle</code></em>);
+                                                         <em class="parameter"><code><span class="type">guint64</span> throttle</code></em>);
 #define             <a class="link" href="GstBaseSink.html#GST-BASE-SINK-PAD:CAPS" title="GST_BASE_SINK_PAD()">GST_BASE_SINK_PAD</a>                   (obj)
 </pre>
 </div>
@@ -110,13 +110,13 @@ struct              <a class="link" href="GstBaseSink.html#GstBaseSinkClass" tit
   "<a class="link" href="GstBaseSink.html#GstBaseSink--blocksize" title='The "blocksize" property'>blocksize</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
   "<a class="link" href="GstBaseSink.html#GstBaseSink--enable-last-buffer" title='The "enable-last-buffer" property'>enable-last-buffer</a>"       <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
   "<a class="link" href="GstBaseSink.html#GstBaseSink--last-buffer" title='The "last-buffer" property'>last-buffer</a>"              <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a>*            : Read
-  "<a class="link" href="GstBaseSink.html#GstBaseSink--max-lateness" title='The "max-lateness" property'>max-lateness</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write
+  "<a class="link" href="GstBaseSink.html#GstBaseSink--max-lateness" title='The "max-lateness" property'>max-lateness</a>"             <span class="type">gint64</span>                : Read / Write
   "<a class="link" href="GstBaseSink.html#GstBaseSink--preroll-queue-len" title='The "preroll-queue-len" property'>preroll-queue-len</a>"        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write / Construct
   "<a class="link" href="GstBaseSink.html#GstBaseSink--qos" title='The "qos" property'>qos</a>"                      <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
-  "<a class="link" href="GstBaseSink.html#GstBaseSink--render-delay" title='The "render-delay" property'>render-delay</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write
+  "<a class="link" href="GstBaseSink.html#GstBaseSink--render-delay" title='The "render-delay" property'>render-delay</a>"             <span class="type">guint64</span>               : Read / Write
   "<a class="link" href="GstBaseSink.html#GstBaseSink--sync" title='The "sync" property'>sync</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
-  "<a class="link" href="GstBaseSink.html#GstBaseSink--throttle-time" title='The "throttle-time" property'>throttle-time</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write
-  "<a class="link" href="GstBaseSink.html#GstBaseSink--ts-offset" title='The "ts-offset" property'>ts-offset</a>"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write
+  "<a class="link" href="GstBaseSink.html#GstBaseSink--throttle-time" title='The "throttle-time" property'>throttle-time</a>"            <span class="type">guint64</span>               : Read / Write
+  "<a class="link" href="GstBaseSink.html#GstBaseSink--ts-offset" title='The "ts-offset" property'>ts-offset</a>"                <span class="type">gint64</span>                : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -338,6 +338,9 @@ The opaque <a class="link" href="GstBaseSink.html" title="GstBaseSink"><span cla
 
   /* Render a BufferList */
   GstFlowReturn (*render_list)  (GstBaseSink *sink, GstBufferList *buffer_list);
+
+  /* notify subclass of query */
+  gboolean      (*query)        (GstBaseSink *sink, GstQuery *query);
 };
 </pre>
 <p>
@@ -424,6 +427,10 @@ any state they set during <code class="function">unlock()</code>, such as cleari
 <td><p><span class="term"><em class="structfield"><code><a name="GstBaseSinkClass.render-list"></a>render_list</code></em> ()</span></p></td>
 <td>Same as <em class="parameter"><code>render</code></em> but used whith buffer lists instead of
 buffers. Since: 0.10.24</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="structfield"><code><a name="GstBaseSinkClass.query"></a>query</code></em> ()</span></p></td>
+<td>perform a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstQuery.html#GstQuery"><span class="type">GstQuery</span></a> on the element. Since: 0.10.36</td>
 </tr>
 </tbody>
 </table></div>
@@ -679,7 +686,7 @@ and will be adjusted with any latency and offset configured in the sink.
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> sync</code></em>);</pre>
 <p>
 Configures <em class="parameter"><code>sink</code></em> to synchronize on the clock or not. When
-<em class="parameter"><code>sync</code></em> is FALSE, incomming samples will be played as fast as
+<em class="parameter"><code>sync</code></em> is FALSE, incoming samples will be played as fast as
 possible. If <em class="parameter"><code>sync</code></em> is TRUE, the timestamps of the incomming
 buffers will be used to schedule the exact render time of its
 contents.
@@ -726,7 +733,7 @@ clock.
 <div class="refsect2">
 <a name="gst-base-sink-set-max-lateness"></a><h3>gst_base_sink_set_max_lateness ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_base_sink_set_max_lateness      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> max_lateness</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> max_lateness</code></em>);</pre>
 <p>
 Sets the new max lateness value to <em class="parameter"><code>max_lateness</code></em>. This value is
 used to decide if a buffer should be dropped or not based on the
@@ -751,7 +758,7 @@ an unlimited time.
 <hr>
 <div class="refsect2">
 <a name="gst-base-sink-get-max-lateness"></a><h3>gst_base_sink_get_max_lateness ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              gst_base_sink_get_max_lateness      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              gst_base_sink_get_max_lateness      (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);</pre>
 <p>
 Gets the max lateness value. See gst_base_sink_set_max_lateness for
 more details.
@@ -826,8 +833,8 @@ upstream.
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> enabled</code></em>);</pre>
 <p>
 Configures <em class="parameter"><code>sink</code></em> to perform all state changes asynchronusly. When async is
-disabled, the sink will immediatly go to PAUSED instead of waiting for a
-preroll buffer. This feature is usefull if the sink does not synchronize
+disabled, the sink will immediately go to PAUSED instead of waiting for a
+preroll buffer. This feature is useful if the sink does not synchronize
 against the clock or when it is dealing with sparse streams.
 </p>
 <div class="variablelist"><table border="0">
@@ -1108,7 +1115,7 @@ mode.
 <hr>
 <div class="refsect2">
 <a name="gst-base-sink-get-throttle-time"></a><h3>gst_base_sink_get_throttle_time ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="returnvalue">guint64</span></a>             gst_base_sink_get_throttle_time     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">guint64</span>             gst_base_sink_get_throttle_time     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>);</pre>
 <p>
 Get the time that will be inserted between frames to control the 
 maximum buffers per second.
@@ -1133,7 +1140,7 @@ maximum buffers per second.
 <div class="refsect2">
 <a name="gst-base-sink-set-throttle-time"></a><h3>gst_base_sink_set_throttle_time ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_base_sink_set_throttle_time     (<em class="parameter"><code><a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> *sink</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a> throttle</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">guint64</span> throttle</code></em>);</pre>
 <p>
 Set the time that will be inserted between rendered buffers. This
 can be used to control the maximum buffers per second that the sink
@@ -1223,7 +1230,7 @@ can be NULL when the sink has not yet received a bufer.
 <hr>
 <div class="refsect2">
 <a name="GstBaseSink--max-lateness"></a><h3>The <code class="literal">"max-lateness"</code> property</h3>
-<pre class="programlisting">  "max-lateness"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write</pre>
+<pre class="programlisting">  "max-lateness"             <span class="type">gint64</span>                : Read / Write</pre>
 <p>Maximum number of nanoseconds that a buffer can be late before it is dropped (-1 unlimited).</p>
 <p>Allowed values: &gt;= -1</p>
 <p>Default value: -1</p>
@@ -1245,7 +1252,7 @@ can be NULL when the sink has not yet received a bufer.
 <hr>
 <div class="refsect2">
 <a name="GstBaseSink--render-delay"></a><h3>The <code class="literal">"render-delay"</code> property</h3>
-<pre class="programlisting">  "render-delay"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write</pre>
+<pre class="programlisting">  "render-delay"             <span class="type">guint64</span>               : Read / Write</pre>
 <p>
 The additional delay between synchronisation and actual rendering of the
 media. This property will add additional latency to the device in order to
@@ -1264,7 +1271,7 @@ make other sinks compensate for the delay.
 <hr>
 <div class="refsect2">
 <a name="GstBaseSink--throttle-time"></a><h3>The <code class="literal">"throttle-time"</code> property</h3>
-<pre class="programlisting">  "throttle-time"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write</pre>
+<pre class="programlisting">  "throttle-time"            <span class="type">guint64</span>               : Read / Write</pre>
 <p>
 The time to insert between buffers. This property can be used to control
 the maximum amount of buffers per second to render. Setting this property
@@ -1276,7 +1283,7 @@ to a value bigger than 0 will make the sink create THROTTLE QoS events.
 <hr>
 <div class="refsect2">
 <a name="GstBaseSink--ts-offset"></a><h3>The <code class="literal">"ts-offset"</code> property</h3>
-<pre class="programlisting">  "ts-offset"                <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>                : Read / Write</pre>
+<pre class="programlisting">  "ts-offset"                <span class="type">gint64</span>                : Read / Write</pre>
 <p>
 Controls the final synchronisation, a negative value will render the buffer
 earlier while a positive value delays playback. This property can be
@@ -1293,6 +1300,6 @@ used to fix synchronisation in bad files.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

@@ -60,6 +60,9 @@
  * Last reviewed on 2006-07-06 (0.10.9)
  */
 
+/* FIXME 0.11: suppress warnings for deprecated API such as GStaticRecMutex
+ * with newer GLib versions (>= 2.31.0) */
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
 #include "gst_private.h"
 
 #include "gstpad.h"
@@ -186,7 +189,7 @@ static GstFlowQuarks flow_quarks[] = {
  *
  * Returns: a static string with the name of the flow return.
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_flow_get_name (GstFlowReturn ret)
 {
   gint i;
@@ -483,7 +486,7 @@ gst_pad_set_property (GObject * object, guint prop_id,
 
   switch (prop_id) {
     case PAD_PROP_DIRECTION:
-      GST_PAD_DIRECTION (object) = g_value_get_enum (value);
+      GST_PAD_DIRECTION (object) = (GstPadDirection) g_value_get_enum (value);
       break;
     case PAD_PROP_TEMPLATE:
       gst_pad_set_pad_template (GST_PAD_CAST (object),
@@ -1038,7 +1041,7 @@ gst_pad_is_active (GstPad * pad)
  *  and sink pads in pull mode.
  * </note>
  *
- * Returns: TRUE if the pad could be blocked. This function can fail if the
+ * Returns: %TRUE if the pad could be blocked. This function can fail if the
  * wrong parameters were passed or the pad was already in the requested state.
  *
  * MT safe.
@@ -1060,6 +1063,15 @@ gst_pad_set_blocked_async_full (GstPad * pad, gboolean blocked,
 
   if (G_UNLIKELY (was_blocked == blocked))
     goto had_right_state;
+
+  if (G_UNLIKELY (
+          (GST_PAD_ACTIVATE_MODE (pad) == GST_ACTIVATE_PUSH) &&
+          (GST_PAD_DIRECTION (pad) != GST_PAD_SRC)))
+    goto wrong_direction;
+  if (G_UNLIKELY (
+          (GST_PAD_ACTIVATE_MODE (pad) == GST_ACTIVATE_PULL) &&
+          (GST_PAD_DIRECTION (pad) != GST_PAD_SINK)))
+    goto wrong_direction;
 
   if (blocked) {
     GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad, "blocking pad");
@@ -1104,10 +1116,20 @@ gst_pad_set_blocked_async_full (GstPad * pad, gboolean blocked,
 
   return TRUE;
 
+/* Errors */
+
 had_right_state:
   {
     GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
         "pad was in right state (%d)", was_blocked);
+    GST_OBJECT_UNLOCK (pad);
+
+    return FALSE;
+  }
+wrong_direction:
+  {
+    GST_CAT_INFO_OBJECT (GST_CAT_SCHEDULING, pad, "pad block on the wrong pad, "
+        "block src pads in push mode and sink pads in pull mode.");
     GST_OBJECT_UNLOCK (pad);
 
     return FALSE;
@@ -1132,7 +1154,7 @@ had_right_state:
  * take an indeterminate amount of time.
  * You can pass NULL as the callback to make this call block. Be careful with
  * this blocking call as it might not return for reasons stated above.
- * 
+ *
  * <note>
  *  Pad block handlers are only called for source pads in push mode
  *  and sink pads in pull mode.
@@ -2022,7 +2044,7 @@ no_format:
  * @sinkpad: the sink #GstPad.
  *
  * Checks if the source pad and the sink pad are compatible so they can be
- * linked. 
+ * linked.
  *
  * Returns: TRUE if the pads can be linked.
  */
@@ -2289,7 +2311,7 @@ done:
 }
 
 /* FIXME-0.11: what about making this the default and using
- * gst_caps_make_writable() explicitely where needed
+ * gst_caps_make_writable() explicitly where needed
  */
 /**
  * gst_pad_get_caps_reffed:
@@ -2348,7 +2370,7 @@ gst_pad_get_caps (GstPad * pad)
 }
 
 /* FIXME-0.11: what about making this the default and using
- * gst_caps_make_writable() explicitely where needed
+ * gst_caps_make_writable() explicitly where needed
  */
 /**
  * gst_pad_peer_get_caps_reffed:
@@ -2610,6 +2632,7 @@ gst_pad_accept_caps (GstPad * pad, GstCaps * caps)
     result = gst_pad_acceptcaps_default (pad, caps);
     GST_DEBUG_OBJECT (pad, "default acceptcaps returned %d", result);
   }
+
   return result;
 
 is_same_caps:
@@ -3287,7 +3310,7 @@ gst_pad_iterate_internal_links_default (GstPad * pad)
      * two concurrent iterators were used and the last iterator would still be
      * thread-unsafe. Just don't use this method anymore. */
     data = g_slice_new (IntLinkIterData);
-    data->list = GST_PAD_INTLINKFUNC (pad) (pad);
+    data->list = ((GstPadIntLinkFunction) GST_PAD_INTLINKFUNC (pad)) (pad);
     data->cookie = 0;
 
     GST_WARNING_OBJECT (pad, "Making unsafe iterator");
@@ -3398,7 +3421,7 @@ add_unref_pad_to_list (GstPad * pad, GList ** list)
  * Deprecated: This function does not ref the pads in the list so that they
  * could become invalid by the time the application accesses them. It's also
  * possible that the list changes while handling the pads, which the caller of
- * this function is unable to know. Use the thread-safe 
+ * this function is unable to know. Use the thread-safe
  * gst_pad_iterate_internal_links_default() instead.
  */
 #ifndef GST_REMOVE_DEPRECATED
@@ -3423,7 +3446,7 @@ gst_pad_get_internal_links_default (GstPad * pad)
 
     it = gst_pad_iterate_internal_links (pad);
     /* loop over the iterator and put all elements into a list, we also
-     * immediatly unref them, which is bad. */
+     * immediately unref them, which is bad. */
     do {
       ires = gst_iterator_foreach (it, (GFunc) add_unref_pad_to_list, &res);
       switch (ires) {
@@ -3490,11 +3513,11 @@ no_parent:
  *
  * Returns: (transfer full) (element-type Gst.Pad): a newly allocated #GList
  *     of pads, free with g_list_free().
- * 
+ *
  * Deprecated: This function does not ref the pads in the list so that they
  * could become invalid by the time the application accesses them. It's also
  * possible that the list changes while handling the pads, which the caller of
- * this function is unable to know. Use the thread-safe 
+ * this function is unable to know. Use the thread-safe
  * gst_pad_iterate_internal_links() instead.
  */
 #ifndef GST_REMOVE_DEPRECATED
@@ -3511,7 +3534,7 @@ gst_pad_get_internal_links (GstPad * pad)
   GST_WARNING_OBJECT (pad, "Calling unsafe internal links");
 
   if (GST_PAD_INTLINKFUNC (pad))
-    res = GST_PAD_INTLINKFUNC (pad) (pad);
+    res = ((GstPadIntLinkFunction) GST_PAD_INTLINKFUNC (pad)) (pad);
 
   return res;
 }
@@ -3570,8 +3593,9 @@ gst_pad_event_default_dispatch (GstPad * pad, GstEvent * event)
         gst_object_unref (item);
         break;
       case GST_ITERATOR_RESYNC:
-        /* FIXME, if we want to reset the result value we need to remember which
-         * pads pushed with which result */
+        /* We don't reset the result here because we don't push the event
+         * again on pads that got the event already and because we need
+         * to consider the result of the previous pushes */
         gst_iterator_resync (iter);
         break;
       case GST_ITERATOR_ERROR:
@@ -3615,7 +3639,7 @@ no_iter:
  * pads that are internally linked to @pad, only one will be sent an event.
  * Multi-sinkpad elements should implement custom event handlers.
  *
- * Returns: TRUE if the event was sent succesfully.
+ * Returns: TRUE if the event was sent successfully.
  */
 gboolean
 gst_pad_event_default (GstPad * pad, GstEvent * event)
@@ -3809,7 +3833,7 @@ no_peer:
  * @pad, only one will be sent the query.
  * Multi-sinkpad elements should implement custom query handlers.
  *
- * Returns: TRUE if the query was performed succesfully.
+ * Returns: TRUE if the query was performed successfully.
  */
 gboolean
 gst_pad_query_default (GstPad * pad, GstQuery * query)
@@ -4042,7 +4066,7 @@ handle_pad_block (GstPad * pad)
       pad->abidata.ABI.block_callback_called = TRUE;
       if (callback) {
         /* there is a callback installed, call it. We release the
-         * lock so that the callback can do something usefull with the
+         * lock so that the callback can do something useful with the
          * pad */
         user_data = pad->block_data;
         GST_OBJECT_UNLOCK (pad);
@@ -4236,8 +4260,8 @@ gst_pad_chain_data_unchecked (GstPad * pad, gboolean is_buffer, void *data,
       goto no_function;
 
     GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
-        "calling chainfunction &%s with buffer %p",
-        GST_DEBUG_FUNCPTR_NAME (chainfunc), data);
+        "calling chainfunction &%s with buffer %" GST_PTR_FORMAT,
+        GST_DEBUG_FUNCPTR_NAME (chainfunc), GST_BUFFER (data));
 
     if (cache) {
       cache->peer = gst_object_ref (pad);
@@ -4455,26 +4479,29 @@ gst_pad_push_data (GstPad * pad, gboolean is_buffer, void *data,
     GST_OBJECT_LOCK (pad);
   }
 
-  if (G_UNLIKELY ((peer = GST_PAD_PEER (pad)) == NULL))
-    goto not_linked;
-
   /* Before pushing the buffer to the peer pad, ensure that caps
    * are set on this pad */
   caps = gst_pad_data_get_caps (is_buffer, data);
   caps_changed = caps && caps != GST_PAD_CAPS (pad);
 
-  /* take ref to peer pad before releasing the lock */
-  gst_object_ref (peer);
-  GST_OBJECT_UNLOCK (pad);
-
   /* we got a new datatype from the pad, it had better handle it */
   if (G_UNLIKELY (caps_changed)) {
+    /* unlock before setting */
+    GST_OBJECT_UNLOCK (pad);
     GST_DEBUG_OBJECT (pad,
         "caps changed from %" GST_PTR_FORMAT " to %p %" GST_PTR_FORMAT,
         GST_PAD_CAPS (pad), caps, caps);
     if (G_UNLIKELY (!gst_pad_set_caps (pad, caps)))
       goto not_negotiated;
+    GST_OBJECT_LOCK (pad);
   }
+
+  if (G_UNLIKELY ((peer = GST_PAD_PEER (pad)) == NULL))
+    goto not_linked;
+
+  /* take ref to peer pad before releasing the lock */
+  gst_object_ref (peer);
+  GST_OBJECT_UNLOCK (pad);
 
   ret = gst_pad_chain_data_unchecked (peer, is_buffer, data, cache);
 
@@ -4540,7 +4567,6 @@ not_linked:
 not_negotiated:
   {
     gst_pad_data_unref (is_buffer, data);
-    gst_object_unref (peer);
     GST_CAT_DEBUG_OBJECT (GST_CAT_SCHEDULING, pad,
         "element pushed data then refused to accept the caps");
     return GST_FLOW_NOT_NEGOTIATED;
@@ -4678,7 +4704,7 @@ gst_pad_push (GstPad * pad, GstBuffer * buffer)
     goto invalid;
 
   GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
-      "calling chainfunction &%s with buffer %p",
+      "calling chainfunction &%s with buffer %" GST_PTR_FORMAT,
       GST_DEBUG_FUNCPTR_NAME (GST_PAD_CHAINFUNC (peer)), buffer);
 
   ret = GST_PAD_CHAINFUNC (peer) (peer, buffer);
@@ -5014,7 +5040,7 @@ not_negotiated:
  *     returns #GST_FLOW_ERROR if %NULL.
  *
  * When @pad is flushing this function returns #GST_FLOW_WRONG_STATE
- * immediatly and @buffer is %NULL.
+ * immediately and @buffer is %NULL.
  *
  * Calls the getrange function of @pad, see #GstPadGetRangeFunction for a
  * description of a getrange function. If @pad has no getrange function
@@ -5242,8 +5268,9 @@ gst_pad_push_event (GstPad * pad, GstEvent * event)
   if (peerpad == NULL)
     goto not_linked;
 
-  GST_LOG_OBJECT (pad, "sending event %s to peerpad %" GST_PTR_FORMAT,
-      GST_EVENT_TYPE_NAME (event), peerpad);
+  GST_LOG_OBJECT (pad,
+      "sending event %s (%" GST_PTR_FORMAT ") to peerpad %" GST_PTR_FORMAT,
+      GST_EVENT_TYPE_NAME (event), event, peerpad);
   gst_object_ref (peerpad);
   GST_OBJECT_UNLOCK (pad);
 
@@ -5375,7 +5402,7 @@ gst_pad_send_event (GstPad * pad, GstEvent * event)
           GST_EVENT_TYPE_NAME (event));
 
       /* make this a little faster, no point in grabbing the lock
-       * if the pad is allready flushing. */
+       * if the pad is already flushing. */
       if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
         goto flushing;
 

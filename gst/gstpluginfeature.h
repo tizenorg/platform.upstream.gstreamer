@@ -52,7 +52,7 @@ typedef struct _GstPluginFeatureClass GstPluginFeatureClass;
 /**
  * GstRank:
  * @GST_RANK_NONE: will be chosen last or not at all
- * @GST_RANK_MARGINAL: unlikly to be chosen
+ * @GST_RANK_MARGINAL: unlikely to be chosen
  * @GST_RANK_SECONDARY: likely to be chosen
  * @GST_RANK_PRIMARY: will be chosen first
  *
@@ -81,7 +81,7 @@ struct _GstPluginFeature {
 
   /*< private >*/
   gboolean       loaded;
-  gchar         *name;
+  gchar         *name; /* FIXME-0.11: remove variable, we use GstObject:name */
   guint          rank;
 
   const gchar   *plugin_name;
@@ -105,10 +105,12 @@ struct _GstPluginFeatureClass {
  *
  * Structure used for filtering based on @name and @type.
  */
+#ifndef GST_DISABLE_DEPRECATED
 typedef struct {
   const gchar   *name;
   GType          type;
 } GstTypeNameData;
+#endif
 
 /**
  * GstPluginFeatureFilter:
@@ -130,16 +132,18 @@ GType           gst_plugin_feature_get_type             (void);
 GstPluginFeature *
                 gst_plugin_feature_load                 (GstPluginFeature *feature);
 
+#ifndef GST_DISABLE_DEPRECATED
 gboolean        gst_plugin_feature_type_name_filter     (GstPluginFeature *feature,
                                                          GstTypeNameData *data);
+#endif
 
 void            gst_plugin_feature_set_rank             (GstPluginFeature *feature, guint rank);
 void            gst_plugin_feature_set_name             (GstPluginFeature *feature, const gchar *name);
 guint           gst_plugin_feature_get_rank             (GstPluginFeature *feature);
-G_CONST_RETURN gchar *gst_plugin_feature_get_name       (GstPluginFeature *feature);
+const gchar    *gst_plugin_feature_get_name             (GstPluginFeature *feature);
 
 void            gst_plugin_feature_list_free            (GList *list);
-GList          *gst_plugin_feature_list_copy            (GList *list);
+GList          *gst_plugin_feature_list_copy            (GList *list) G_GNUC_MALLOC;
 void            gst_plugin_feature_list_debug           (GList *list);
 
 /**

@@ -61,6 +61,7 @@
 #include "gstqueue.h"
 
 #include "../../gst/gst-i18n-lib.h"
+#include "../../gst/glib-compat-private.h"
 
 static GstStaticPadTemplate sinktemplate = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
@@ -91,7 +92,7 @@ GST_DEBUG_CATEGORY_STATIC (queue_dataflow);
                       queue->cur_level.time, \
                       queue->min_threshold.time, \
                       queue->max_size.time, \
-                      queue->queue->length)
+                      queue->queue.length)
 
 /* Queue signals and args */
 enum
@@ -120,7 +121,7 @@ enum
   PROP_LEAKY,
   PROP_SILENT,
 #ifdef GST_EXT_AV_RECORDING
-  PROP_EMPTY_BUFFERS,   // Harish Jenny K N
+  PROP_EMPTY_BUFFERS
 #endif
 };
 
@@ -376,10 +377,9 @@ gst_queue_class_init (GstQueueClass * klass)
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
 #ifdef GST_EXT_AV_RECORDING
-  // Harish Jenny K N 
   g_object_class_install_property (gobject_class, PROP_EMPTY_BUFFERS,
       g_param_spec_boolean ("empty-buffers", "empty_buffers",
-          "Delete all the buffers in the queue",
+          "Drop all the incomming buffers",
          FALSE, G_PARAM_READWRITE));
 #endif
 
@@ -441,7 +441,8 @@ gst_queue_init (GstQueue * queue, GstQueueClass * g_class)
   queue->qlock = g_mutex_new ();
   queue->item_add = g_cond_new ();
   queue->item_del = g_cond_new ();
-  queue->queue = g_queue_new ();
+
+  g_queue_init (&queue->queue);
 
   queue->sinktime = GST_CLOCK_TIME_NONE;
   queue->srctime = GST_CLOCK_TIME_NONE;
@@ -463,16 +464,15 @@ gst_queue_init (GstQueue * queue, GstQueueClass * g_class)
 static void
 gst_queue_finalize (GObject * object)
 {
+  GstMiniObject *data;
   GstQueue *queue = GST_QUEUE (object);
 
   GST_DEBUG_OBJECT (queue, "finalizing queue");
 
-  while (!g_queue_is_empty (queue->queue)) {
-    GstMiniObject *data = g_queue_pop_head (queue->queue);
-
+  while ((data = g_queue_pop_head (&queue->queue)))
     gst_mini_object_unref (data);
-  }
-  g_queue_free (queue->queue);
+
+  g_queue_clear (&queue->queue);
   g_mutex_free (queue->qlock);
   g_cond_free (queue->item_add);
   g_cond_free (queue->item_del);
@@ -683,9 +683,9 @@ apply_buffer (GstQueue * queue, GstBuffer * buffer, GstSegment * segment,
 static void
 gst_queue_locked_flush (GstQueue * queue)
 {
-  while (!g_queue_is_empty (queue->queue)) {
-    GstMiniObject *data = g_queue_pop_head (queue->queue);
+  GstMiniObject *data;
 
+  while ((data = g_queue_pop_head (&queue->queue))) {
     /* Then lose another reference because we are supposed to destroy that
        data when flushing */
     gst_mini_object_unref (data);
@@ -716,7 +716,7 @@ gst_queue_locked_enqueue_buffer (GstQueue * queue, gpointer item)
   queue->cur_level.bytes += GST_BUFFER_SIZE (buffer);
   apply_buffer (queue, buffer, &queue->sink_segment, TRUE, TRUE);
 
-  g_queue_push_tail (queue->queue, item);
+  g_queue_push_tail (&queue->queue, item);
   GST_QUEUE_SIGNAL_ADD (queue);
 }
 
@@ -737,7 +737,7 @@ gst_queue_locked_enqueue_event (GstQueue * queue, gpointer item)
     case GST_EVENT_NEWSEGMENT:
       apply_segment (queue, event, &queue->sink_segment, TRUE);
       /* if the queue is empty, apply sink segment on the source */
-      if (queue->queue->length == 0) {
+      if (queue->queue.length == 0) {
         GST_CAT_LOG_OBJECT (queue_dataflow, queue, "Apply segment on srcpad");
         apply_segment (queue, event, &queue->src_segment, FALSE);
         queue->newseg_applied_to_src = TRUE;
@@ -750,7 +750,7 @@ gst_queue_locked_enqueue_event (GstQueue * queue, gpointer item)
       break;
   }
 
-  g_queue_push_tail (queue->queue, item);
+  g_queue_push_tail (&queue->queue, item);
   GST_QUEUE_SIGNAL_ADD (queue);
 }
 
@@ -760,7 +760,7 @@ gst_queue_locked_dequeue (GstQueue * queue, gboolean * is_buffer)
 {
   GstMiniObject *item;
 
-  item = g_queue_pop_head (queue->queue);
+  item = g_queue_pop_head (&queue->queue);
   if (item == NULL)
     goto no_item;
 
@@ -917,7 +917,7 @@ out_eos:
 static gboolean
 gst_queue_is_empty (GstQueue * queue)
 {
-  if (queue->queue->length == 0)
+  if (queue->queue.length == 0)
     return TRUE;
 
   /* It is possible that a max size is reached before all min thresholds are.
@@ -982,15 +982,14 @@ gst_queue_chain (GstPad * pad, GstBuffer * buffer)
 
 #ifdef GST_EXT_AV_RECORDING
   /* Added to not enqueue buffers in the queue while paused */
-  // Harish Jenny K N 
-  if(queue->empty_buffers==TRUE)
-  {
+  if (queue->empty_buffers) {
     gst_buffer_unref(buffer);
-    buffer=NULL;
+    buffer = NULL;
     GST_QUEUE_MUTEX_UNLOCK(queue);
     return GST_FLOW_OK;
   }
 #endif
+
   timestamp = GST_BUFFER_TIMESTAMP (buffer);
   duration = GST_BUFFER_DURATION (buffer);
 
@@ -1551,9 +1550,8 @@ gst_queue_set_property (GObject * object,
       queue->silent = g_value_get_boolean (value);
       break;
 #ifdef GST_EXT_AV_RECORDING
-    // Harish Jenny K N 
     case PROP_EMPTY_BUFFERS:
-      queue->empty_buffers = g_value_get_boolean (value );
+      queue->empty_buffers = g_value_get_boolean (value);
       break;
 #endif
     default:
@@ -1607,9 +1605,8 @@ gst_queue_get_property (GObject * object,
       g_value_set_boolean (value, queue->silent);
       break;
 #ifdef GST_EXT_AV_RECORDING
-    // Harish Jenny K N 
     case PROP_EMPTY_BUFFERS:
-      g_value_set_boolean(value, queue->empty_buffers);
+      g_value_set_boolean (value, queue->empty_buffers);
       break;
 #endif
     default:

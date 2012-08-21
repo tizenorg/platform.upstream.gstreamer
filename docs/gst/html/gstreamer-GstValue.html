@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstValue</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="gstreamer-GstUtils.html" title="GstUtils">
 <link rel="next" href="gstreamer-GstVersion.html" title="GstVersion">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -51,8 +51,8 @@ to GStreamer</p>
 #define             <a class="link" href="gstreamer-GstValue.html#GST-FOURCC-ARGS:CAPS" title="GST_FOURCC_ARGS()">GST_FOURCC_ARGS</a>                     (fourcc)
 #define             <a class="link" href="gstreamer-GstValue.html#GST-TYPE-FOURCC:CAPS" title="GST_TYPE_FOURCC">GST_TYPE_FOURCC</a>
 <span class="returnvalue">void</span>                <a class="link" href="gstreamer-GstValue.html#gst-value-set-fourcc" title="gst_value_set_fourcc ()">gst_value_set_fourcc</a>                (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="returnvalue">guint32</span></a>             <a class="link" href="gstreamer-GstValue.html#gst-value-get-fourcc" title="gst_value_get_fourcc ()">gst_value_get_fourcc</a>                (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
+                                                         <em class="parameter"><code><span class="type">guint32</span> fourcc</code></em>);
+<span class="returnvalue">guint32</span>             <a class="link" href="gstreamer-GstValue.html#gst-value-get-fourcc" title="gst_value_get_fourcc ()">gst_value_get_fourcc</a>                (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
 
 #define             <a class="link" href="gstreamer-GstValue.html#GST-VALUE-HOLDS-INT-RANGE:CAPS" title="GST_VALUE_HOLDS_INT_RANGE()">GST_VALUE_HOLDS_INT_RANGE</a>           (x)
 #define             <a class="link" href="gstreamer-GstValue.html#GST-TYPE-INT-RANGE:CAPS" title="GST_TYPE_INT_RANGE">GST_TYPE_INT_RANGE</a>
@@ -65,10 +65,10 @@ to GStreamer</p>
 #define             <a class="link" href="gstreamer-GstValue.html#GST-VALUE-HOLDS-INT64-RANGE:CAPS" title="GST_VALUE_HOLDS_INT64_RANGE()">GST_VALUE_HOLDS_INT64_RANGE</a>         (x)
 #define             <a class="link" href="gstreamer-GstValue.html#GST-TYPE-INT64-RANGE:CAPS" title="GST_TYPE_INT64_RANGE">GST_TYPE_INT64_RANGE</a>
 <span class="returnvalue">void</span>                <a class="link" href="gstreamer-GstValue.html#gst-value-set-int64-range" title="gst_value_set_int64_range ()">gst_value_set_int64_range</a>           (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> start</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> end</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              <a class="link" href="gstreamer-GstValue.html#gst-value-get-int64-range-min" title="gst_value_get_int64_range_min ()">gst_value_get_int64_range_min</a>       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              <a class="link" href="gstreamer-GstValue.html#gst-value-get-int64-range-max" title="gst_value_get_int64_range_max ()">gst_value_get_int64_range_max</a>       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="gstreamer-GstValue.html#gst-value-get-int64-range-min" title="gst_value_get_int64_range_min ()">gst_value_get_int64_range_min</a>       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="gstreamer-GstValue.html#gst-value-get-int64-range-max" title="gst_value_get_int64_range_max ()">gst_value_get_int64_range_max</a>       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
 
 #define             <a class="link" href="gstreamer-GstValue.html#GST-VALUE-HOLDS-DOUBLE-RANGE:CAPS" title="GST_VALUE_HOLDS_DOUBLE_RANGE()">GST_VALUE_HOLDS_DOUBLE_RANGE</a>        (x)
 #define             <a class="link" href="gstreamer-GstValue.html#GST-TYPE-DOUBLE-RANGE:CAPS" title="GST_TYPE_DOUBLE_RANGE">GST_TYPE_DOUBLE_RANGE</a>
@@ -172,7 +172,7 @@ struct              <a class="link" href="gstreamer-GstValue.html#GstValueTable"
 <span class="returnvalue">void</span>                <a class="link" href="gstreamer-GstValue.html#gst-value-register" title="gst_value_register ()">gst_value_register</a>                  (<em class="parameter"><code>const <a class="link" href="gstreamer-GstValue.html#GstValueTable" title="struct GstValueTable"><span class="type">GstValueTable</span></a> *table</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="gstreamer-GstValue.html#gst-value-init-and-copy" title="gst_value_init_and_copy ()">gst_value_init_and_copy</a>             (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *dest</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *src</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *		           <a class="link" href="gstreamer-GstValue.html#gst-value-serialize" title="gst_value_serialize ()">gst_value_serialize</a>                 (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="gstreamer-GstValue.html#gst-value-serialize" title="gst_value_serialize ()">gst_value_serialize</a>                 (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="gstreamer-GstValue.html#gst-value-deserialize" title="gst_value_deserialize ()">gst_value_deserialize</a>               (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *dest</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *src</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="gstreamer-GstValue.html#gst-value-compare" title="gst_value_compare ()">gst_value_compare</a>                   (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value1</code></em>,
@@ -248,7 +248,7 @@ Checks if the given <a href="http://library.gnome.org/devel/gobject/unstable/gob
 <pre class="programlisting">#define GST_MAKE_FOURCC(a,b,c,d)        ((guint32)((a)|(b)&lt;&lt;8|(c)&lt;&lt;16|(d)&lt;&lt;24))
 </pre>
 <p>
-Transform four characters into a <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc value with host
+Transform four characters into a <span class="type">guint32</span> fourcc value with host
 endianness.
 </p>
 <div class="informalexample">
@@ -292,7 +292,7 @@ endianness.
 <pre class="programlisting">#define GST_STR_FOURCC(f)               ((guint32)(((f)[0])|((f)[1]&lt;&lt;8)|((f)[2]&lt;&lt;16)|((f)[3]&lt;&lt;24)))
 </pre>
 <p>
-Transform an input string into a <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc value with host
+Transform an input string into a <span class="type">guint32</span> fourcc value with host
 endianness.
 Caller is responsible for ensuring the input string consists of at least
 four characters.
@@ -325,7 +325,7 @@ four characters.
 </pre>
 <p>
 Can be used together with <a class="link" href="gstreamer-GstValue.html#GST-FOURCC-ARGS:CAPS" title="GST_FOURCC_ARGS()"><span class="type">GST_FOURCC_ARGS</span></a> to properly output a
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc value in a <code class="function">printf()</code>-style text message.
+<span class="type">guint32</span> fourcc value in a <code class="function">printf()</code>-style text message.
 </p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
@@ -347,13 +347,13 @@ Can be used together with <a class="link" href="gstreamer-GstValue.html#GST-FOUR
 <pre class="programlisting">#define             GST_FOURCC_ARGS(fourcc)</pre>
 <p>
 Can be used together with <a class="link" href="gstreamer-GstValue.html#GST-FOURCC-FORMAT:CAPS" title="GST_FOURCC_FORMAT"><span class="type">GST_FOURCC_FORMAT</span></a> to properly output a
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc value in a <code class="function">printf()</code>-style text message.
+<span class="type">guint32</span> fourcc value in a <code class="function">printf()</code>-style text message.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
 <td><p><span class="term"><em class="parameter"><code>fourcc</code></em> :</span></p></td>
-<td>a <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc value to output</td>
+<td>a <span class="type">guint32</span> fourcc value to output</td>
 </tr></tbody>
 </table></div>
 </div>
@@ -377,7 +377,7 @@ a <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-value
 <div class="refsect2">
 <a name="gst-value-set-fourcc"></a><h3>gst_value_set_fourcc ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_value_set_fourcc                (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">guint32</span> fourcc</code></em>);</pre>
 <p>
 Sets <em class="parameter"><code>value</code></em> to <em class="parameter"><code>fourcc</code></em>.
 </p>
@@ -391,7 +391,7 @@ Sets <em class="parameter"><code>value</code></em> to <em class="parameter"><cod
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>fourcc</code></em> :</span></p></td>
-<td>the <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc to set</td>
+<td>the <span class="type">guint32</span> fourcc to set</td>
 </tr>
 </tbody>
 </table></div>
@@ -399,9 +399,9 @@ Sets <em class="parameter"><code>value</code></em> to <em class="parameter"><cod
 <hr>
 <div class="refsect2">
 <a name="gst-value-get-fourcc"></a><h3>gst_value_get_fourcc ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="returnvalue">guint32</span></a>             gst_value_get_fourcc                (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">guint32</span>             gst_value_get_fourcc                (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
 <p>
-Gets the <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc contained in <em class="parameter"><code>value</code></em>.
+Gets the <span class="type">guint32</span> fourcc contained in <em class="parameter"><code>value</code></em>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -413,7 +413,7 @@ Gets the <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>the <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint32"><span class="type">guint32</span></a> fourcc contained in <em class="parameter"><code>value</code></em>.</td>
+<td>the <span class="type">guint32</span> fourcc contained in <em class="parameter"><code>value</code></em>.</td>
 </tr>
 </tbody>
 </table></div>
@@ -542,7 +542,7 @@ Checks if the given <a href="http://library.gnome.org/devel/gobject/unstable/gob
 <pre class="programlisting">#define GST_TYPE_INT64_RANGE             gst_int64_range_get_type ()
 </pre>
 <p>
-a <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> type that represents an <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> range
+a <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> type that represents an <span class="type">gint64</span> range
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -557,8 +557,8 @@ a <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-value
 <div class="refsect2">
 <a name="gst-value-set-int64-range"></a><h3>gst_value_set_int64_range ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_value_set_int64_range           (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> start</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> end</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
 <p>
 Sets <em class="parameter"><code>value</code></em> to the range specified by <em class="parameter"><code>start</code></em> and <em class="parameter"><code>end</code></em>.
 </p>
@@ -584,7 +584,7 @@ Sets <em class="parameter"><code>value</code></em> to the range specified by <em
 <hr>
 <div class="refsect2">
 <a name="gst-value-get-int64-range-min"></a><h3>gst_value_get_int64_range_min ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              gst_value_get_int64_range_min       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              gst_value_get_int64_range_min       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
 <p>
 Gets the minimum of the range specified by <em class="parameter"><code>value</code></em>.
 </p>
@@ -606,7 +606,7 @@ Gets the minimum of the range specified by <em class="parameter"><code>value</co
 <hr>
 <div class="refsect2">
 <a name="gst-value-get-int64-range-max"></a><h3>gst_value_get_int64_range_max ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              gst_value_get_int64_range_max       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              gst_value_get_int64_range_max       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
 <p>
 Gets the maximum of the range specified by <em class="parameter"><code>value</code></em>.
 </p>
@@ -1318,7 +1318,7 @@ a boxed <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_value_set_date                  (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Date-and-Time-Functions.html#GDate"><span class="type">GDate</span></a> *date</code></em>);</pre>
 <p>
-Sets the contents of <em class="parameter"><code>value</code></em> to coorespond to <em class="parameter"><code>date</code></em>.  The actual
+Sets the contents of <em class="parameter"><code>value</code></em> to correspond to <em class="parameter"><code>date</code></em>.  The actual
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Date-and-Time-Functions.html#GDate"><span class="type">GDate</span></a> structure is copied before it is used.
 </p>
 <div class="variablelist"><table border="0">
@@ -1935,7 +1935,7 @@ the contents from source to target.
 <hr>
 <div class="refsect2">
 <a name="gst-value-serialize"></a><h3>gst_value_serialize ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *		           gst_value_serialize                 (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             gst_value_serialize                 (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *value</code></em>);</pre>
 <p>
 tries to transform the given <em class="parameter"><code>value</code></em> into a string representation that allows
 getting back this string later on using <a class="link" href="gstreamer-GstValue.html#gst-value-deserialize" title="gst_value_deserialize ()"><code class="function">gst_value_deserialize()</code></a>.
@@ -2138,7 +2138,7 @@ be used at the same time as <a class="link" href="gstreamer-GstValue.html#gst-va
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>func</code></em> :</span></p></td>
-<td>a function that implments creating a union between the two types</td>
+<td>a function that implements creating a union between the two types</td>
 </tr>
 </tbody>
 </table></div>
@@ -2159,7 +2159,8 @@ Note that this means subtraction as in sets, not as in mathematics.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
 <td>the destination value for the result if the
-subtraction is not empty. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates]</span>
+subtraction is not empty. May be NULL, in which case the resulting set
+will not be computed, which can give a fair speedup. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates]</span>
 </td>
 </tr>
 <tr>
@@ -2246,8 +2247,8 @@ cannot be used at the same time as <a class="link" href="gstreamer-GstValue.html
 <p>
 Calculates the intersection of two values.  If the values have
 a non-empty intersection, the value representing the intersection
-is placed in <em class="parameter"><code>dest</code></em>.  If the intersection is non-empty, <em class="parameter"><code>dest</code></em> is
-not modified.
+is placed in <em class="parameter"><code>dest</code></em>, unless NULL.  If the intersection is non-empty,
+<em class="parameter"><code>dest</code></em> is not modified.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -2255,7 +2256,7 @@ not modified.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
 <td>a uninitialized <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> that will hold the calculated
-intersection value. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates]</span>
+intersection value. May be NULL if the resulting set if not needed. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates]</span>
 </td>
 </tr>
 <tr>
@@ -2437,6 +2438,6 @@ Prepends <em class="parameter"><code>prepend_value</code></em> to the GstValueAr
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

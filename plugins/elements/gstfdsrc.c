@@ -275,6 +275,8 @@ gst_fd_src_update_fd (GstFdSrc * src, guint64 size)
 
     GST_INFO_OBJECT (src, "marking fd %d as seekable", src->fd);
     src->seekable_fd = TRUE;
+
+    gst_base_src_set_dynamic_size (GST_BASE_SRC (src), TRUE);
   }
   return;
 
@@ -282,6 +284,7 @@ not_seekable:
   {
     GST_INFO_OBJECT (src, "marking fd %d as NOT seekable", src->fd);
     src->seekable_fd = FALSE;
+    gst_base_src_set_dynamic_size (GST_BASE_SRC (src), FALSE);
   }
 }
 
@@ -631,7 +634,7 @@ gst_fd_src_uri_set_uri (GstURIHandler * handler, const gchar * uri)
   gchar *protocol, *q;
   GstFdSrc *src = GST_FD_SRC (handler);
   gint fd;
-  guint64 size = -1;
+  guint64 size = (guint64) - 1;
 
   GST_INFO_OBJECT (src, "checking uri %s", uri);
 

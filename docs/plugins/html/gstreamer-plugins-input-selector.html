@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>input-selector</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer Core Plugins 0.10 Plugins Reference Manual">
 <link rel="up" href="ch01.html" title="gstreamer Elements">
 <link rel="prev" href="gstreamer-plugins-identity.html" title="identity">
 <link rel="next" href="gstreamer-plugins-multiqueue.html" title="multiqueue">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -61,6 +61,7 @@
   "<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector--active-pad" title='The "active-pad" property'>active-pad</a>"               <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>*               : Read / Write
   "<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector--n-pads" title='The "n-pads" property'>n-pads</a>"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read
   "<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector--select-all" title='The "select-all" property'>select-all</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
+  "<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector--sync-streams" title='The "sync-streams" property'>sync-streams</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -83,7 +84,7 @@ properties, which users may find useful, namely:
 </p>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
 <li class="listitem">
-"running-time": Running time of stream on pad (<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>)
+"running-time": Running time of stream on pad (<span class="type">gint64</span>)
 </li>
 <li class="listitem">
 "tags": The currently active tags on the pad (<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstTagList.html#GstTagList"><span class="type">GstTagList</span></a>, boxed type)
@@ -101,7 +102,7 @@ properties, which users may find useful, namely:
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
 <div class="refsect2">
-<a name="idp10320976"></a><h3>Element Information</h3>
+<a name="idp10302128"></a><h3>Element Information</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -124,7 +125,7 @@ properties, which users may find useful, namely:
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp10328512"></a><h3>Element Pads</h3>
+<a name="idp10309664"></a><h3>Element Pads</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -202,12 +203,25 @@ properties, which users may find useful, namely:
 <p>Forwards data from all input pads.</p>
 <p>Default value: FALSE</p>
 </div>
+<hr>
+<div class="refsect2">
+<a name="GstInputSelector--sync-streams"></a><h3>The <code class="literal">"sync-streams"</code> property</h3>
+<pre class="programlisting">  "sync-streams"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write</pre>
+<p>
+If set to <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> all inactive streams will be synced to the
+running time of the active stream. This makes sure that no
+buffers are dropped by input-selector that might be needed
+when switching the active pad.
+</p>
+<p>Default value: FALSE</p>
+<p class="since">Since 0.10.36</p>
+</div>
 </div>
 <div class="refsect1">
 <a name="gstreamer-plugins-input-selector.signal-details"></a><h2>Signal Details</h2>
 <div class="refsect2">
 <a name="GstInputSelector-block"></a><h3>The <code class="literal">"block"</code> signal</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>              user_function                      (<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector"><span class="type">GstInputSelector</span></a> *inputselector,
+<pre class="programlisting"><span class="returnvalue">gint64</span>              user_function                      (<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector"><span class="type">GstInputSelector</span></a> *inputselector,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          user_data)          : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-ACTION:CAPS"><code class="literal">Action</code></a></pre>
 <p>
 Block all sink pads in preparation for a switch. Returns the stop time of
@@ -234,8 +248,8 @@ active pad or the current active pad never received data.
 <a name="GstInputSelector-switch"></a><h3>The <code class="literal">"switch"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="gstreamer-plugins-input-selector.html#GstInputSelector"><span class="type">GstInputSelector</span></a> *inputselector,
                                                         <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>           *pad,
-                                                        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>            stop_time,
-                                                        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a>            start_time,
+                                                        <span class="type">gint64</span>            stop_time,
+                                                        <span class="type">gint64</span>            start_time,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          user_data)          : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
 <p>
 Switch to a new feed. The segment opened by the previously active pad, if
@@ -322,6 +336,6 @@ use the running time of the newly active sink pad</td>
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

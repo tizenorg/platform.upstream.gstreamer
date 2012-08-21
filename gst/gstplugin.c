@@ -735,8 +735,8 @@ gst_plugin_load_file (const gchar * filename, GError ** error)
     }
   }
 
-__ta__(__tafmt__("load plugin %s", filename), 
-	
+__ta__(__tafmt__("load plugin %s", filename),
+
   GST_CAT_DEBUG (GST_CAT_PLUGIN_LOADING, "attempt to load plugin \"%s\"",
       filename);
 
@@ -921,7 +921,7 @@ gst_plugin_get_name (GstPlugin * plugin)
  *
  * Returns: the long name of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_description (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -937,7 +937,7 @@ gst_plugin_get_description (GstPlugin * plugin)
  *
  * Returns: the filename of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_filename (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -953,7 +953,7 @@ gst_plugin_get_filename (GstPlugin * plugin)
  *
  * Returns: the version of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_version (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -969,7 +969,7 @@ gst_plugin_get_version (GstPlugin * plugin)
  *
  * Returns: the license of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_license (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -985,7 +985,7 @@ gst_plugin_get_license (GstPlugin * plugin)
  *
  * Returns: the source of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_source (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -1001,7 +1001,7 @@ gst_plugin_get_source (GstPlugin * plugin)
  *
  * Returns: the package of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_package (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -1017,7 +1017,7 @@ gst_plugin_get_package (GstPlugin * plugin)
  *
  * Returns: the origin of the plugin
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_plugin_get_origin (GstPlugin * plugin)
 {
   g_return_val_if_fail (plugin != NULL, NULL);
@@ -1070,7 +1070,7 @@ gst_plugin_is_loaded (GstPlugin * plugin)
  *
  * Since: 0.10.24
  */
-G_CONST_RETURN GstStructure *
+const GstStructure *
 gst_plugin_get_cache_data (GstPlugin * plugin)
 {
   g_return_val_if_fail (GST_IS_PLUGIN (plugin), NULL);
@@ -1457,12 +1457,11 @@ _priv_plugin_deps_env_vars_changed (GstPlugin * plugin)
   return FALSE;
 }
 
-static GList *
+static void
 gst_plugin_ext_dep_extract_env_vars_paths (GstPlugin * plugin,
-    GstPluginDep * dep)
+    GstPluginDep * dep, GQueue * paths)
 {
   gchar **evars;
-  GList *paths = NULL;
 
   for (evars = dep->env_vars; evars != NULL && *evars != NULL; ++evars) {
     const gchar *e;
@@ -1509,9 +1508,9 @@ gst_plugin_ext_dep_extract_env_vars_paths (GstPlugin * plugin,
           full_path = g_strdup (arr[i]);
         }
 
-        if (!g_list_find_custom (paths, full_path, (GCompareFunc) strcmp)) {
+        if (!g_queue_find_custom (paths, full_path, (GCompareFunc) strcmp)) {
           GST_LOG_OBJECT (plugin, "path: '%s'", full_path);
-          paths = g_list_prepend (paths, full_path);
+          g_queue_push_tail (paths, full_path);
           full_path = NULL;
         } else {
           GST_LOG_OBJECT (plugin, "path: '%s' (duplicate,ignoring)", full_path);
@@ -1525,10 +1524,7 @@ gst_plugin_ext_dep_extract_env_vars_paths (GstPlugin * plugin,
     g_strfreev (components);
   }
 
-  GST_LOG_OBJECT (plugin, "Extracted %d paths from environment",
-      g_list_length (paths));
-
-  return paths;
+  GST_LOG_OBJECT (plugin, "Extracted %d paths from environment", paths->length);
 }
 
 static guint
@@ -1674,43 +1670,37 @@ static guint
 gst_plugin_ext_dep_get_stat_hash (GstPlugin * plugin, GstPluginDep * dep)
 {
   gboolean paths_are_default_only;
-  GList *scan_paths;
+  GQueue scan_paths = G_QUEUE_INIT;
   guint scan_hash = 0;
+  gchar *path;
 
   GST_LOG_OBJECT (plugin, "start");
 
   paths_are_default_only =
       dep->flags & GST_PLUGIN_DEPENDENCY_FLAG_PATHS_ARE_DEFAULT_ONLY;
 
-  scan_paths = gst_plugin_ext_dep_extract_env_vars_paths (plugin, dep);
+  gst_plugin_ext_dep_extract_env_vars_paths (plugin, dep, &scan_paths);
 
-  if (scan_paths == NULL || !paths_are_default_only) {
+  if (g_queue_is_empty (&scan_paths) || !paths_are_default_only) {
     gchar **paths;
 
     for (paths = dep->paths; paths != NULL && *paths != NULL; ++paths) {
       const gchar *path = *paths;
 
-      if (!g_list_find_custom (scan_paths, path, (GCompareFunc) strcmp)) {
+      if (!g_queue_find_custom (&scan_paths, path, (GCompareFunc) strcmp)) {
         GST_LOG_OBJECT (plugin, "path: '%s'", path);
-        scan_paths = g_list_prepend (scan_paths, g_strdup (path));
+        g_queue_push_tail (&scan_paths, g_strdup (path));
       } else {
         GST_LOG_OBJECT (plugin, "path: '%s' (duplicate, ignoring)", path);
       }
     }
   }
 
-  /* not that the order really matters, but it makes debugging easier */
-  scan_paths = g_list_reverse (scan_paths);
-
-  while (scan_paths != NULL) {
-    const gchar *path = scan_paths->data;
-
+  while ((path = g_queue_pop_head (&scan_paths))) {
     scan_hash += gst_plugin_ext_dep_scan_path_with_filenames (plugin, path,
         (const gchar **) dep->names, dep->flags);
     scan_hash = scan_hash << 1;
-
-    g_free (scan_paths->data);
-    scan_paths = g_list_delete_link (scan_paths, scan_paths);
+    g_free (path);
   }
 
   GST_LOG_OBJECT (plugin, "done, scan_hash: %08x", scan_hash);
@@ -1770,7 +1760,7 @@ gst_plugin_ext_dep_equals (GstPluginDep * dep, const gchar ** env_vars,
 /**
  * gst_plugin_add_dependency:
  * @plugin: a #GstPlugin
- * @env_vars: NULL-terminated array of environent variables affecting the
+ * @env_vars: NULL-terminated array of environment variables affecting the
  *     feature set of the plugin (e.g. an environment variable containing
  *     paths where to look for additional modules/plugins of a library),
  *     or NULL. Environment variable names may be followed by a path component
@@ -1843,7 +1833,7 @@ gst_plugin_add_dependency (GstPlugin * plugin, const gchar ** env_vars,
 /**
  * gst_plugin_add_dependency_simple:
  * @plugin: the #GstPlugin
- * @env_vars: one or more environent variables (separated by ':', ';' or ','),
+ * @env_vars: one or more environment variables (separated by ':', ';' or ','),
  *      or NULL. Environment variable names may be followed by a path component
  *      which will be added to the content of the environment variable, e.g.
  *      "HOME/.mystuff/plugins:MYSTUFF_PLUGINS_PATH"

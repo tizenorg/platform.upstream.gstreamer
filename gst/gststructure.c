@@ -169,8 +169,8 @@ gst_structure_validate_name (const gchar * name)
   while (*s && (g_ascii_isalnum (*s) || strchr ("/-_.:+ ", *s) != NULL))
     s++;
   if (G_UNLIKELY (*s != '\0')) {
-    GST_WARNING ("Invalid character '%c' at offset %lu in structure name: %s",
-        *s, ((gulong) s - (gulong) name), name);
+    GST_WARNING ("Invalid character '%c' at offset %" G_GUINTPTR_FORMAT " in"
+        " structure name: %s", *s, ((guintptr) s - (guintptr) name), name);
     return FALSE;
   }
 
@@ -565,12 +565,7 @@ gst_structure_set_valist_internal (GstStructure * structure,
       g_warning ("Don't use G_TYPE_DATE, use GST_TYPE_DATE instead\n");
       type = GST_TYPE_DATE;
     }
-#if GLIB_CHECK_VERSION(2,23,3)
     G_VALUE_COLLECT_INIT (&field.value, type, varargs, 0, &err);
-#else
-    g_value_init (&field.value, type);
-    G_VALUE_COLLECT (&field.value, varargs, 0, &err);
-#endif
     if (G_UNLIKELY (err)) {
       g_critical ("%s", err);
       return;
@@ -2844,10 +2839,10 @@ wrong_type:
  * (as a GType), pointer(s) to a variable(s) to hold the return value(s).
  * The last variable argument should be NULL.
  *
- * For refcounted (mini)objects you will acquire your own reference which
+ * For refcounted (mini)objects you will receive a new reference which
  * you must release with a suitable _unref() when no longer needed. For
- * strings and boxed types you will acquire a copy which you will need to
- * release with either g_free() or the suiteable function for the boxed type.
+ * strings and boxed types you will receive a copy which you will need to
+ * release with either g_free() or the suitable function for the boxed type.
  *
  * Returns: FALSE if there was a problem reading any of the fields (e.g.
  *     because the field requested did not exist, or was of a type other
@@ -2889,10 +2884,10 @@ gst_structure_get (const GstStructure * structure, const char *first_fieldname,
  * more efficient since it saves the string-to-quark lookup in the global
  * quark hashtable.
  *
- * For refcounted (mini)objects you will acquire your own reference which
+ * For refcounted (mini)objects you will receive a new reference which
  * you must release with a suitable _unref() when no longer needed. For
- * strings and boxed types you will acquire a copy which you will need to
- * release with either g_free() or the suiteable function for the boxed type.
+ * strings and boxed types you will receive a copy which you will need to
+ * release with either g_free() or the suitable function for the boxed type.
  *
  * Returns: FALSE if there was a problem reading any of the fields (e.g.
  *     because the field requested did not exist, or was of a type other
@@ -2915,4 +2910,264 @@ gst_structure_id_get (const GstStructure * structure, GQuark first_field_id,
   va_end (args);
 
   return ret;
+}
+
+static gboolean
+gst_structure_is_equal_foreach (GQuark field_id, const GValue * val2,
+    gpointer data)
+{
+  const GstStructure *struct1 = (const GstStructure *) data;
+  const GValue *val1 = gst_structure_id_get_value (struct1, field_id);
+
+  if (G_UNLIKELY (val1 == NULL))
+    return FALSE;
+  if (gst_value_compare (val1, val2) == GST_VALUE_EQUAL) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * gst_structure_is_equal:
+ * @structure1: a #GstStructure.
+ * @structure2: a #GstStructure.
+ *
+ * Tests if the two #GstStructure are equal.
+ *
+ * Returns: TRUE if the two structures have the same name and field.
+ *
+ * Since: 0.10.36
+ **/
+gboolean
+gst_structure_is_equal (const GstStructure * structure1,
+    const GstStructure * structure2)
+{
+  g_return_val_if_fail (GST_IS_STRUCTURE (structure1), FALSE);
+  g_return_val_if_fail (GST_IS_STRUCTURE (structure2), FALSE);
+
+  if (G_UNLIKELY (structure1 == structure2))
+    return TRUE;
+
+  if (structure1->name != structure2->name) {
+    return FALSE;
+  }
+  if (structure1->fields->len != structure2->fields->len) {
+    return FALSE;
+  }
+
+  return gst_structure_foreach (structure1, gst_structure_is_equal_foreach,
+      (gpointer) structure2);
+}
+
+
+typedef struct
+{
+  GstStructure *dest;
+  const GstStructure *intersect;
+}
+IntersectData;
+
+static gboolean
+gst_structure_intersect_field1 (GQuark id, const GValue * val1, gpointer data)
+{
+  IntersectData *idata = (IntersectData *) data;
+  const GValue *val2 = gst_structure_id_get_value (idata->intersect, id);
+
+  if (G_UNLIKELY (val2 == NULL)) {
+    gst_structure_id_set_value (idata->dest, id, val1);
+  } else {
+    GValue dest_value = { 0 };
+    if (gst_value_intersect (&dest_value, val1, val2)) {
+      gst_structure_id_set_value (idata->dest, id, &dest_value);
+      g_value_unset (&dest_value);
+    } else {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+static gboolean
+gst_structure_intersect_field2 (GQuark id, const GValue * val1, gpointer data)
+{
+  IntersectData *idata = (IntersectData *) data;
+  const GValue *val2 = gst_structure_id_get_value (idata->intersect, id);
+
+  if (G_UNLIKELY (val2 == NULL)) {
+    gst_structure_id_set_value (idata->dest, id, val1);
+  }
+  return TRUE;
+}
+
+/**
+ * gst_structure_intersect:
+ * @struct1: a #GstStructure
+ * @struct2: a #GstStructure
+ *
+ * Interesects @struct1 and @struct2 and returns the intersection.
+ *
+ * Returns: Intersection of @struct1 and @struct2
+ *
+ * Since: 0.10.36
+ */
+GstStructure *
+gst_structure_intersect (const GstStructure * struct1,
+    const GstStructure * struct2)
+{
+  IntersectData data;
+
+  g_assert (struct1 != NULL);
+  g_assert (struct2 != NULL);
+
+  if (G_UNLIKELY (struct1->name != struct2->name))
+    return NULL;
+
+  /* copy fields from struct1 which we have not in struct2 to target
+   * intersect if we have the field in both */
+  data.dest = gst_structure_id_empty_new (struct1->name);
+  data.intersect = struct2;
+  if (G_UNLIKELY (!gst_structure_foreach ((GstStructure *) struct1,
+              gst_structure_intersect_field1, &data)))
+    goto error;
+
+  /* copy fields from struct2 which we have not in struct1 to target */
+  data.intersect = struct1;
+  if (G_UNLIKELY (!gst_structure_foreach ((GstStructure *) struct2,
+              gst_structure_intersect_field2, &data)))
+    goto error;
+
+  return data.dest;
+
+error:
+  gst_structure_free (data.dest);
+  return NULL;
+}
+
+static gboolean
+gst_caps_structure_can_intersect_field (GQuark id, const GValue * val1,
+    gpointer data)
+{
+  GstStructure *other = (GstStructure *) data;
+  const GValue *val2 = gst_structure_id_get_value (other, id);
+
+  if (G_LIKELY (val2)) {
+    if (!gst_value_can_intersect (val1, val2)) {
+      return FALSE;
+    } else {
+      gint eq = gst_value_compare (val1, val2);
+
+      if (eq == GST_VALUE_UNORDERED) {
+        /* we need to try interseting */
+        if (!gst_value_intersect (NULL, val1, val2)) {
+          return FALSE;
+        }
+      } else if (eq != GST_VALUE_EQUAL) {
+        return FALSE;
+      }
+    }
+  }
+  return TRUE;
+}
+
+/**
+ * gst_structure_can_intersect:
+ * @struct1: a #GstStructure
+ * @struct2: a #GstStructure
+ *
+ * Tries intersecting @struct1 and @struct2 and reports whether the result
+ * would not be empty.
+ *
+ * Returns: %TRUE if intersection would not be empty
+ *
+ * Since: 0.10.36
+ */
+gboolean
+gst_structure_can_intersect (const GstStructure * struct1,
+    const GstStructure * struct2)
+{
+  g_return_val_if_fail (GST_IS_STRUCTURE (struct1), FALSE);
+  g_return_val_if_fail (GST_IS_STRUCTURE (struct2), FALSE);
+
+  if (G_UNLIKELY (struct1->name != struct2->name))
+    return FALSE;
+
+  /* tries to intersect if we have the field in both */
+  return gst_structure_foreach ((GstStructure *) struct1,
+      gst_caps_structure_can_intersect_field, (gpointer) struct2);
+}
+
+static gboolean
+gst_caps_structure_is_subset_field (GQuark field_id, const GValue * value,
+    gpointer user_data)
+{
+  GstStructure *superset = user_data;
+  const GValue *other;
+  int comparison;
+
+  if (!(other = gst_structure_id_get_value (superset, field_id)))
+    /* field is missing in the superset => is subset */
+    return TRUE;
+
+  comparison = gst_value_compare (other, value);
+
+  /* equal values are subset */
+  if (comparison == GST_VALUE_EQUAL)
+    return TRUE;
+
+  /* ordered, but unequal, values are not */
+  if (comparison != GST_VALUE_UNORDERED)
+    return FALSE;
+
+  /*
+   * 1 - [1,2] = empty
+   * -> !subset
+   *
+   * [1,2] - 1 = 2
+   *  -> 1 - [1,2] = empty
+   *  -> subset
+   *
+   * [1,3] - [1,2] = 3
+   * -> [1,2] - [1,3] = empty
+   * -> subset
+   *
+   * {1,2} - {1,3} = 2
+   * -> {1,3} - {1,2} = 3
+   * -> !subset
+   *
+   *  First caps subtraction needs to return a non-empty set, second
+   *  subtractions needs to give en empty set.
+   *  Both substractions are switched below, as it's faster that way.
+   */
+  if (!gst_value_subtract (NULL, value, other)) {
+    if (gst_value_subtract (NULL, other, value)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * gst_structure_is_subset:
+ * @subset: a #GstStructure
+ * @superset: a potentially greater #GstStructure
+ *
+ * Checks if @subset is a subset of @superset, i.e. has the same
+ * structure name and for all fields that are existing in @superset,
+ * @subset has a value that is a subset of the value in @superset.
+ *
+ * Returns: %TRUE if @subset is a subset of @superset
+ *
+ * Since: 0.10.36
+ */
+gboolean
+gst_structure_is_subset (const GstStructure * subset,
+    const GstStructure * superset)
+{
+  if ((superset->name != subset->name) ||
+      (gst_structure_n_fields (superset) > gst_structure_n_fields (subset)))
+    return FALSE;
+
+  return gst_structure_foreach ((GstStructure *) subset,
+      gst_caps_structure_is_subset_field, (gpointer) superset);
 }

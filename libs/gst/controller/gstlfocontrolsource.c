@@ -43,6 +43,8 @@
 #include "gstlfocontrolsource.h"
 #include "gstlfocontrolsourceprivate.h"
 
+#include "gst/glib-compat-private.h"
+
 #include <gst/math-compat.h>
 
 #define EMPTY(x) (x)
@@ -566,7 +568,7 @@ static GstWaveformImplementation *waveforms[] = {
   &waveform_triangle
 };
 
-static guint num_waveforms = G_N_ELEMENTS (waveforms);
+static const guint num_waveforms = G_N_ELEMENTS (waveforms);
 
 enum
 {
@@ -649,7 +651,7 @@ gst_lfo_control_source_set_waveform (GstLFOControlSource * self,
   GstControlSource *csource = GST_CONTROL_SOURCE (self);
   gboolean ret = TRUE;
 
-  if (waveform >= num_waveforms || waveform < 0) {
+  if (waveform >= num_waveforms || (int) waveform < 0) {
     GST_WARNING ("waveform %d invalid or not implemented yet", waveform);
     return FALSE;
   }
@@ -969,7 +971,8 @@ gst_lfo_control_source_set_property (GObject * object, guint prop_id,
   switch (prop_id) {
     case PROP_WAVEFORM:
       g_mutex_lock (self->lock);
-      gst_lfo_control_source_set_waveform (self, g_value_get_enum (value));
+      gst_lfo_control_source_set_waveform (self,
+          (GstLFOWaveform) g_value_get_enum (value));
       g_mutex_unlock (self->lock);
       break;
     case PROP_FREQUENCY:{

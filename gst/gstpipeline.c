@@ -29,7 +29,7 @@
  * A #GstPipeline is a special #GstBin used as the toplevel container for
  * the filter graph. The #GstPipeline will manage the selection and
  * distribution of a global #GstClock as well as provide a #GstBus to the
- * application. It will also implement a default behavour for managing
+ * application. It will also implement a default behaviour for managing
  * seek events (see gst_element_seek()).
  *
  * gst_pipeline_new() is used to create a pipeline. when you are done with
@@ -425,7 +425,7 @@ gst_pipeline_change_state (GstElement * element, GstStateChange transition)
         if (clock) {
           now = gst_clock_get_time (clock);
         } else {
-          GST_DEBUG ("no clock, using base time of NONE");
+          GST_DEBUG_OBJECT (pipeline, "no clock, using base time of NONE");
           now = GST_CLOCK_TIME_NONE;
         }
 

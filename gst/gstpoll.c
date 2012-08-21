@@ -57,6 +57,7 @@
 #endif
 
 #include "gst_private.h"
+#include "glib-compat-private.h"
 
 #include <sys/types.h>
 
@@ -74,7 +75,12 @@
 #define EINPROGRESS WSAEINPROGRESS
 #else
 #define _GNU_SOURCE 1
+#ifdef HAVE_SYS_POLL_H
 #include <sys/poll.h>
+#endif
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#endif
 #include <sys/time.h>
 #include <sys/socket.h>
 #endif
@@ -154,8 +160,8 @@ static gboolean gst_poll_add_fd_unlocked (GstPoll * set, GstPollFD * fd);
 #define IS_FLUSHING(s)      (g_atomic_int_get(&(s)->flushing))
 #define SET_FLUSHING(s,val) (g_atomic_int_set(&(s)->flushing, (val)))
 
-#define INC_WAITING(s)      (g_atomic_int_exchange_and_add(&(s)->waiting, 1))
-#define DEC_WAITING(s)      (g_atomic_int_exchange_and_add(&(s)->waiting, -1))
+#define INC_WAITING(s)      (G_ATOMIC_INT_ADD(&(s)->waiting, 1))
+#define DEC_WAITING(s)      (G_ATOMIC_INT_ADD(&(s)->waiting, -1))
 #define GET_WAITING(s)      (g_atomic_int_get(&(s)->waiting))
 
 #define TEST_REBUILD(s)     (g_atomic_int_compare_and_exchange(&(s)->rebuild, 1, 0))
@@ -165,7 +171,7 @@ static gboolean gst_poll_add_fd_unlocked (GstPoll * set, GstPollFD * fd);
 #define WAKE_EVENT(s)       (write ((s)->control_write_fd.fd, "W", 1) == 1)
 #define RELEASE_EVENT(s)    (read ((s)->control_read_fd.fd, (s)->buf, 1) == 1)
 #else
-#define WAKE_EVENT(s)       (SetEvent ((s)->wakeup_event))
+#define WAKE_EVENT(s)       (SetEvent ((s)->wakeup_event), errno = GetLastError () == NO_ERROR ? 0 : EACCES, errno == 0 ? 1 : 0)
 #define RELEASE_EVENT(s)    (ResetEvent ((s)->wakeup_event))
 #endif
 
@@ -176,7 +182,7 @@ raise_wakeup (GstPoll * set)
 {
   gboolean result = TRUE;
 
-  if (g_atomic_int_exchange_and_add (&set->control_pending, 1) == 0) {
+  if (G_ATOMIC_INT_ADD (&set->control_pending, 1) == 0) {
     /* raise when nothing pending */
     result = WAKE_EVENT (set);
   }
@@ -214,7 +220,7 @@ release_all_wakeup (GstPoll * set)
         break;
       else
         /* retry again until we read it successfully */
-        g_atomic_int_exchange_and_add (&set->control_pending, 1);
+        G_ATOMIC_INT_ADD (&set->control_pending, 1);
     }
   }
   return old;
@@ -1231,7 +1237,7 @@ gst_poll_wait (GstPoll * set, GstClockTime timeout)
   if (G_UNLIKELY (old_waiting > 0 && !is_timer))
     goto already_waiting;
 
-  /* flushing, exit immediatly */
+  /* flushing, exit immediately */
   if (G_UNLIKELY (IS_FLUSHING (set)))
     goto flushing;
 

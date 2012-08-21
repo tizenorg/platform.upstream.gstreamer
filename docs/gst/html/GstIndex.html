@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstIndex</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstImplementsInterface.html" title="GstImplementsInterface">
 <link rel="next" href="GstIndexFactory.html" title="GstIndexFactory">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -75,7 +75,7 @@ enum                <a class="link" href="GstIndex.html#GstIndexResolverMethod" 
 enum                <a class="link" href="GstIndex.html#GstIndexFlags" title="enum GstIndexFlags">GstIndexFlags</a>;
 #define             <a class="link" href="GstIndex.html#GST-INDEX-IS-READABLE:CAPS" title="GST_INDEX_IS_READABLE()">GST_INDEX_IS_READABLE</a>               (obj)
 #define             <a class="link" href="GstIndex.html#GST-INDEX-IS-WRITABLE:CAPS" title="GST_INDEX_IS_WRITABLE()">GST_INDEX_IS_WRITABLE</a>               (obj)
-<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *                <a class="link" href="GstIndex.html#gst-index-new" title="gst_index_new ()">gst_index_new</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          <a class="link" href="GstIndex.html#gst-index-new" title="gst_index_new ()">gst_index_new</a>                       (<em class="parameter"><code><span class="type">void</span></code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstIndex.html#gst-index-commit" title="gst_index_commit ()">gst_index_commit</a>                    (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="GstIndex.html#gst-index-get-group" title="gst_index_get_group ()">gst_index_get_group</a>                 (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>);
@@ -102,48 +102,47 @@ enum                <a class="link" href="GstIndex.html#GstIndexFlags" title="en
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstIndex.html#gst-index-get-writer-id" title="gst_index_get_writer_id ()">gst_index_get_writer_id</a>             (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *writer</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> *id</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-add-format" title="gst_index_add_format ()">gst_index_add_format</a>          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-add-format" title="gst_index_add_format ()">gst_index_add_format</a>                (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-add-association" title="gst_index_add_association ()">gst_index_add_association</a>     (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-add-association" title="gst_index_add_association ()">gst_index_add_association</a>           (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>,
                                                          <em class="parameter"><code>...</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-add-associationv" title="gst_index_add_associationv ()">gst_index_add_associationv</a>    (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-add-associationv" title="gst_index_add_associationv ()">gst_index_add_associationv</a>          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> n</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="GstIndex.html#GstIndexAssociation" title="struct GstIndexAssociation"><span class="type">GstIndexAssociation</span></a> *list</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-add-object" title="gst_index_add_object ()">gst_index_add_object</a>          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-add-object" title="gst_index_add_object ()">gst_index_add_object</a>                (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="type">GType</span></a> type</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> object</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-add-id" title="gst_index_add_id ()">gst_index_add_id</a>              (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-add-id" title="gst_index_add_id ()">gst_index_add_id</a>                    (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-get-assoc-entry" title="gst_index_get_assoc_entry ()">gst_index_get_assoc_entry</a>     (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-get-assoc-entry" title="gst_index_get_assoc_entry ()">gst_index_get_assoc_entry</a>           (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexLookupMethod" title="enum GstIndexLookupMethod"><span class="type">GstIndexLookupMethod</span></a> method</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           <a class="link" href="GstIndex.html#gst-index-get-assoc-entry-full" title="gst_index_get_assoc_entry_full ()">gst_index_get_assoc_entry_full</a>
-                                                        (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>);
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-get-assoc-entry-full" title="gst_index_get_assoc_entry_full ()">gst_index_get_assoc_entry_full</a>      (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexLookupMethod" title="enum GstIndexLookupMethod"><span class="type">GstIndexLookupMethod</span></a> method</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GCompareDataFunc"><span class="type">GCompareDataFunc</span></a> func</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data</code></em>);
-<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *          <a class="link" href="GstIndex.html#gst-index-entry-copy" title="gst_index_entry_copy ()">gst_index_entry_copy</a>           (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>);
+<a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     <a class="link" href="GstIndex.html#gst-index-entry-copy" title="gst_index_entry_copy ()">gst_index_entry_copy</a>                (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstIndex.html#gst-index-entry-free" title="gst_index_entry_free ()">gst_index_entry_free</a>                (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstIndex.html#gst-index-entry-assoc-map" title="gst_index_entry_assoc_map ()">gst_index_entry_assoc_map</a>           (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *value</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> *value</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -417,7 +416,7 @@ An association in an entry.
 <td>the format of the association</td>
 </tr>
 <tr>
-<td><p><span class="term"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> <em class="structfield"><code><a name="GstIndexAssociation.value"></a>value</code></em>;</span></p></td>
+<td><p><span class="term"><span class="type">gint64</span> <em class="structfield"><code><a name="GstIndexAssociation.value"></a>value</code></em>;</span></p></td>
 <td>the value of the association</td>
 </tr>
 </tbody>
@@ -694,7 +693,7 @@ Check if the index can be written to
 <hr>
 <div class="refsect2">
 <a name="gst-index-new"></a><h3>gst_index_new ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *                gst_index_new                 (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          gst_index_new                       (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
 Create a new dummy index object. Use <a class="link" href="GstElement.html#gst-element-set-index" title="gst_element_set_index ()"><code class="function">gst_element_set_index()</code></a> to assign that
 to an element or pipeline. This index is not storing anything, but will
@@ -1021,7 +1020,7 @@ the lock is not recursive.
 <hr>
 <div class="refsect2">
 <a name="gst-index-add-format"></a><h3>gst_index_add_format ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_add_format          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_add_format                (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>);</pre>
 <p>
@@ -1058,11 +1057,11 @@ Free-function: gst_index_entry_free
 <hr>
 <div class="refsect2">
 <a name="gst-index-add-association"></a><h3>gst_index_add_association ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_add_association     (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_add_association           (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>,
                                                          <em class="parameter"><code>...</code></em>);</pre>
 <p>
 Associate given format/value pairs with each other.
@@ -1106,7 +1105,7 @@ you might want to use a gint64 cast to be sure.
 <hr>
 <div class="refsect2">
 <a name="gst-index-add-associationv"></a><h3>gst_index_add_associationv ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_add_associationv    (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_add_associationv          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> n</code></em>,
@@ -1147,7 +1146,7 @@ Associate given format/value pairs with each other.
 <hr>
 <div class="refsect2">
 <a name="gst-index-add-object"></a><h3>gst_index_add_object ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_add_object          (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_add_object                (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *key</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="type">GType</span></a> type</code></em>,
@@ -1191,7 +1190,7 @@ This function is not yet implemented.
 <hr>
 <div class="refsect2">
 <a name="gst-index-add-id"></a><h3>gst_index_add_id ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_add_id              (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_add_id                    (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description</code></em>);</pre>
 <p>
@@ -1222,12 +1221,12 @@ Add an id entry into the index.
 <hr>
 <div class="refsect2">
 <a name="gst-index-get-assoc-entry"></a><h3>gst_index_get_assoc_entry ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_get_assoc_entry     (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_get_assoc_entry           (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexLookupMethod" title="enum GstIndexLookupMethod"><span class="type">GstIndexLookupMethod</span></a> method</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>);</pre>
 <p>
 Finds the given format/value in the index
 </p>
@@ -1269,13 +1268,12 @@ value was not found.</td>
 <hr>
 <div class="refsect2">
 <a name="gst-index-get-assoc-entry-full"></a><h3>gst_index_get_assoc_entry_full ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *           gst_index_get_assoc_entry_full
-                                                        (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_get_assoc_entry_full      (<em class="parameter"><code><a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> *index</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> id</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexLookupMethod" title="enum GstIndexLookupMethod"><span class="type">GstIndexLookupMethod</span></a> method</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstIndex.html#GstAssocFlags" title="enum GstAssocFlags"><span class="type">GstAssocFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> value</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> value</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GCompareDataFunc"><span class="type">GCompareDataFunc</span></a> func</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data</code></em>);</pre>
 <p>
@@ -1328,7 +1326,7 @@ value was not found.</td>
 <hr>
 <div class="refsect2">
 <a name="gst-index-entry-copy"></a><h3>gst_index_entry_copy ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *          gst_index_entry_copy           (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="returnvalue">GstIndexEntry</span></a> *     gst_index_entry_copy                (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>);</pre>
 <p>
 Copies an entry and returns the result.
 </p>
@@ -1371,7 +1369,7 @@ Free the memory used by the given entry.
 <a name="gst-index-entry-assoc-map"></a><h3>gst_index_entry_assoc_map ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_index_entry_assoc_map           (<em class="parameter"><code><a class="link" href="GstIndex.html#GstIndexEntry" title="struct GstIndexEntry"><span class="type">GstIndexEntry</span></a> *entry</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstFormat.html#GstFormat" title="enum GstFormat"><span class="type">GstFormat</span></a> format</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> *value</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> *value</code></em>);</pre>
 <p>
 Gets alternative formats associated with the indexentry.
 </p>
@@ -1444,6 +1442,6 @@ Is emitted when a new entry is added to the index.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

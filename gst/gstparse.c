@@ -31,7 +31,7 @@
  *
  * Please note that these functions take several measures to create
  * somewhat dynamic pipelines. Due to that such pipelines are not always
- * reuseable (set the state to NULL and back to PLAYING).
+ * reusable (set the state to NULL and back to PLAYING).
  */
 
 #include "gst_private.h"
@@ -44,12 +44,6 @@
 #include "parse/types.h"
 #endif
 
-static void
-_prepend_missing_element (gchar * element, GList ** list)
-{
-  *list = g_list_prepend (*list, g_strdup (element));
-}
-
 static GstParseContext *
 gst_parse_context_copy (const GstParseContext * context)
 {
@@ -58,9 +52,13 @@ gst_parse_context_copy (const GstParseContext * context)
 
   ret = gst_parse_context_new ();
   if (context) {
-    g_list_foreach (context->missing_elements, (GFunc) _prepend_missing_element,
-        &ret->missing_elements);
-    ret->missing_elements = g_list_reverse (ret->missing_elements);
+    GQueue missing_copy = G_QUEUE_INIT;
+    GList *l;
+
+    for (l = context->missing_elements; l != NULL; l = l->next)
+      g_queue_push_tail (&missing_copy, g_strdup ((const gchar *) l->data));
+
+    ret->missing_elements = missing_copy.head;
   }
 #endif
   return ret;
@@ -223,7 +221,7 @@ _gst_parse_escape (const gchar * str)
 GstElement *
 gst_parse_launchv (const gchar ** argv, GError ** error)
 {
-  return gst_parse_launchv_full (argv, NULL, 0, error);
+  return gst_parse_launchv_full (argv, NULL, GST_PARSE_FLAG_NONE, error);
 }
 
 /**
@@ -299,7 +297,8 @@ gst_parse_launchv_full (const gchar ** argv, GstParseContext * context,
 GstElement *
 gst_parse_launch (const gchar * pipeline_description, GError ** error)
 {
-  return gst_parse_launch_full (pipeline_description, NULL, 0, error);
+  return gst_parse_launch_full (pipeline_description, NULL, GST_PARSE_FLAG_NONE,
+      error);
 }
 
 /**
@@ -334,7 +333,7 @@ gst_parse_launch_full (const gchar * pipeline_description,
   GST_CAT_INFO (GST_CAT_PIPELINE, "parsing pipeline description '%s'",
       pipeline_description);
 
-  element = _gst_parse_launch (pipeline_description, error, context, flags);
+  element = priv_gst_parse_launch (pipeline_description, error, context, flags);
 
   /* don't return partially constructed pipeline if FATAL_ERRORS was given */
   if (G_UNLIKELY (error != NULL && *error != NULL && element != NULL)) {

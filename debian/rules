@@ -12,29 +12,11 @@ DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 # fixit : need to check 
-CFLAGS += -Wall -g -fPIC								\
-		-DGST_EXT_COMPANSATE_EOS_HANDLING	\
-		-DGST_EXT_USE_TINY_REGISTRY			\
-		-DGST_EXT_TIME_ANALYSIS 				\
-		-DGST_EXT_TA_UNIT_MEXT 				\
-		-DGST_EXT_PAD_LINK_UNCHECKED			\
-		-DGST_EXT_REDUCE_PLUGIN_NUM 			\
-		-DGST_EXT_USE_PDP_NETWORK			\
-		-DGST_EXT_VOLUME_WITHOUT_LIBOIL 		\
-		-DGST_EXT_AUDIOSINK_MUTE 				\
-		-DEXT_AUDIO_FILTER_EFFECT 				\
-		-DGST_EXT_NONBLOCKDQUE				\
-		-DGST_EXT_RENEGOTIATION				\
-		-DGST_EXT_MOBILECAMERA 				\
-		-DGST_EXT_ASYNC_DEV					\
-		-DGST_EXT_AV_RECORDING 				\
-		-DGST_EXT_SWITCH_CAMERA 				\
-		-DGST_EXT_OVERLAYSINK_SQVGA 			\
-		-DGST_EXT_FFMUX_ADD_PROPERTY 			\
-		-DGST_EXT_FFMUX_ENHANCEMENT 			\
-		-DGST_EXT_I_LIKE_DSP					\
-		-DGST_EXT_CAMCORDER_IPP				\
-		-DGST_EXT_QUEUE_ENHANCEMENT
+CFLAGS += -Wall -g -fPIC			\
+		-DGST_EXT_AV_RECORDING		\
+		-DGST_EXT_QUEUE_ENHANCEMENT	\
+		-DGST_EXT_CURRENT_BYTES		\
+		-DGST_EXT_MODIFIED_DQBUF
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -58,24 +40,24 @@ config.status:
 	./autogen.sh
 
 	./configure --prefix=/usr		\
-		--disable-valgrind			\
-		--without-check 			\
-		--disable-static 			\
-		--disable-rpath 			\
+		--disable-valgrind		\
+		--without-check 		\
+		--disable-static 		\
+		--disable-rpath 		\
 		--disable-libtool-lock 		\
 		--disable-alloc-trace 		\
 		--disable-gcov 			\
 		--disable-nls 			\
 		--disable-examples 		\
-		--disable-tests 			\
-		--disable-failing-tests 		\
+		--disable-tests 		\
+		--disable-failing-tests 	\
 		--disable-docbook 		\
 		--disable-gtk-doc 		\
 		--disable-registry-update 	\
 		--disable-loadsave 		\
 		--with-html-dir=/tmp/dump 	\
-		$(CONFIGURE_OPTIONS) 	\
-		CFLAGS="$(CFLAGS)" 	\
+		$(CONFIGURE_OPTIONS) 		\
+		CFLAGS="$(CFLAGS)" 		\
 		LDFLAGS="$(LDFLAGS)"
 
 

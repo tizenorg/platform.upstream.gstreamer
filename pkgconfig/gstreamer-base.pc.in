@@ -12,4 +12,4 @@ Description: Base classes for GStreamer elements
 Requires: gstreamer-@GST_MAJORMINOR@
 Version: @VERSION@
 Libs: -L${libdir} -lgstbase-@GST_MAJORMINOR@
-Cflags: -I${includedir}
+Cflags: -I${includedir} -DGST_EXT_MODIFIED_DQBUF

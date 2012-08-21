@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstIndexFactory</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstIndex.html" title="GstIndex">
 <link rel="next" href="gstreamer-GstIterator.html" title="GstIterator">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -43,13 +43,13 @@
 #include &lt;gst/gst.h&gt;
 
 struct              <a class="link" href="GstIndexFactory.html#GstIndexFactory-struct" title="struct GstIndexFactory">GstIndexFactory</a>;
-<a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *	  <a class="link" href="GstIndexFactory.html#gst-index-factory-new" title="gst_index_factory_new ()">gst_index_factory_new</a>               (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+<a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *   <a class="link" href="GstIndexFactory.html#gst-index-factory-new" title="gst_index_factory_new ()">gst_index_factory_new</a>               (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *longdesc</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="type">GType</span></a> type</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstIndexFactory.html#gst-index-factory-destroy" title="gst_index_factory_destroy ()">gst_index_factory_destroy</a>           (<em class="parameter"><code><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="type">GstIndexFactory</span></a> *factory</code></em>);
-<a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *	  <a class="link" href="GstIndexFactory.html#gst-index-factory-find" title="gst_index_factory_find ()">gst_index_factory_find</a>              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
-<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *		        <a class="link" href="GstIndexFactory.html#gst-index-factory-create" title="gst_index_factory_create ()">gst_index_factory_create</a>            (<em class="parameter"><code><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="type">GstIndexFactory</span></a> *factory</code></em>);
-<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *		        <a class="link" href="GstIndexFactory.html#gst-index-factory-make" title="gst_index_factory_make ()">gst_index_factory_make</a>              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
+<a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *   <a class="link" href="GstIndexFactory.html#gst-index-factory-find" title="gst_index_factory_find ()">gst_index_factory_find</a>              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
+<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          <a class="link" href="GstIndexFactory.html#gst-index-factory-create" title="gst_index_factory_create ()">gst_index_factory_create</a>            (<em class="parameter"><code><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="type">GstIndexFactory</span></a> *factory</code></em>);
+<a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          <a class="link" href="GstIndexFactory.html#gst-index-factory-make" title="gst_index_factory_make ()">gst_index_factory_make</a>              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -79,7 +79,7 @@ The GstIndexFactory object
 <hr>
 <div class="refsect2">
 <a name="gst-index-factory-new"></a><h3>gst_index_factory_new ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *	  gst_index_factory_new               (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+<pre class="programlisting"><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *   gst_index_factory_new               (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *longdesc</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="type">GType</span></a> type</code></em>);</pre>
 <p>
@@ -126,7 +126,7 @@ Removes the index from the global list.
 <hr>
 <div class="refsect2">
 <a name="gst-index-factory-find"></a><h3>gst_index_factory_find ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *	  gst_index_factory_find              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="returnvalue">GstIndexFactory</span></a> *   gst_index_factory_find              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Search for an indexfactory of the given name.
 </p>
@@ -149,7 +149,7 @@ Search for an indexfactory of the given name.
 <hr>
 <div class="refsect2">
 <a name="gst-index-factory-create"></a><h3>gst_index_factory_create ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *		        gst_index_factory_create            (<em class="parameter"><code><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="type">GstIndexFactory</span></a> *factory</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          gst_index_factory_create            (<em class="parameter"><code><a class="link" href="GstIndexFactory.html" title="GstIndexFactory"><span class="type">GstIndexFactory</span></a> *factory</code></em>);</pre>
 <p>
 Create a new <a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> instance from the
 given indexfactory.
@@ -172,7 +172,7 @@ given indexfactory.
 <hr>
 <div class="refsect2">
 <a name="gst-index-factory-make"></a><h3>gst_index_factory_make ()</h3>
-<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *		        gst_index_factory_make              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstIndex.html" title="GstIndex"><span class="returnvalue">GstIndex</span></a> *          gst_index_factory_make              (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Create a new <a class="link" href="GstIndex.html" title="GstIndex"><span class="type">GstIndex</span></a> instance from the
 indexfactory with the given name.
@@ -200,6 +200,6 @@ indexfactory with the given name.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

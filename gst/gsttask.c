@@ -68,10 +68,14 @@
  * Last reviewed on 2010-03-15 (0.10.29)
  */
 
+/* FIXME 0.11: suppress warnings for deprecated API such as GStaticRecMutex
+ * with newer GLib versions (>= 2.31.0) */
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
 #include "gst_private.h"
 
 #include "gstinfo.h"
 #include "gsttask.h"
+#include "glib-compat-private.h"
 
 #include <stdio.h>
 
@@ -83,7 +87,7 @@ GST_DEBUG_CATEGORY_STATIC (task_debug);
 #define GST_CAT_DEFAULT (task_debug)
 
 #define SET_TASK_STATE(t,s) (g_atomic_int_set (&GST_TASK_STATE(t), (s)))
-#define GET_TASK_STATE(t)   (g_atomic_int_get (&GST_TASK_STATE(t)))
+#define GET_TASK_STATE(t)   ((GstTaskState) g_atomic_int_get (&GST_TASK_STATE(t)))
 
 #define GST_TASK_GET_PRIVATE(obj)  \
    (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GST_TYPE_TASK, GstTaskPrivate))
@@ -225,7 +229,7 @@ gst_task_finalize (GObject * object)
 static void
 gst_task_configure_name (GstTask * task)
 {
-#ifdef HAVE_SYS_PRCTL_H
+#if defined(HAVE_SYS_PRCTL_H) && defined(PR_SET_NAME)
   const gchar *name;
   gchar thread_name[17] = { 0, };
 
@@ -276,8 +280,13 @@ gst_task_func (GstTask * task)
     goto no_lock;
   task->abidata.ABI.thread = tself;
   /* only update the priority when it was changed */
-  if (priv->prio_set)
+  if (priv->prio_set) {
+#if !GLIB_CHECK_VERSION (2, 31, 0)
     g_thread_set_priority (tself, priv->priority);
+#else
+    GST_INFO_OBJECT (task, "Thread priorities no longer have any effect");
+#endif
+  }
   GST_OBJECT_UNLOCK (task);
 
   /* fire the enter_thread callback when we need to */
@@ -333,7 +342,9 @@ exit:
   } else {
     /* restore normal priority when releasing back into the pool, we will not
      * touch the priority when a custom callback has been installed. */
+#if !GLIB_CHECK_VERSION (2, 31, 0)
     g_thread_set_priority (tself, G_THREAD_PRIORITY_NORMAL);
+#endif
   }
   /* now we allow messing with the lock again by setting the running flag to
    * FALSE. Together with the SIGNAL this is the sign for the _join() to
@@ -475,7 +486,11 @@ gst_task_set_priority (GstTask * task, GThreadPriority priority)
   if (thread != NULL) {
     /* if this task already has a thread, we can configure the priority right
      * away, else we do that when we assign a thread to the task. */
+#if !GLIB_CHECK_VERSION (2, 31, 0)
     g_thread_set_priority (thread, priority);
+#else
+    GST_INFO_OBJECT (task, "Thread priorities no longer have any effect");
+#endif
   }
   GST_OBJECT_UNLOCK (task);
 }

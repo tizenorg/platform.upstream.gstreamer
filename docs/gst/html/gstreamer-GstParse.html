@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstParse</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="gstreamer-GstParamSpec.html" title="GstParamSpec">
 <link rel="next" href="GstPipeline.html" title="GstPipeline">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -57,11 +57,10 @@ enum                <a class="link" href="gstreamer-GstParse.html#GstParseFlags"
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseContext" title="GstParseContext"><span class="type">GstParseContext</span></a> *context</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseFlags" title="enum GstParseFlags"><span class="type">GstParseFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *             <a class="link" href="gstreamer-GstParse.html#gst-parse-bin-from-description" title="gst_parse_bin_from_description ()">gst_parse_bin_from_description</a> (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="gstreamer-GstParse.html#gst-parse-bin-from-description" title="gst_parse_bin_from_description ()">gst_parse_bin_from_description</a>      (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ghost_unlinked_pads</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *             <a class="link" href="gstreamer-GstParse.html#gst-parse-bin-from-description-full" title="gst_parse_bin_from_description_full ()">gst_parse_bin_from_description_full</a>
-                                                        (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="gstreamer-GstParse.html#gst-parse-bin-from-description-full" title="gst_parse_bin_from_description_full ()">gst_parse_bin_from_description_full</a> (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ghost_unlinked_pads</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseContext" title="GstParseContext"><span class="type">GstParseContext</span></a> *context</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseFlags" title="enum GstParseFlags"><span class="type">GstParseFlags</span></a> flags</code></em>,
@@ -82,7 +81,7 @@ gst-launch utility (see man-page for syntax documentation).
 <p>
 Please note that these functions take several measures to create
 somewhat dynamic pipelines. Due to that such pipelines are not always
-reuseable (set the state to NULL and back to PLAYING).
+reusable (set the state to NULL and back to PLAYING).
 </p>
 </div>
 <div class="refsect1">
@@ -113,8 +112,7 @@ Get access to the error quark of the parse subsystem.
 <hr>
 <div class="refsect2">
 <a name="GstParseError"></a><h3>enum GstParseError</h3>
-<pre class="programlisting">typedef enum
-{
+<pre class="programlisting">typedef enum {
   GST_PARSE_ERROR_SYNTAX,
   GST_PARSE_ERROR_NO_SUCH_ELEMENT,
   GST_PARSE_ERROR_NO_SUCH_PROPERTY,
@@ -180,8 +178,7 @@ Opaque structure.
 <hr>
 <div class="refsect2">
 <a name="GstParseFlags"></a><h3>enum GstParseFlags</h3>
-<pre class="programlisting">typedef enum
-{
+<pre class="programlisting">typedef enum {
   GST_PARSE_FLAG_NONE = 0,
   GST_PARSE_FLAG_FATAL_ERRORS = (1 &lt;&lt; 0)
 } GstParseFlags;
@@ -367,7 +364,7 @@ be set (unless you passed <a class="link" href="gstreamer-GstParse.html#GST-PARS
 <hr>
 <div class="refsect2">
 <a name="gst-parse-bin-from-description"></a><h3>gst_parse_bin_from_description ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *             gst_parse_bin_from_description (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_parse_bin_from_description      (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ghost_unlinked_pads</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **err</code></em>);</pre>
 <p>
@@ -409,8 +406,7 @@ for unlinked source or sink pads within the bin</td>
 <hr>
 <div class="refsect2">
 <a name="gst-parse-bin-from-description-full"></a><h3>gst_parse_bin_from_description_full ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *             gst_parse_bin_from_description_full
-                                                        (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_parse_bin_from_description_full (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *bin_description</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> ghost_unlinked_pads</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseContext" title="GstParseContext"><span class="type">GstParseContext</span></a> *context</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-GstParse.html#GstParseFlags" title="enum GstParseFlags"><span class="type">GstParseFlags</span></a> flags</code></em>,
@@ -534,6 +530,6 @@ elements. Free with <a href="http://library.gnome.org/devel/glib/unstable/glib-S
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

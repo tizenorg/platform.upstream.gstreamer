@@ -12,14 +12,16 @@
   </para>
   
   <para>
-    &GStreamer; derives several times from the clock and the playback state.
+    &GStreamer; derives several <emphasis>time value</emphasis> from the clock
+    and the playback state.
     It is important to note, that a  <emphasis>clock-time</emphasis> is
     monotonically rising, but the value itself is not meaningful.
     Subtracting the <emphasis>base-time</emphasis> yields the
     <emphasis>running-time</emphasis>. It is the same as the
     <emphasis>stream-time</emphasis> if one plays from start to end at original
     rate. The <emphasis>stream-time</emphasis> indicates the position in the
-    media.
+    media. The <emphasis>running-time</emphasis> is (re-)set to 0 when the 
+    pipeline starts to play and also after <emphasis>flushing</emphasis> seeks.
   </para>
 
   <figure float="1" id="chapter-clock-img">
@@ -51,7 +53,7 @@
       <function>gst_clock_get_time ()</function>. The clock-time does not
       need to start at 0. The pipeline, which contains the global clock that
       all elements in the pipeline will use, in addition has a <quote>base
-      time</quote>, which is the clock time at the the point where the
+      time</quote>, which is the clock time at the point where the
       pipeline went to the PLAYING state. Each element can subtract the
       <quote>base time</quote> from the clock-time to know the current
       running time.

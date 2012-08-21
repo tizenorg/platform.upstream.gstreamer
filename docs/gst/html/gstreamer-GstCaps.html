@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstCaps</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstBus.html" title="GstBus">
 <link rel="next" href="GstChildProxy.html" title="GstChildProxy">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -102,6 +102,8 @@ enum                <a class="link" href="gstreamer-GstCaps.html#GstCapsFlags" t
                                                          <em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps2</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="gstreamer-GstCaps.html#gst-caps-is-subset" title="gst_caps_is_subset ()">gst_caps_is_subset</a>                  (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *subset</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *superset</code></em>);
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="gstreamer-GstCaps.html#gst-caps-is-subset-structure" title="gst_caps_is_subset_structure ()">gst_caps_is_subset_structure</a>        (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="gstreamer-GstStructure.html#GstStructure" title="struct GstStructure"><span class="type">GstStructure</span></a> *structure</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="gstreamer-GstCaps.html#gst-caps-can-intersect" title="gst_caps_can_intersect ()">gst_caps_can_intersect</a>              (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps1</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps2</code></em>);
 <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="returnvalue">GstCaps</span></a> *           <a class="link" href="gstreamer-GstCaps.html#gst-caps-intersect" title="gst_caps_intersect ()">gst_caps_intersect</a>                  (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps1</code></em>,
@@ -155,7 +157,7 @@ A <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><
 <p>
 </p>
 <div class="example">
-<a name="idp13598816"></a><p class="title"><b>Example 7. Creating caps</b></p>
+<a name="idp14113840"></a><p class="title"><b>Example 7. Creating caps</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -325,6 +327,7 @@ would be [A, B], maintaining the first caps priority on the intersection.
 <div class="refsect2">
 <a name="GstCapsFlags"></a><h3>enum GstCapsFlags</h3>
 <pre class="programlisting">typedef enum {
+  GST_CAPS_FLAGS_NONE = 0,
   GST_CAPS_FLAGS_ANY = (1 &lt;&lt; 0)
 } GstCapsFlags;
 </pre>
@@ -333,12 +336,19 @@ Extra flags for a caps.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
-<tbody><tr>
+<tbody>
+<tr>
+<td><p><a name="GST-CAPS-FLAGS-NONE:CAPS"></a><span class="term"><code class="literal">GST_CAPS_FLAGS_NONE</code></span></p></td>
+<td>no extra flags (Since 0.10.36)
+</td>
+</tr>
+<tr>
 <td><p><a name="GST-CAPS-FLAGS-ANY:CAPS"></a><span class="term"><code class="literal">GST_CAPS_FLAGS_ANY</code></span></p></td>
 <td>Caps has no specific content, but can contain
    anything.
 </td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 </div>
 <hr>
@@ -827,7 +837,7 @@ structure is not copied; <em class="parameter"><code>caps</code></em> becomes th
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>caps</code></em> :</span></p></td>
-<td>the <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> that will the the new structure</td>
+<td>the <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> that will the new structure</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>structure</code></em> :</span></p></td>
@@ -1196,6 +1206,38 @@ are included on one caps and omitted on the other.</div>
 </div>
 <hr>
 <div class="refsect2">
+<a name="gst-caps-is-subset-structure"></a><h3>gst_caps_is_subset_structure ()</h3>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_caps_is_subset_structure        (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="gstreamer-GstStructure.html#GstStructure" title="struct GstStructure"><span class="type">GstStructure</span></a> *structure</code></em>);</pre>
+<p>
+Checks if <em class="parameter"><code>structure</code></em> is a subset of <em class="parameter"><code>caps</code></em>. See <a class="link" href="gstreamer-GstCaps.html#gst-caps-is-subset" title="gst_caps_is_subset ()"><code class="function">gst_caps_is_subset()</code></a>
+for more information.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>caps</code></em> :</span></p></td>
+<td>a <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>structure</code></em> :</span></p></td>
+<td>a potential <a class="link" href="gstreamer-GstStructure.html#GstStructure" title="struct GstStructure"><span class="type">GstStructure</span></a> subset of <em class="parameter"><code>caps</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if <em class="parameter"><code>structure</code></em> is a subset of <em class="parameter"><code>caps</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.10.36</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="gst-caps-can-intersect"></a><h3>gst_caps_can_intersect ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_caps_can_intersect              (<em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps1</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps2</code></em>);</pre>
@@ -1521,12 +1563,12 @@ are included on one caps and omitted on the other.</div>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>minuend</code></em> :</span></p></td>
 <td>
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> to substract from</td>
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> to subtract from</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>subtrahend</code></em> :</span></p></td>
 <td>
-<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> to substract</td>
+<a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> to subtract</td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
@@ -1621,7 +1663,7 @@ fixating. <em class="parameter"><code>caps</code></em> must be writable.
 <a name="gst-caps-unref"></a><h3>gst_caps_unref ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                gst_caps_unref                      (<em class="parameter"><code><a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);</pre>
 <p>
-Unref a <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> and and free all its structures and the
+Unref a <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> and free all its structures and the
 structures' values when the refcount reaches 0.
 </p>
 <div class="variablelist"><table border="0">
@@ -1641,6 +1683,6 @@ structures' values when the refcount reaches 0.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

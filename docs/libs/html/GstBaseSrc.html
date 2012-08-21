@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstBaseSrc</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Library Reference Manual">
 <link rel="up" href="gstreamer-base.html" title="GStreamer Base and Utillity Classes">
 <link rel="prev" href="gstreamer-libs-GstBaseParse.html" title="GstBaseParse">
 <link rel="next" href="GstBaseSink.html" title="GstBaseSink">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -63,10 +63,12 @@ enum                <a class="link" href="GstBaseSrc.html#GstBaseSrcFlags" title
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstBaseSrc.html#gst-base-src-get-do-timestamp" title="gst_base_src_get_do_timestamp ()">gst_base_src_get_do_timestamp</a>       (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="GstBaseSrc.html#gst-base-src-set-do-timestamp" title="gst_base_src_set_do_timestamp ()">gst_base_src_set_do_timestamp</a>       (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> timestamp</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GstBaseSrc.html#gst-base-src-set-dynamic-size" title="gst_base_src_set_dynamic_size ()">gst_base_src_set_dynamic_size</a>       (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> dynamic</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstBaseSrc.html#gst-base-src-new-seamless-segment" title="gst_base_src_new_seamless_segment ()">gst_base_src_new_seamless_segment</a>   (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> start</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> stop</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> position</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> stop</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> position</code></em>);
 #define             <a class="link" href="GstBaseSrc.html#GST-BASE-SRC-PAD:CAPS" title="GST_BASE_SRC_PAD()">GST_BASE_SRC_PAD</a>                    (obj)
 </pre>
 </div>
@@ -235,7 +237,7 @@ should install a pad template in its class_init function, like so:
 <p>
 </p>
 <div class="refsect2">
-<a name="idp9283984"></a><h3>Controlled shutdown of live sources in applications</h3>
+<a name="idp8473536"></a><h3>Controlled shutdown of live sources in applications</h3>
 <p>
 Applications that record from a live source may want to stop recording
 in a controlled way, so that the recording is stopped, but the data
@@ -743,11 +745,36 @@ sources.
 </div>
 <hr>
 <div class="refsect2">
+<a name="gst-base-src-set-dynamic-size"></a><h3>gst_base_src_set_dynamic_size ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                gst_base_src_set_dynamic_size       (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> dynamic</code></em>);</pre>
+<p>
+If not <em class="parameter"><code>dynamic</code></em>, size is only updated when needed, such as when trying to
+read past current tracked size.  Otherwise, size is checked for upon each
+read.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td>base source instance</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dynamic</code></em> :</span></p></td>
+<td>new dynamic size mode</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.10.36</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="gst-base-src-new-seamless-segment"></a><h3>gst_base_src_new_seamless_segment ()</h3>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_base_src_new_seamless_segment   (<em class="parameter"><code><a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> *src</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> start</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> stop</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a> position</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> stop</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> position</code></em>);</pre>
 <p>
 Prepare a new seamless segment for emission downstream. This function must
 only be called by derived sub-classes, and only from the <code class="function">create()</code> function,
@@ -839,6 +866,6 @@ Gives the pointer to the <a href="http://gstreamer.freedesktop.org/data/doc/gstr
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

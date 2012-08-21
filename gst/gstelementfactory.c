@@ -343,7 +343,8 @@ detailserror:
 /**
  * gst_element_factory_create:
  * @factory: factory to instantiate
- * @name: name of new element
+ * @name: (allow-none): name of new element, or NULL to automatically create
+ *    a unique name
  *
  * Create a new element of the type defined by the given elementfactory.
  * It will be given the name supplied, since all elements require a name as
@@ -361,7 +362,7 @@ gst_element_factory_create (GstElementFactory * factory, const gchar * name)
 
   g_return_val_if_fail (factory != NULL, NULL);
 
-__ta__(__tafmt__("Creating Element %s(name:%s)", GST_PLUGIN_FEATURE_NAME (factory), name), 
+__ta__(__tafmt__("Creating Element %s(name:%s)", GST_PLUGIN_FEATURE_NAME (factory), name),
 
 
   newfactory =
@@ -399,8 +400,8 @@ __ta__(__tafmt__("Creating Element %s(name:%s)", GST_PLUGIN_FEATURE_NAME (factor
    * an element at the same moment
    */
   oclass = GST_ELEMENT_GET_CLASS (element);
-  if (!g_atomic_pointer_compare_and_exchange (
-          (gpointer) & oclass->elementfactory, NULL, factory))
+  if (!G_ATOMIC_POINTER_COMPARE_AND_EXCHANGE (&oclass->elementfactory, NULL,
+          factory))
     gst_object_unref (factory);
 
   GST_DEBUG ("created element \"%s\"", GST_PLUGIN_FEATURE_NAME (factory));
@@ -433,7 +434,8 @@ no_element:
 /**
  * gst_element_factory_make:
  * @factoryname: a named factory to instantiate
- * @name: (allow-none): name of new element
+ * @name: (allow-none): name of new element, or NULL to automatically create
+ *    a unique name
  *
  * Create a new element of the type defined by the given element factory.
  * If name is NULL, then the element will receive a guaranteed unique name,
@@ -519,7 +521,7 @@ gst_element_factory_get_element_type (GstElementFactory * factory)
  *
  * Returns: the longname
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_longname (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -535,7 +537,7 @@ gst_element_factory_get_longname (GstElementFactory * factory)
  *
  * Returns: the class
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_klass (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -551,7 +553,7 @@ gst_element_factory_get_klass (GstElementFactory * factory)
  *
  * Returns: the description
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_description (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -567,7 +569,7 @@ gst_element_factory_get_description (GstElementFactory * factory)
  *
  * Returns: the author
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_author (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -575,7 +577,7 @@ gst_element_factory_get_author (GstElementFactory * factory)
   return factory->details.author;
 }
 
-static G_CONST_RETURN gchar *
+static const gchar *
 gst_element_factory_get_meta_data (GstElementFactory * factory,
     const gchar * key)
 {
@@ -596,7 +598,7 @@ gst_element_factory_get_meta_data (GstElementFactory * factory,
  *
  * Returns: the documentation uri
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_documentation_uri (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -613,7 +615,7 @@ gst_element_factory_get_documentation_uri (GstElementFactory * factory)
  *
  * Returns: the icon name
  */
-G_CONST_RETURN gchar *
+const gchar *
 gst_element_factory_get_icon_name (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -666,7 +668,7 @@ __gst_element_factory_add_interface (GstElementFactory * elementfactory,
  * Returns: (transfer none) (element-type Gst.StaticPadTemplate): the
  *     static pad templates
  */
-G_CONST_RETURN GList *
+const GList *
 gst_element_factory_get_static_pad_templates (GstElementFactory * factory)
 {
   g_return_val_if_fail (GST_IS_ELEMENT_FACTORY (factory), NULL);
@@ -751,7 +753,7 @@ typedef struct
  * @factory: a #GstElementFactory
  * @type: a #GstElementFactoryListType
  *
- * Check if @factory if of the given types.
+ * Check if @factory is of the given types.
  *
  * Returns: %TRUE if @factory is of @type.
  *
@@ -893,7 +895,7 @@ GList *
 gst_element_factory_list_filter (GList * list,
     const GstCaps * caps, GstPadDirection direction, gboolean subsetonly)
 {
-  GList *result = NULL;
+  GQueue results = G_QUEUE_INIT;
 
   GST_DEBUG ("finding factories");
 
@@ -927,7 +929,7 @@ gst_element_factory_list_filter (GList * list,
         if ((subsetonly && gst_caps_is_subset (caps, tmpl_caps)) ||
             (!subsetonly && gst_caps_can_intersect (caps, tmpl_caps))) {
           /* non empty intersection, we can use this element */
-          result = g_list_prepend (result, gst_object_ref (factory));
+          g_queue_push_tail (&results, gst_object_ref (factory));
           gst_caps_unref (tmpl_caps);
           break;
         }
@@ -935,5 +937,5 @@ gst_element_factory_list_filter (GList * list,
       }
     }
   }
-  return g_list_reverse (result);
+  return results.head;
 }

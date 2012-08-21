@@ -61,10 +61,6 @@ typedef struct _GstBaseSrcPrivate GstBaseSrcPrivate;
  */
 #define GST_BASE_SRC_PAD(obj)                 (GST_BASE_SRC_CAST (obj)->srcpad)
 
-#ifndef	_MMCAMCORDER_MODIFIED_DQBUF
-#define	_MMCAMCORDER_MODIFIED_DQBUF
-#endif
-
 /**
  * GstBaseSrc:
  *
@@ -82,9 +78,9 @@ struct _GstBaseSrc {
   GCond         *live_cond;
   gboolean       is_live;
   gboolean       live_running;
-#ifdef _MMCAMCORDER_MODIFIED_DQBUF
-  gboolean	 blive_play;
-#endif
+#ifdef GST_EXT_MODIFIED_DQBUF
+  gboolean       blive_play;
+#endif /* GST_EXT_MODIFIED_DQBUF */
 
   /* MT-protected (with LOCK) */
   gint           blocksize;     /* size of buffers when operating push based */
@@ -250,6 +246,8 @@ void            gst_base_src_set_live         (GstBaseSrc *src, gboolean live);
 gboolean        gst_base_src_is_live          (GstBaseSrc *src);
 
 void            gst_base_src_set_format       (GstBaseSrc *src, GstFormat format);
+
+void            gst_base_src_set_dynamic_size (GstBaseSrc * src, gboolean dynamic);
 
 gboolean        gst_base_src_query_latency    (GstBaseSrc *src, gboolean * live,
                                                GstClockTime * min_latency,

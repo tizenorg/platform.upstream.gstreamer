@@ -41,7 +41,10 @@
  * Core and plug-in writers can add and remove pads with gst_element_add_pad()
  * and gst_element_remove_pad().
  *
- * A pad of an element can be retrieved by name with gst_element_get_pad().
+ * An existing pad of an element can be retrieved by name with
+ * gst_element_get_static_pad(). A new dynamic pad can be created using
+ * gst_element_request_pad() with a #GstPadTemplate or 
+ * gst_element_get_request_pad() with the template name such as "src_\%d".
  * An iterator of all pads can be retrieved with gst_element_iterate_pads().
  *
  * Elements can be linked through their pads.
@@ -76,6 +79,9 @@
  * Last reviewed on 2009-05-29 (0.10.24)
  */
 
+/* FIXME 0.11: suppress warnings for deprecated API such as GStaticRecMutex
+ * with newer GLib versions (>= 2.31.0) */
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
 #include "gst_private.h"
 #include <glib.h>
 #include <stdarg.h>
@@ -92,6 +98,7 @@
 #include "gstinfo.h"
 #include "gstvalue.h"
 #include "gst-i18n-lib.h"
+#include "glib-compat-private.h"
 
 #include <mm_ta/mm_ta.h>
 
@@ -191,11 +198,10 @@ gst_element_get_type (void)
 static void
 gst_element_class_init (GstElementClass * klass)
 {
-  GObjectClass *gobject_class;
-  GstObjectClass *gstobject_class;
-
-  gobject_class = (GObjectClass *) klass;
-  gstobject_class = (GstObjectClass *) klass;
+  GObjectClass *gobject_class = (GObjectClass *) klass;
+#if !defined(GST_DISABLE_LOADSAVE) && !defined(GST_REMOVE_DEPRECATED)
+  GstObjectClass *gstobject_class = (GstObjectClass *) klass;
+#endif
 
   parent_class = g_type_class_peek_parent (klass);
 
@@ -1049,8 +1055,8 @@ _gst_element_request_pad (GstElement * element, GstPadTemplate * templ,
  * @element: a #GstElement to find a request pad of.
  * @name: the name of the request #GstPad to retrieve.
  *
- * Retrieves a pad from the element by name. This version only retrieves
- * request pads. The pad should be released with
+ * Retrieves a pad from the element by name (e.g. "src_\%d"). This version only
+ * retrieves request pads. The pad should be released with
  * gst_element_release_request_pad().
  *
  * This method is slow and will be deprecated in the future. New code should
@@ -1156,6 +1162,8 @@ gst_element_get_request_pad (GstElement * element, const gchar * name)
  * request. Can be %NULL.
  *
  * Retrieves a request pad from the element according to the provided template.
+ * Pad templates can be looked up using
+ * gst_element_factory_get_static_pad_templates().
  *
  * If the @caps are specified and the element implements thew new
  * request_new_pad_full virtual method, the element will use them to select
@@ -1244,8 +1252,9 @@ gst_element_iterate_pad_list (GstElement * element, GList ** padlist)
  * gst_element_iterate_pads:
  * @element: a #GstElement to iterate pads of.
  *
- * Retrieves an iterattor of @element's pads. The iterator should
- * be freed after usage.
+ * Retrieves an iterator of @element's pads. The iterator should
+ * be freed after usage. Also more specialized iterators exists such as
+ * gst_element_iterate_src_pads() or gst_element_iterate_sink_pads().
  *
  * Returns: (transfer full): the #GstIterator of #GstPad. Unref each pad
  *     after use.
@@ -1326,6 +1335,30 @@ gst_element_class_add_pad_template (GstElementClass * klass,
   klass->padtemplates = g_list_append (klass->padtemplates,
       gst_object_ref (templ));
   klass->numpadtemplates++;
+}
+
+/**
+ * gst_element_class_add_static_pad_template:
+ * @klass: the #GstElementClass to add the pad template to.
+ * @templ: (transfer none): a #GstStaticPadTemplate describing the pad
+ * to add to the element class.
+ *
+ * Adds a padtemplate to an element class. This is mainly used in the _base_init
+ * functions of classes.
+ *
+ * Since: 0.10.36
+ */
+void
+gst_element_class_add_static_pad_template (GstElementClass * klass,
+    GstStaticPadTemplate * templ)
+{
+  GstPadTemplate *pt;
+
+  g_return_if_fail (GST_IS_ELEMENT_CLASS (klass));
+
+  pt = gst_static_pad_template_get (templ);
+  gst_element_class_add_pad_template (klass, pt);
+  gst_object_unref (pt);
 }
 
 static void
@@ -2124,7 +2157,7 @@ gst_element_get_state_func (GstElement * element,
   if (ret == GST_STATE_CHANGE_FAILURE)
     goto done;
 
-  /* we got no_preroll, report immediatly */
+  /* we got no_preroll, report immediately */
   if (ret == GST_STATE_CHANGE_NO_PREROLL)
     goto done;
 
@@ -2325,6 +2358,28 @@ nothing_aborted:
   }
 }
 
+/* Not static because GstBin has manual state handling too */
+void
+_priv_gst_element_state_changed (GstElement * element, GstState oldstate,
+    GstState newstate, GstState pending)
+{
+  GstElementClass *klass = GST_ELEMENT_GET_CLASS (element);
+  GstMessage *message;
+
+  GST_CAT_INFO_OBJECT (GST_CAT_STATES, element,
+      "notifying about state-changed %s to %s (%s pending)",
+      gst_element_state_get_name (oldstate),
+      gst_element_state_get_name (newstate),
+      gst_element_state_get_name (pending));
+
+  if (klass->state_changed)
+    klass->state_changed (element, oldstate, newstate, pending);
+
+  message = gst_message_new_state_changed (GST_OBJECT_CAST (element),
+      oldstate, newstate, pending);
+  gst_element_post_message (element, message);
+}
+
 /**
  * gst_element_continue_state:
  * @element: a #GstElement to continue the state change of.
@@ -2352,7 +2407,6 @@ gst_element_continue_state (GstElement * element, GstStateChangeReturn ret)
   GstStateChangeReturn old_ret;
   GstState old_state, old_next;
   GstState current, next, pending;
-  GstMessage *message;
   GstStateChange transition;
 
   GST_OBJECT_LOCK (element);
@@ -2388,9 +2442,7 @@ gst_element_continue_state (GstElement * element, GstStateChangeReturn ret)
       gst_element_state_get_name (old_next),
       gst_element_state_get_name (pending), gst_element_state_get_name (next));
 
-  message = gst_message_new_state_changed (GST_OBJECT_CAST (element),
-      old_state, old_next, pending);
-  gst_element_post_message (element, message);
+  _priv_gst_element_state_changed (element, old_state, old_next, pending);
 
   GST_CAT_INFO_OBJECT (GST_CAT_STATES, element,
       "continue state change %s to %s, final %s",
@@ -2422,16 +2474,9 @@ complete:
      * previous return value.
      * We do signal the cond though as a _get_state() might be blocking
      * on it. */
-    if (old_state != old_next || old_ret == GST_STATE_CHANGE_ASYNC) {
-      GST_CAT_INFO_OBJECT (GST_CAT_STATES, element,
-          "posting state-changed %s to %s",
-          gst_element_state_get_name (old_state),
-          gst_element_state_get_name (old_next));
-      message =
-          gst_message_new_state_changed (GST_OBJECT_CAST (element), old_state,
-          old_next, GST_STATE_VOID_PENDING);
-      gst_element_post_message (element, message);
-    }
+    if (old_state != old_next || old_ret == GST_STATE_CHANGE_ASYNC)
+      _priv_gst_element_state_changed (element, old_state, old_next,
+          GST_STATE_VOID_PENDING);
 
     GST_STATE_BROADCAST (element);
 
@@ -2504,9 +2549,7 @@ gst_element_lost_state_full (GstElement * element, gboolean new_base_time)
     GST_ELEMENT_START_TIME (element) = 0;
   GST_OBJECT_UNLOCK (element);
 
-  message = gst_message_new_state_changed (GST_OBJECT_CAST (element),
-      new_state, new_state, new_state);
-  gst_element_post_message (element, message);
+  _priv_gst_element_state_changed (element, new_state, new_state, new_state);
 
   message =
       gst_message_new_async_start (GST_OBJECT_CAST (element), new_base_time);
@@ -2580,14 +2623,14 @@ gst_element_set_state (GstElement * element, GstState state)
   g_return_val_if_fail (GST_IS_ELEMENT (element), GST_STATE_CHANGE_FAILURE);
 
   sprintf(szDebugMsg, "set %s state %s to %s", GST_ELEMENT_NAME (element),  gst_element_state_get_name(GST_STATE (element)), gst_element_state_get_name(state) );
-  MMTA_ACUM_ITEM_BEGIN(szDebugMsg, FALSE);		
-		
+  MMTA_ACUM_ITEM_BEGIN(szDebugMsg, FALSE);
+
   oclass = GST_ELEMENT_GET_CLASS (element);
 
   if (oclass->set_state)
     result = (oclass->set_state) (element, state);
 
-  MMTA_ACUM_ITEM_END(szDebugMsg, FALSE);		
+  MMTA_ACUM_ITEM_END(szDebugMsg, FALSE);
 
   return result;
 }
@@ -2808,18 +2851,18 @@ invalid_return:
 }
 
 /* gst_iterator_fold functions for pads_activate
- * Note how we don't stop the iterator when we fail an activation. This is
- * probably a FIXME since when one pad activation fails, we don't want to
- * continue our state change. */
+ * Stop the iterator if activating one pad failed. */
 static gboolean
 activate_pads (GstPad * pad, GValue * ret, gboolean * active)
 {
-  if (!gst_pad_set_active (pad, *active))
+  gboolean cont = TRUE;
+
+  if (!(cont = gst_pad_set_active (pad, *active)))
     g_value_set_boolean (ret, FALSE);
 
   /* unref the object that was reffed for us by _fold */
   gst_object_unref (pad);
-  return TRUE;
+  return cont;
 }
 
 /* set the caps on the pad to NULL */
@@ -2831,8 +2874,7 @@ clear_caps (GstPad * pad, GValue * ret, gboolean * active)
   return TRUE;
 }
 
-/* returns false on error or early cutout (will never happen because the fold
- * function always returns TRUE, see FIXME above) of the fold, true if all
+/* returns false on error or early cutout of the fold, true if all
  * pads in @iter were (de)activated successfully. */
 static gboolean
 iterator_activate_fold_with_resync (GstIterator * iter,

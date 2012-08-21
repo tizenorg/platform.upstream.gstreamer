@@ -165,7 +165,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* FIXME 0.11: suppress warnings for deprecated API such as GStaticRecMutex
+ * with newer GLib versions (>= 2.31.0) */
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
 #include <gst/gst_private.h>
+#include <gst/glib-compat-private.h>
 
 #include "gstbasesrc.h"
 #include "gsttypefindhelper.h"
@@ -198,9 +202,9 @@ enum
 #define DEFAULT_TYPEFIND        FALSE
 #define DEFAULT_DO_TIMESTAMP    FALSE
 
-#ifdef _MMCAMCORDER_MODIFIED_DQBUF
-#define DEFAULT_YIELD_TIME		200
-#endif
+#ifdef GST_EXT_MODIFIED_DQBUF
+#define DEFAULT_YIELD_TIME      200
+#endif /* GST_EXT_MODIFIED_DQBUF */
 
 enum
 {
@@ -238,6 +242,7 @@ struct _GstBaseSrcPrivate
   GstClockTimeDiff ts_offset;
 
   gboolean do_timestamp;
+  volatile gint dynamic_size;
 
   /* stream sequence number */
   guint32 seqnum;
@@ -327,6 +332,8 @@ static GstFlowReturn gst_base_src_pad_get_range (GstPad * pad, guint64 offset,
 static GstFlowReturn gst_base_src_get_range (GstBaseSrc * src, guint64 offset,
     guint length, GstBuffer ** buf);
 static gboolean gst_base_src_seekable (GstBaseSrc * src);
+static gboolean gst_base_src_update_length (GstBaseSrc * src, guint64 offset,
+    guint * length);
 
 static void
 gst_base_src_base_init (gpointer g_class)
@@ -586,6 +593,25 @@ gst_base_src_set_format (GstBaseSrc * src, GstFormat format)
   GST_OBJECT_LOCK (src);
   gst_segment_init (&src->segment, format);
   GST_OBJECT_UNLOCK (src);
+}
+
+/**
+ * gst_base_src_set_dynamic_size:
+ * @src: base source instance
+ * @dynamic: new dynamic size mode
+ *
+ * If not @dynamic, size is only updated when needed, such as when trying to
+ * read past current tracked size.  Otherwise, size is checked for upon each
+ * read.
+ *
+ * Since: 0.10.36
+ */
+void
+gst_base_src_set_dynamic_size (GstBaseSrc * src, gboolean dynamic)
+{
+  g_return_if_fail (GST_IS_BASE_SRC (src));
+
+  g_atomic_int_set (&src->priv->dynamic_size, dynamic);
 }
 
 /**
@@ -936,9 +962,14 @@ gst_base_src_default_query (GstBaseSrc * src, GstQuery * query)
         {
           gint64 duration;
           GstFormat seg_format;
+          guint length = 0;
 
-          GST_OBJECT_LOCK (src);
+          /* may have to refresh duration */
+          if (g_atomic_int_get (&src->priv->dynamic_size))
+            gst_base_src_update_length (src, 0, &length);
+
           /* this is the duration as configured by the subclass. */
+          GST_OBJECT_LOCK (src);
           duration = src->segment.duration;
           seg_format = src->segment.format;
           GST_OBJECT_UNLOCK (src);
@@ -1043,7 +1074,7 @@ gst_base_src_default_query (GstBaseSrc * src, GstQuery * query)
       GstClockTime min, max;
       gboolean live;
 
-      /* Subclasses should override and implement something usefull */
+      /* Subclasses should override and implement something useful */
       res = gst_base_src_query_latency (src, &live, &min, &max);
 
       GST_LOG_OBJECT (src, "report latency: live %d, min %" GST_TIME_FORMAT
@@ -1375,7 +1406,7 @@ gst_base_src_perform_seek (GstBaseSrc * src, GstEvent * event, gboolean unlock)
 
   /* If we configured the seeksegment above, don't overwrite it now. Otherwise
    * copy the current segment info into the temp segment that we can actually
-   * attempt the seek with. We only update the real segment if the seek suceeds. */
+   * attempt the seek with. We only update the real segment if the seek succeeds. */
   if (!seekseg_configured) {
     memcpy (&seeksegment, &src->segment, sizeof (GstSegment));
 
@@ -1430,6 +1461,9 @@ gst_base_src_perform_seek (GstBaseSrc * src, GstEvent * event, gboolean unlock)
         gst_event_new_new_segment_full (TRUE,
         src->segment.rate, src->segment.applied_rate, src->segment.format,
         src->segment.start, src->segment.last_stop, src->segment.time);
+    seeksegment.time = gst_segment_to_stream_time (&src->segment,
+        src->segment.format, src->segment.last_stop);
+    seeksegment.start = src->segment.last_stop;
     gst_event_set_seqnum (src->priv->close_segment, seqnum);
   }
 
@@ -1564,7 +1598,7 @@ gst_base_src_send_event (GstElement * element, GstEvent * event)
        *    first and do EOS instead of entering it.
        *  - If we are in the _create function or we did not manage to set the
        *    flag fast enough and we are about to enter the _create function,
-       *    we unlock it so that we exit with WRONG_STATE immediatly. We then
+       *    we unlock it so that we exit with WRONG_STATE immediately. We then
        *    check the EOS flag and do the EOS logic.
        */
       g_atomic_int_set (&src->priv->pending_eos, TRUE);
@@ -2032,6 +2066,7 @@ gst_base_src_update_length (GstBaseSrc * src, guint64 offset, guint * length)
   GstBaseSrcClass *bclass;
   GstFormat format;
   gint64 stop;
+  gboolean dynamic;
 
   bclass = GST_BASE_SRC_GET_CLASS (src);
 
@@ -2056,11 +2091,14 @@ gst_base_src_update_length (GstBaseSrc * src, guint64 offset, guint * length)
       ", segment.stop %" G_GINT64_FORMAT ", maxsize %" G_GINT64_FORMAT, offset,
       *length, size, stop, maxsize);
 
+  dynamic = g_atomic_int_get (&src->priv->dynamic_size);
+  GST_DEBUG_OBJECT (src, "dynamic size: %d", dynamic);
+
   /* check size if we have one */
   if (maxsize != -1) {
     /* if we run past the end, check if the file became bigger and
      * retry. */
-    if (G_UNLIKELY (offset + *length >= maxsize)) {
+    if (G_UNLIKELY (offset + *length >= maxsize || dynamic)) {
       /* see if length of the file changed */
       if (bclass->get_size)
         if (!bclass->get_size (src, &size))
@@ -2088,7 +2126,6 @@ gst_base_src_update_length (GstBaseSrc * src, guint64 offset, guint * length)
    * segment is in bytes, we checked that above. */
   GST_OBJECT_LOCK (src);
   gst_segment_set_duration (&src->segment, GST_FORMAT_BYTES, size);
-  gst_segment_set_last_stop (&src->segment, GST_FORMAT_BYTES, offset);
   GST_OBJECT_UNLOCK (src);
 
   return TRUE;
@@ -2128,6 +2165,12 @@ again:
 
   if (G_UNLIKELY (!gst_base_src_update_length (src, offset, &length)))
     goto unexpected_length;
+
+  /* track position */
+  GST_OBJECT_LOCK (src);
+  if (src->segment.format == GST_FORMAT_BYTES)
+    gst_segment_set_last_stop (&src->segment, GST_FORMAT_BYTES, offset);
+  GST_OBJECT_UNLOCK (src);
 
   /* normally we don't count buffers */
   if (G_UNLIKELY (src->num_buffers_left >= 0)) {
@@ -2374,13 +2417,12 @@ gst_base_src_loop (GstPad * pad)
 
   src = GST_BASE_SRC (GST_OBJECT_PARENT (pad));
 
-#ifdef _MMCAMCORDER_MODIFIED_DQBUF
-  if ((src->live_running) && (!src->blive_play))
-  {
+#ifdef GST_EXT_MODIFIED_DQBUF
+  if ((src->live_running) && (!src->blive_play)) {
     sched_yield();
     usleep(DEFAULT_YIELD_TIME);
   }
-#endif
+#endif /* GST_EXT_MODIFIED_DQBUF */
 
   GST_LIVE_LOCK (src);
 
@@ -2909,9 +2951,10 @@ gst_base_src_set_playing (GstBaseSrc * basesrc, gboolean live_play)
       bclass->unlock (basesrc);
   }
 
-#ifdef _MMCAMCORDER_MODIFIED_DQBUF
+#ifdef GST_EXT_MODIFIED_DQBUF
   basesrc->blive_play = live_play;
-#endif
+#endif /* GST_EXT_MODIFIED_DQBUF */
+
   /* we are now able to grab the LIVE lock, when we get it, we can be
    * waiting for PLAYING while blocked in the LIVE cond or we can be waiting
    * for the clock. */
@@ -3131,7 +3174,7 @@ gst_base_src_change_state (GstElement * element, GstStateChange transition)
        * already did this */
 
       /* FIXME, deprecate this behaviour, it is very dangerous.
-       * the prefered way of sending EOS downstream is by sending
+       * the preferred way of sending EOS downstream is by sending
        * the EOS event to the element */
       if (!basesrc->priv->last_sent_eos) {
         GST_DEBUG_OBJECT (basesrc, "Sending EOS event");

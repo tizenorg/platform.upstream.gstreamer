@@ -219,7 +219,7 @@ parse_debug_category (gchar * str, const gchar ** category)
 }
 
 static gboolean
-parse_debug_level (gchar * str, gint * level)
+parse_debug_level (gchar * str, GstDebugLevel * level)
 {
   if (!str)
     return FALSE;
@@ -229,7 +229,7 @@ parse_debug_level (gchar * str, gint * level)
 
   if (str[0] != NUL && str[1] == NUL
       && str[0] >= '0' && str[0] < '0' + GST_LEVEL_COUNT) {
-    *level = str[0] - '0';
+    *level = (GstDebugLevel) (str[0] - '0');
     return TRUE;
   }
 
@@ -251,7 +251,7 @@ parse_debug_list (const gchar * list)
       gchar **values = g_strsplit (*walk, ":", 2);
 
       if (values[0] && values[1]) {
-        gint level;
+        GstDebugLevel level;
         const gchar *category;
 
         if (parse_debug_category (values[0], &category)
@@ -261,7 +261,7 @@ parse_debug_list (const gchar * list)
 
       g_strfreev (values);
     } else {
-      gint level;
+      GstDebugLevel level;
 
       if (parse_debug_level (*walk, &level))
         gst_debug_set_default_threshold (level);
@@ -362,6 +362,9 @@ gst_init_get_option_group (void)
     {NULL}
   };
 
+/* Since GLib 2.31.0 threading is always enabled and g_thread_init()
+ * is not needed any longer and deprecated */
+#if !GLIB_CHECK_VERSION (2, 31, 0)
   /* Since GLib 2.23.2 calling g_thread_init() 'late' is allowed and is
    * automatically done as part of g_type_init() */
   if (glib_check_version (2, 23, 3)) {
@@ -383,6 +386,7 @@ gst_init_get_option_group (void)
   } else {
     /* GLib >= 2.23.2 */
   }
+#endif
 
   group = g_option_group_new ("gst", _("GStreamer Options"),
       _("Show GStreamer Options"), NULL, NULL);
@@ -426,8 +430,10 @@ gst_init_check (int *argc, char **argv[], GError ** err)
 #endif
   gboolean res;
 
+#if !GLIB_CHECK_VERSION (2, 31, 0)
   if (!g_thread_get_initialized ())
     g_thread_init (NULL);
+#endif
 
   if (gst_initialized) {
     GST_DEBUG ("already initialized gst");
@@ -494,7 +500,7 @@ gst_init (int *argc, char **argv[])
 
   MMTA_INIT();
 
-__ta__("gst_init", 
+__ta__("gst_init",
   if (!gst_init_check (argc, argv, &err)) {
     g_print ("Could not initialize GStreamer: %s\n",
         err ? err->message : "unknown error occurred");
@@ -581,8 +587,10 @@ init_pre (GOptionContext * context, GOptionGroup * group, gpointer data,
 
   g_type_init ();
 
+#if !GLIB_CHECK_VERSION (2, 31, 0)
   /* we need threading to be enabled right here */
   g_assert (g_thread_get_initialized ());
+#endif
 
   _gst_debug_init ();
 
@@ -909,9 +917,9 @@ parse_one_option (gint opt, const gchar * arg, GError ** err)
     }
 #ifndef GST_DISABLE_GST_DEBUG
     case ARG_DEBUG_LEVEL:{
-      gint tmp = 0;
+      GstDebugLevel tmp = GST_LEVEL_NONE;
 
-      tmp = strtol (arg, NULL, 0);
+      tmp = (GstDebugLevel) strtol (arg, NULL, 0);
       if (tmp >= 0 && tmp < GST_LEVEL_COUNT) {
         gst_debug_set_default_threshold (tmp);
       }
@@ -1128,7 +1136,7 @@ gst_deinit (void)
   GST_INFO ("deinitialized GStreamer");
 
   MMTA_RELEASE();
-  
+
 }
 
 /**

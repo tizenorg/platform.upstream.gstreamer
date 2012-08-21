@@ -505,7 +505,7 @@ GST_BOILERPLATE_FULL (type, type_as_function, parent_type,              \
 					  _GST_PUT (data, 0,  8,  0, num); \
 					} while (0)
 
-/* Float endianess conversion macros */
+/* Float endianness conversion macros */
 
 /* FIXME: Remove this once we depend on a GLib version with this */
 #ifndef GFLOAT_FROM_LE
@@ -1003,8 +1003,8 @@ GstPad*                 gst_element_get_compatible_pad  (GstElement *element, Gs
 
 GstPadTemplate*         gst_element_get_compatible_pad_template (GstElement *element, GstPadTemplate *compattempl);
 
-G_CONST_RETURN gchar*   gst_element_state_get_name      (GstState state);
-G_CONST_RETURN gchar *  gst_element_state_change_return_get_name (GstStateChangeReturn state_ret);
+const gchar*            gst_element_state_get_name      (GstState state);
+const gchar *           gst_element_state_change_return_get_name (GstStateChangeReturn state_ret);
 
 gboolean		gst_element_link                (GstElement *src, GstElement *dest);
 gboolean		gst_element_link_many           (GstElement *element_1,

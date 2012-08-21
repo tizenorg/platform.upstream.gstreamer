@@ -50,7 +50,7 @@
  * Most of the event API is used inside plugins. Applications usually only 
  * construct and use seek events. 
  * To do that gst_event_new_seek() is used to create a seek event. It takes
- * the needed parameters to specity seeking time and mode.
+ * the needed parameters to specify seeking time and mode.
  * <example>
  * <title>performing a seek on a pipeline</title>
  *   <programlisting>
@@ -369,7 +369,7 @@ gst_event_has_name (GstEvent * event, const gchar * name)
  * required.
  *
  * Note that events and messages share the same sequence number incrementor;
- * two events or messages will never not have the same sequence number unless
+ * two events or messages will never have the same sequence number unless
  * that correspondence was made explicitly.
  *
  * Returns: The event's sequence number.
@@ -589,6 +589,7 @@ gst_event_new_new_segment_full (gboolean update, gdouble rate,
 
   g_return_val_if_fail (rate != 0.0, NULL);
   g_return_val_if_fail (applied_rate != 0.0, NULL);
+  g_return_val_if_fail (format != GST_FORMAT_UNDEFINED, NULL);
 
   if (format == GST_FORMAT_TIME) {
     GST_CAT_INFO (GST_CAT_EVENT,
@@ -664,7 +665,7 @@ gst_event_parse_new_segment_full (GstEvent * event, gboolean * update,
         g_value_get_double (gst_structure_id_get_value (structure,
             GST_QUARK (APPLIED_RATE)));
   if (G_LIKELY (format))
-    *format =
+    *format = (GstFormat)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (FORMAT)));
   if (G_LIKELY (start))
@@ -729,7 +730,7 @@ gst_event_parse_tag (GstEvent * event, GstTagList ** taglist)
  * Create a new buffersize event. The event is sent downstream and notifies
  * elements that they should provide a buffer of the specified dimensions.
  *
- * When the @async flag is set, a thread boundary is prefered.
+ * When the @async flag is set, a thread boundary is preferred.
  *
  * Returns: (transfer full): a new #GstEvent
  */
@@ -776,7 +777,7 @@ gst_event_parse_buffer_size (GstEvent * event, GstFormat * format,
 
   structure = event->structure;
   if (format)
-    *format =
+    *format = (GstFormat)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (FORMAT)));
   if (minsize)
@@ -940,7 +941,7 @@ gst_event_parse_qos_full (GstEvent * event, GstQOSType * type,
 
   structure = event->structure;
   if (type)
-    *type =
+    *type = (GstQOSType)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (TYPE)));
   if (proportion)
@@ -1068,15 +1069,15 @@ gst_event_parse_seek (GstEvent * event, gdouble * rate,
         g_value_get_double (gst_structure_id_get_value (structure,
             GST_QUARK (RATE)));
   if (format)
-    *format =
+    *format = (GstFormat)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (FORMAT)));
   if (flags)
-    *flags =
+    *flags = (GstSeekFlags)
         g_value_get_flags (gst_structure_id_get_value (structure,
             GST_QUARK (FLAGS)));
   if (start_type)
-    *start_type =
+    *start_type = (GstSeekType)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (CUR_TYPE)));
   if (start)
@@ -1084,7 +1085,7 @@ gst_event_parse_seek (GstEvent * event, gdouble * rate,
         g_value_get_int64 (gst_structure_id_get_value (structure,
             GST_QUARK (CUR)));
   if (stop_type)
-    *stop_type =
+    *stop_type = (GstSeekType)
         g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (STOP_TYPE)));
   if (stop)
@@ -1174,8 +1175,9 @@ gst_event_parse_latency (GstEvent * event, GstClockTime * latency)
  * to skip @amount (expressed in @format) of media. It can be used to implement
  * stepping through the video frame by frame or for doing fast trick modes.
  *
- * A rate of <= 0.0 is not allowed, pause the pipeline or reverse the playback
- * direction of the pipeline to get the same effect.
+ * A rate of <= 0.0 is not allowed. Pause the pipeline, for the effect of rate
+ * = 0.0 or first reverse the direction of playback using a seek event to get
+ * the same effect as rate < 0.0.
  *
  * The @flush flag will clear any pending data in the pipeline before starting
  * the step operation.
@@ -1234,7 +1236,8 @@ gst_event_parse_step (GstEvent * event, GstFormat * format, guint64 * amount,
 
   structure = event->structure;
   if (format)
-    *format = g_value_get_enum (gst_structure_id_get_value (structure,
+    *format =
+        (GstFormat) g_value_get_enum (gst_structure_id_get_value (structure,
             GST_QUARK (FORMAT)));
   if (amount)
     *amount = g_value_get_uint64 (gst_structure_id_get_value (structure,

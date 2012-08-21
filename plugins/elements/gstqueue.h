@@ -104,13 +104,13 @@ struct _GstQueue {
   gboolean      unexpected;
   gboolean      eos;
 
-  /* to not enqueue the buffers */
 #ifdef GST_EXT_AV_RECORDING
+  /* to not enqueue the buffers */
   gboolean empty_buffers;
 #endif
 
   /* the queue of data we're keeping our grubby hands on */
-  GQueue *queue;
+  GQueue queue;
 
   GstQueueSize
     cur_level,          /* currently in the queue */

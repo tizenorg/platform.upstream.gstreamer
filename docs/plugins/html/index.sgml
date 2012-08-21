@@ -193,6 +193,7 @@
 <ANCHOR id="GstInputSelector--active-pad" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector--active-pad">
 <ANCHOR id="GstInputSelector--n-pads" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector--n-pads">
 <ANCHOR id="GstInputSelector--select-all" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector--select-all">
+<ANCHOR id="GstInputSelector--sync-streams" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector--sync-streams">
 <ANCHOR id="gstreamer-plugins-input-selector.signal-details" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#gstreamer-plugins-input-selector.signal-details">
 <ANCHOR id="GstInputSelector-block" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector-block">
 <ANCHOR id="GstInputSelector-switch" href="gstreamer-plugins-0.10/gstreamer-plugins-input-selector.html#GstInputSelector-switch">
@@ -216,6 +217,7 @@
 <ANCHOR id="GstMultiQueue--high-percent" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue--high-percent">
 <ANCHOR id="GstMultiQueue--low-percent" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue--low-percent">
 <ANCHOR id="GstMultiQueue--use-buffering" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue--use-buffering">
+<ANCHOR id="GstMultiQueue--sync-by-running-time" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue--sync-by-running-time">
 <ANCHOR id="gstreamer-plugins-multiqueue.signal-details" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#gstreamer-plugins-multiqueue.signal-details">
 <ANCHOR id="GstMultiQueue-overrun" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue-overrun">
 <ANCHOR id="GstMultiQueue-underrun" href="gstreamer-plugins-0.10/gstreamer-plugins-multiqueue.html#GstMultiQueue-underrun">

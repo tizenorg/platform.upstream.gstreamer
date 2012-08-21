@@ -800,6 +800,7 @@ gst_file_src_create_read (GstFileSrc * src, guint64 offset, guint length,
 {
   int ret;
   GstBuffer *buf;
+  guint to_read, bytes_read;
 
   if (G_UNLIKELY (src->read_position != offset)) {
     off_t res;
@@ -818,28 +819,38 @@ gst_file_src_create_read (GstFileSrc * src, guint64 offset, guint length,
   }
 
   /* No need to read anything if length is 0 */
-  if (length > 0) {
+  GST_BUFFER_SIZE (buf) = 0;
+  GST_BUFFER_OFFSET (buf) = offset;
+  GST_BUFFER_OFFSET_END (buf) = offset;
+  bytes_read = 0;
+  to_read = length;
+  while (to_read > 0) {
     GST_LOG_OBJECT (src, "Reading %d bytes at offset 0x%" G_GINT64_MODIFIER "x",
-        length, offset);
-    ret = read (src->fd, GST_BUFFER_DATA (buf), length);
-    if (G_UNLIKELY (ret < 0))
+        to_read, offset + bytes_read);
+    errno = 0;
+    ret = read (src->fd, GST_BUFFER_DATA (buf) + bytes_read, to_read);
+    if (G_UNLIKELY (ret < 0)) {
+      if (errno == EAGAIN || errno == EINTR)
+        continue;
       goto could_not_read;
+    }
 
-    /* seekable regular files should have given us what we expected */
-    if (G_UNLIKELY ((guint) ret < length && src->seekable))
-      goto unexpected_eos;
-
-    /* other files should eos if they read 0 and more was requested */
-    if (G_UNLIKELY (ret == 0 && length > 0))
+    /* files should eos if they read 0 and more was requested */
+    if (G_UNLIKELY (ret == 0)) {
+      /* .. but first we should return any remaining data */
+      if (bytes_read > 0)
+        break;
       goto eos;
+    }
 
-    length = ret;
-    GST_BUFFER_SIZE (buf) = length;
-    GST_BUFFER_OFFSET (buf) = offset;
-    GST_BUFFER_OFFSET_END (buf) = offset + length;
+    to_read -= ret;
+    bytes_read += ret;
 
-    src->read_position += length;
+    src->read_position += ret;
   }
+
+  GST_BUFFER_SIZE (buf) = bytes_read;
+  GST_BUFFER_OFFSET_END (buf) = offset + bytes_read;
 
   *buffer = buf;
 
@@ -857,16 +868,9 @@ could_not_read:
     gst_buffer_unref (buf);
     return GST_FLOW_ERROR;
   }
-unexpected_eos:
-  {
-    GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL),
-        ("unexpected end of file."));
-    gst_buffer_unref (buf);
-    return GST_FLOW_ERROR;
-  }
 eos:
   {
-    GST_DEBUG ("non-regular file hits EOS");
+    GST_DEBUG ("EOS");
     gst_buffer_unref (buf);
     return GST_FLOW_UNEXPECTED;
   }
@@ -1018,6 +1022,8 @@ gst_file_src_start (GstBaseSrc * basesrc)
   /* We can only really do seeking on regular files - for other file types, we
    * don't know their length, so seeking isn't useful/meaningful */
   src->seekable = src->seekable && src->is_regular;
+
+  gst_base_src_set_dynamic_size (basesrc, src->seekable);
 
   return TRUE;
 

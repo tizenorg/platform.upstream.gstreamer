@@ -44,6 +44,7 @@
 #include "gstenumtypes.h"
 #include "gstpoll.h"
 #include "gstutils.h"
+#include "glib-compat-private.h"
 
 #include <errno.h>
 
@@ -51,12 +52,13 @@
 #  define WIN32_LEAN_AND_MEAN   /* prevents from including too many things */
 #  include <windows.h>          /* QueryPerformance* stuff */
 #  undef WIN32_LEAN_AND_MEAN
+#  define EWOULDBLOCK EAGAIN    /* This is just to placate gcc */
 #endif /* G_OS_WIN32 */
 
-#define GET_ENTRY_STATUS(e)          (g_atomic_int_get(&GST_CLOCK_ENTRY_STATUS(e)))
+#define GET_ENTRY_STATUS(e)          ((GstClockReturn) g_atomic_int_get(&GST_CLOCK_ENTRY_STATUS(e)))
 #define SET_ENTRY_STATUS(e,val)      (g_atomic_int_set(&GST_CLOCK_ENTRY_STATUS(e),(val)))
-#define CAS_ENTRY_STATUS(e,old,val)  (g_atomic_int_compare_and_exchange(\
-                                       ((volatile gint *)&GST_CLOCK_ENTRY_STATUS(e)), (old), (val)))
+#define CAS_ENTRY_STATUS(e,old,val)  (G_ATOMIC_INT_COMPARE_AND_EXCHANGE(\
+                                       (&GST_CLOCK_ENTRY_STATUS(e)), (old), (val)))
 
 /* Define this to get some extra debug about jitter from each clock_wait */
 #undef WAIT_DEBUGGING
@@ -235,7 +237,7 @@ gst_system_clock_set_property (GObject * object, guint prop_id,
 
   switch (prop_id) {
     case PROP_CLOCK_TYPE:
-      sysclock->priv->clock_type = g_value_get_enum (value);
+      sysclock->priv->clock_type = (GstClockType) g_value_get_enum (value);
       GST_CAT_DEBUG (GST_CAT_CLOCK, "clock-type set to %d",
           sysclock->priv->clock_type);
       break;
@@ -326,9 +328,16 @@ gst_system_clock_add_wakeup (GstSystemClock * sysclock)
   if (sysclock->priv->wakeup_count == 0) {
     GST_CAT_DEBUG (GST_CAT_CLOCK, "writing control");
     while (!gst_poll_write_control (sysclock->priv->timer)) {
-      g_warning
-          ("gstsystemclock: write control failed in wakeup_async, trying again : %d:%s\n",
-          errno, g_strerror (errno));
+      if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+        g_warning
+            ("gstsystemclock: write control failed in wakeup_async, trying again: %d:%s\n",
+            errno, g_strerror (errno));
+      } else {
+        g_critical
+            ("gstsystemclock: write control failed in wakeup_async: %d:%s\n",
+            errno, g_strerror (errno));
+        return;
+      }
     }
   }
   sysclock->priv->wakeup_count++;
@@ -726,8 +735,14 @@ gst_system_clock_start_async (GstSystemClock * clock)
   if (G_LIKELY (clock->thread != NULL))
     return TRUE;                /* Thread already running. Nothing to do */
 
+#if !GLIB_CHECK_VERSION (2, 31, 0)
   clock->thread = g_thread_create ((GThreadFunc) gst_system_clock_async_thread,
       clock, TRUE, &error);
+#else
+  clock->thread = g_thread_try_new ("GstSystemClock",
+      (GThreadFunc) gst_system_clock_async_thread, clock, &error);
+#endif
+
   if (G_UNLIKELY (error))
     goto no_thread;
 

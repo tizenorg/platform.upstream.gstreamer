@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstClock</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstChildProxy.html" title="GstChildProxy">
 <link rel="next" href="gstreamer-gstconfig.html" title="gstconfig">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -94,7 +94,7 @@ enum                <a class="link" href="GstClock.html#GstClockFlags" title="en
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> *r_squared</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstClock.html#gst-clock-set-master" title="gst_clock_set_master ()">gst_clock_set_master</a>                (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *master</code></em>);
-<a class="link" href="GstClock.html" title="GstClock"><span class="returnvalue">GstClock</span></a> *		        <a class="link" href="GstClock.html#gst-clock-get-master" title="gst_clock_get_master ()">gst_clock_get_master</a>                (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>);
+<a class="link" href="GstClock.html" title="GstClock"><span class="returnvalue">GstClock</span></a> *          <a class="link" href="GstClock.html#gst-clock-get-master" title="gst_clock_get_master ()">gst_clock_get_master</a>                (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>);
 <a class="link" href="GstClock.html#GstClockTime" title="GstClockTime"><span class="returnvalue">GstClockTime</span></a>        <a class="link" href="GstClock.html#gst-clock-set-resolution" title="gst_clock_set_resolution ()">gst_clock_set_resolution</a>            (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstClock.html#GstClockTime" title="GstClockTime"><span class="type">GstClockTime</span></a> resolution</code></em>);
 <a class="link" href="GstClock.html#GstClockTime" title="GstClockTime"><span class="returnvalue">GstClockTime</span></a>        <a class="link" href="GstClock.html#gst-clock-get-resolution" title="gst_clock_get_resolution ()">gst_clock_get_resolution</a>            (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>);
@@ -156,7 +156,7 @@ enum                <a class="link" href="GstClock.html#GstClockFlags" title="en
 <a name="GstClock.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
   "<a class="link" href="GstClock.html#GstClock--stats" title='The "stats" property'>stats</a>"                    <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write
-  "<a class="link" href="GstClock.html#GstClock--timeout" title='The "timeout" property'>timeout</a>"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write
+  "<a class="link" href="GstClock.html#GstClock--timeout" title='The "timeout" property'>timeout</a>"                  <span class="type">guint64</span>               : Read / Write
   "<a class="link" href="GstClock.html#GstClock--window-size" title='The "window-size" property'>window-size</a>"              <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write
   "<a class="link" href="GstClock.html#GstClock--window-threshold" title='The "window-threshold" property'>window-threshold</a>"         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write
 </pre>
@@ -393,6 +393,9 @@ Tests if a given <a class="link" href="GstClock.html#GstClockTime" title="GstClo
 <p>
 Constant that defines one GStreamer second.
 </p>
+<p>
+Value: 1000000000
+</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -401,6 +404,9 @@ Constant that defines one GStreamer second.
 </pre>
 <p>
 Constant that defines one GStreamer millisecond.
+</p>
+<p>
+Value: 1000000
 </p>
 </div>
 <hr>
@@ -411,6 +417,9 @@ Constant that defines one GStreamer millisecond.
 <p>
 Constant that defines one GStreamer microsecond.
 </p>
+<p>
+Value: 1000
+</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -419,6 +428,9 @@ Constant that defines one GStreamer microsecond.
 </pre>
 <p>
 Constant that defines one GStreamer nanosecond
+</p>
+<p>
+Value: 1
 </p>
 </div>
 <hr>
@@ -787,8 +799,7 @@ The status of the entry
 <hr>
 <div class="refsect2">
 <a name="GstClockReturn"></a><h3>enum GstClockReturn</h3>
-<pre class="programlisting">typedef enum
-{
+<pre class="programlisting">typedef enum {
   GST_CLOCK_OK		=  0,
   GST_CLOCK_EARLY =  1,
   GST_CLOCK_UNSCHEDULED =  2,
@@ -1091,7 +1102,7 @@ MT safe.</td>
 <hr>
 <div class="refsect2">
 <a name="gst-clock-get-master"></a><h3>gst_clock_get_master ()</h3>
-<pre class="programlisting"><a class="link" href="GstClock.html" title="GstClock"><span class="returnvalue">GstClock</span></a> *		        gst_clock_get_master                (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstClock.html" title="GstClock"><span class="returnvalue">GstClock</span></a> *          gst_clock_get_master                (<em class="parameter"><code><a class="link" href="GstClock.html" title="GstClock"><span class="type">GstClock</span></a> *clock</code></em>);</pre>
 <p>
 Get the master clock that <em class="parameter"><code>clock</code></em> is slaved to or <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> when the clock is
 not slaved to any master clock.
@@ -1813,7 +1824,7 @@ MT safe.
 <hr>
 <div class="refsect2">
 <a name="GstClock--timeout"></a><h3>The <code class="literal">"timeout"</code> property</h3>
-<pre class="programlisting">  "timeout"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint64"><span class="type">guint64</span></a>               : Read / Write</pre>
+<pre class="programlisting">  "timeout"                  <span class="type">guint64</span>               : Read / Write</pre>
 <p>The amount of time, in nanoseconds, to sample master and slave clocks.</p>
 <p>Default value: 100000000</p>
 </div>
@@ -1841,6 +1852,6 @@ MT safe.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

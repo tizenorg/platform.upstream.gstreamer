@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstXML</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="gstreamer-GstVersion.html" title="GstVersion">
 <link rel="next" href="gstreamer-support.html" title="GStreamer Core Support">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -48,7 +48,7 @@ struct              <a class="link" href="GstXML.html#GstXML-struct" title="stru
 <span class="returnvalue">xmlDocPtr</span>           <a class="link" href="GstXML.html#gst-xml-write" title="gst_xml_write ()">gst_xml_write</a>                       (<em class="parameter"><code><a class="link" href="GstElement.html" title="GstElement"><span class="type">GstElement</span></a> *element</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="GstXML.html#gst-xml-write-file" title="gst_xml_write_file ()">gst_xml_write_file</a>                  (<em class="parameter"><code><a class="link" href="GstElement.html" title="GstElement"><span class="type">GstElement</span></a> *element</code></em>,
                                                          <em class="parameter"><code><span class="type">FILE</span> *out</code></em>);
-<a class="link" href="GstXML.html" title="GstXML"><span class="returnvalue">GstXML</span></a> *		          <a class="link" href="GstXML.html#gst-xml-new" title="gst_xml_new ()">gst_xml_new</a>                         (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GstXML.html" title="GstXML"><span class="returnvalue">GstXML</span></a> *            <a class="link" href="GstXML.html#gst-xml-new" title="gst_xml_new ()">gst_xml_new</a>                         (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstXML.html#gst-xml-parse-doc" title="gst_xml_parse_doc ()">gst_xml_parse_doc</a>                   (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>,
                                                          <em class="parameter"><code><span class="type">xmlDocPtr</span> doc</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guchar"><span class="type">guchar</span></a> *root</code></em>);
@@ -59,10 +59,10 @@ struct              <a class="link" href="GstXML.html#GstXML-struct" title="stru
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guchar"><span class="type">guchar</span></a> *buffer</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> size</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *root</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *	       <a class="link" href="GstXML.html#gst-xml-get-element" title="gst_xml_get_element ()">gst_xml_get_element</a>                 (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>,
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="GstXML.html#gst-xml-get-element" title="gst_xml_get_element ()">gst_xml_get_element</a>                 (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guchar"><span class="type">guchar</span></a> *name</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *		           <a class="link" href="GstXML.html#gst-xml-get-topelements" title="gst_xml_get_topelements ()">gst_xml_get_topelements</a>             (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *	       <a class="link" href="GstXML.html#gst-xml-make-element" title="gst_xml_make_element ()">gst_xml_make_element</a>                (<em class="parameter"><code><span class="type">xmlNodePtr</span> cur</code></em>,
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="GstXML.html#gst-xml-get-topelements" title="gst_xml_get_topelements ()">gst_xml_get_topelements</a>             (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>);
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="GstXML.html#gst-xml-make-element" title="gst_xml_make_element ()">gst_xml_make_element</a>                (<em class="parameter"><code><span class="type">xmlNodePtr</span> cur</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *parent</code></em>);
 </pre>
 </div>
@@ -184,7 +184,7 @@ file.
 <hr>
 <div class="refsect2">
 <a name="gst-xml-new"></a><h3>gst_xml_new ()</h3>
-<pre class="programlisting"><a class="link" href="GstXML.html" title="GstXML"><span class="returnvalue">GstXML</span></a> *		          gst_xml_new                         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstXML.html" title="GstXML"><span class="returnvalue">GstXML</span></a> *            gst_xml_new                         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
 <p><code class="literal">gst_xml_new</code> is deprecated and should not be used in newly-written code.</p>
@@ -323,7 +323,7 @@ an in memory XML buffer.
 <hr>
 <div class="refsect2">
 <a name="gst-xml-get-element"></a><h3>gst_xml_get_element ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *	       gst_xml_get_element                 (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_xml_get_element                 (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guchar"><span class="type">guchar</span></a> *name</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
@@ -355,7 +355,7 @@ to do anything to the element after loading.
 <hr>
 <div class="refsect2">
 <a name="gst-xml-get-topelements"></a><h3>gst_xml_get_topelements ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *		           gst_xml_get_topelements             (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>);</pre>
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             gst_xml_get_topelements             (<em class="parameter"><code><a class="link" href="GstXML.html" title="GstXML"><span class="type">GstXML</span></a> *xml</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
 <p><code class="literal">gst_xml_get_topelements</code> is deprecated and should not be used in newly-written code.</p>
@@ -383,7 +383,7 @@ reference using <a class="link" href="GstObject.html#gst-object-ref" title="gst_
 <hr>
 <div class="refsect2">
 <a name="gst-xml-make-element"></a><h3>gst_xml_make_element ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *	       gst_xml_make_element                (<em class="parameter"><code><span class="type">xmlNodePtr</span> cur</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_xml_make_element                (<em class="parameter"><code><span class="type">xmlNodePtr</span> cur</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *parent</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
@@ -448,6 +448,6 @@ Signals that a new object has been deserialized.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

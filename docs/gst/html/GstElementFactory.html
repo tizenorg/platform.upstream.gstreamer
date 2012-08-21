@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GstElementFactory</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="GStreamer 0.10 Core Reference Manual">
 <link rel="up" href="libgstreamer.html" title="GStreamer Core Library">
 <link rel="prev" href="GstElement.html" title="GstElement">
 <link rel="next" href="gstreamer-GstGError.html" title="GstGError">
-<meta name="generator" content="GTK-Doc V1.17 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -53,7 +53,7 @@ struct              <a class="link" href="GstElementFactory.html#GstElementDetai
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a> rank</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="type">GType</span></a> type</code></em>);
-<a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="returnvalue">GstElementFactory</span></a> *      <a class="link" href="GstElementFactory.html#gst-element-factory-find" title="gst_element_factory_find ()">gst_element_factory_find</a>       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
+<a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="returnvalue">GstElementFactory</span></a> * <a class="link" href="GstElementFactory.html#gst-element-factory-find" title="gst_element_factory_find ()">gst_element_factory_find</a>            (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
 <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Type-Information.html#GType"><span class="returnvalue">GType</span></a>               <a class="link" href="GstElementFactory.html#gst-element-factory-get-element-type" title="gst_element_factory_get_element_type ()">gst_element_factory_get_element_type</a>
                                                         (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);
 const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="GstElementFactory.html#gst-element-factory-get-longname" title="gst_element_factory_get_longname ()">gst_element_factory_get_longname</a>    (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);
@@ -66,13 +66,13 @@ const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.htm
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="returnvalue">guint</span></a>               <a class="link" href="GstElementFactory.html#gst-element-factory-get-num-pad-templates" title="gst_element_factory_get_num_pad_templates ()">gst_element_factory_get_num_pad_templates</a>
                                                         (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="GstElementFactory.html#gst-element-factory-get-uri-type" title="gst_element_factory_get_uri_type ()">gst_element_factory_get_uri_type</a>    (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **                 <a class="link" href="GstElementFactory.html#gst-element-factory-get-uri-protocols" title="gst_element_factory_get_uri_protocols ()">gst_element_factory_get_uri_protocols</a>
+<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **            <a class="link" href="GstElementFactory.html#gst-element-factory-get-uri-protocols" title="gst_element_factory_get_uri_protocols ()">gst_element_factory_get_uri_protocols</a>
                                                         (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstElementFactory.html#gst-element-factory-has-interface" title="gst_element_factory_has_interface ()">gst_element_factory_has_interface</a>   (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *interfacename</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *              <a class="link" href="GstElementFactory.html#gst-element-factory-create" title="gst_element_factory_create ()">gst_element_factory_create</a>    (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="GstElementFactory.html#gst-element-factory-create" title="gst_element_factory_create ()">gst_element_factory_create</a>          (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
-<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *              <a class="link" href="GstElementFactory.html#gst-element-factory-make" title="gst_element_factory_make ()">gst_element_factory_make</a>      (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *factoryname</code></em>,
+<a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="GstElementFactory.html#gst-element-factory-make" title="gst_element_factory_make ()">gst_element_factory_make</a>            (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *factoryname</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstElementFactory.html#gst-element-factory-can-sink-caps" title="gst_element_factory_can_sink_caps ()">gst_element_factory_can_sink_caps</a>   (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><span class="type">GstCaps</span></a> *caps</code></em>);
@@ -153,7 +153,7 @@ The following code example shows you how to create a GstFileSrc element.
 <p>
 </p>
 <div class="example">
-<a name="idp16666480"></a><p class="title"><b>Example 9. Using an element factory</b></p>
+<a name="idp19945040"></a><p class="title"><b>Example 9. Using an element factory</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -335,7 +335,7 @@ and later). <span class="annotation">[<acronym title="NULL is ok, both for passi
 <hr>
 <div class="refsect2">
 <a name="gst-element-factory-find"></a><h3>gst_element_factory_find ()</h3>
-<pre class="programlisting"><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="returnvalue">GstElementFactory</span></a> *      gst_element_factory_find       (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="returnvalue">GstElementFactory</span></a> * gst_element_factory_find            (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Search for an element factory of the given name. Refs the returned
 element factory; caller is responsible for unreffing.
@@ -564,7 +564,7 @@ Gets the type of URIs the element supports or <a class="link" href="gstreamer-Gs
 <hr>
 <div class="refsect2">
 <a name="gst-element-factory-get-uri-protocols"></a><h3>gst_element_factory_get_uri_protocols ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **                 gst_element_factory_get_uri_protocols
+<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> **            gst_element_factory_get_uri_protocols
                                                         (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>);</pre>
 <p>
 Gets a NULL-terminated array of protocols this element supports or NULL if
@@ -621,7 +621,7 @@ Check if <em class="parameter"><code>factory</code></em> implements the interfac
 <hr>
 <div class="refsect2">
 <a name="gst-element-factory-create"></a><h3>gst_element_factory_create ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *              gst_element_factory_create    (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_element_factory_create          (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Create a new element of the type defined by the given elementfactory.
@@ -637,7 +637,9 @@ their first argument.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
-<td>name of new element</td>
+<td>name of new element, or NULL to automatically create
+a unique name. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
@@ -651,7 +653,7 @@ be created. <span class="annotation">[<acronym title="Free data after the code i
 <hr>
 <div class="refsect2">
 <a name="gst-element-factory-make"></a><h3>gst_element_factory_make ()</h3>
-<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *              gst_element_factory_make      (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *factoryname</code></em>,
+<pre class="programlisting"><a class="link" href="GstElement.html" title="GstElement"><span class="returnvalue">GstElement</span></a> *        gst_element_factory_make            (<em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *factoryname</code></em>,
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
 <p>
 Create a new element of the type defined by the given element factory.
@@ -668,7 +670,8 @@ If name is given, it will be given the name supplied.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
-<td>name of new element. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+<td>name of new element, or NULL to automatically create
+a unique name. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 <tr>
@@ -1137,7 +1140,7 @@ usage. <span class="annotation">[<acronym title="Free data after the code is don
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_element_factory_list_is_type    (<em class="parameter"><code><a class="link" href="GstElementFactory.html" title="GstElementFactory"><span class="type">GstElementFactory</span></a> *factory</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstElementFactory.html#GstElementFactoryListType" title="GstElementFactoryListType"><span class="type">GstElementFactoryListType</span></a> type</code></em>);</pre>
 <p>
-Check if <em class="parameter"><code>factory</code></em> if of the given types.
+Check if <em class="parameter"><code>factory</code></em> is of the given types.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -1169,6 +1172,6 @@ Check if <em class="parameter"><code>factory</code></em> if of the given types.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.17</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

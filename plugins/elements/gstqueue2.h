@@ -62,8 +62,14 @@ struct _GstQueue2Range
 
   guint64 offset;          /* offset of range start in source */
   guint64 rb_offset;       /* offset of range start in ring buffer */
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  guint64 fb_offset;       /* offset of range start in file buffer */
+#endif
   guint64 writing_pos;     /* writing position in source */
   guint64 rb_writing_pos;  /* writing position in ring buffer */
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  guint64 fb_writing_pos;       /*  writing position in file buffer */
+#endif
   guint64 reading_pos;     /* reading position in source */
   guint64 max_reading_pos; /* latest requested offset in source */
 };
@@ -95,7 +101,7 @@ struct _GstQueue2
   gboolean unexpected;
 
   /* the queue of data we're keeping our hands on */
-  GQueue *queue;
+  GQueue queue;
 
   GstQueue2Size cur_level;       /* currently in the queue */
   GstQueue2Size max_level;       /* max. amount of data allowed in the queue */
@@ -121,6 +127,7 @@ struct _GstQueue2
   gdouble last_in_elapsed;
   guint64 bytes_in;
   gdouble byte_in_rate;
+  gdouble byte_in_period;
 
   GTimer *out_timer;
   gboolean out_timer_started;
@@ -153,6 +160,9 @@ struct _GstQueue2
 
   guint64 ring_buffer_max_size;
   guint8 * ring_buffer;
+#ifdef GST_EXT_QUEUE_ENHANCEMENT
+  guint64 file_buffer_max_size;
+#endif
 };
 
 struct _GstQueue2Class

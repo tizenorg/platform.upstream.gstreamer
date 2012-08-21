@@ -7,7 +7,7 @@
       The controller subsystem offers a lightweight way to adjust gobject
       properties over stream-time. Normaly these properties are changed using
       <function>g_object_set()</function>. Timing those calls reliably so that
-      the changes affect certain stream times is close to imposible. The
+      the changes affect certain stream times is close to impossible. The
       controller takes time into account. It works by attaching control-sources
       to properties. Control-sources can provide new values for the properties
       for a given timestamp. At run-time the elements continously pull values
@@ -30,7 +30,7 @@
     </para>
     <para>
       The <filename>gstreamer-controller</filename> library needs to be initialized
-      when your application is run.  This can be done after the the GStreamer
+      when your application is run.  This can be done after the GStreamer
       library has been initialized.
     </para>
     <programlisting>
@@ -60,6 +60,13 @@
   gst_interpolation_control_source_set_interpolation_mode(csource, GST_INTERPOLATE_LINEAR);
     </programlisting>
     <para>
+      Now we need to assign the control-source to the gobject property. One 
+      control source can only be assigned to one property.
+    </para>
+    <programlisting>
+      gst_controller_set_control_source (controller, "prop1", csource);
+    </programlisting>
+    <para>
       This control-source takes new property values from a list of time-stamped
       parameter changes. The source can e.g. fill gaps by smoothing parameter
       changes. This behaviour can be configured by setting the 
@@ -75,13 +82,6 @@
     <programlisting>
   gst_interpolation_control_source_set (csource, 0 * GST_SECOND, value1);
   gst_interpolation_control_source_set (csource, 1 * GST_SECOND, value2);
-    </programlisting>
-    <para>
-      Finally we need to assign the control-source to the gobject property. One 
-      control source can only be assigned to one property.
-    </para>
-    <programlisting>
-      gst_controller_set_control_source (controller, "prop1", csource);
     </programlisting>
     <para>
       Now everything is ready to play. One final note - the controller subsystem

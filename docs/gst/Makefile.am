@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-
+if ENABLE_GTK_DOC
 # The name of the module, e.g. 'glib'.
 # DOC_MODULE=gstreamer-@GST_API_VERSION@
 DOC_MODULE=gstreamer
@@ -88,4 +88,5 @@ include $(top_srcdir)/common/gtk-doc.mak
 
 # gtk-doc.mak defines CLEANFILES
 CLEANFILES += gst-universe.svg
+endif
 

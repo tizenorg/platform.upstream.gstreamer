@@ -1,3 +1,4 @@
+if ENABLE_GTK_DOC
 ## Process this file with automake to produce Makefile.in
 
 # The name of the module, e.g. 'glib'.
@@ -75,3 +76,5 @@ GTKDOC_EXTRA_ENVIRONMENT= \
 DOC_OVERRIDES = $(DOC_MODULE)-overrides.txt
 
 include $(top_srcdir)/common/gtk-doc.mak
+
+endif

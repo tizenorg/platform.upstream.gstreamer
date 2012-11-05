@@ -1,3 +1,4 @@
+if ENABLE_GTK_DOC
 GST_DOC_SCANOBJ = $(top_srcdir)/common/gstdoc-scangobj
 
 ## Process this file with automake to produce Makefile.in
@@ -94,3 +95,4 @@ GTKDOC_LD=$(LIBTOOL) --tag=CC --mode=link $(CC)
 DOC_OVERRIDES =
 
 include $(top_srcdir)/common/gtk-doc-plugins.mak
+endif

@@ -1,6 +1,6 @@
 Name:           gstreamer
 %define _name   gstreamer
-Version:        1.0.0
+Version:        1.0.2
 Release:        0
 %define gst_branch 1.0
 Summary:        Streaming-Media Framework Runtime

@@ -909,9 +909,8 @@ post_activate (GstPad * pad, GstPadMode new_mode)
  * push or pull mode, just return. Otherwise dispatches to the pad's activate
  * function to perform the actual activation.
  *
- * If not @active, checks the pad's current mode and calls
- * gst_pad_activate_push() or gst_pad_activate_pull(), as appropriate, with a
- * FALSE argument.
+ * If not @active, calls gst_pad_activate_mode() with the pad's current mode
+ * and a FALSE argument.
  *
  * Returns: #TRUE if the operation was successful.
  *
@@ -1449,8 +1448,8 @@ gst_pad_mark_reconfigure (GstPad * pad)
  * @notify: notify called when @activate will not be used anymore.
  *
  * Sets the given activate function for @pad. The activate function will
- * dispatch to gst_pad_activate_push() or gst_pad_activate_pull() to perform
- * the actual activation. Only makes sense to set on sink pads.
+ * dispatch to gst_pad_activate_mode() to perform the actual activation.
+ * Only makes sense to set on sink pads.
  *
  * Call this function if your sink pad can start a pull-based task.
  */
@@ -3292,15 +3291,24 @@ push_sticky (GstPad * pad, PadEvent * ev, gpointer user_data)
       GST_DEBUG_OBJECT (pad, "event %s marked received",
           GST_EVENT_TYPE_NAME (event));
       break;
+    case GST_FLOW_CUSTOM_SUCCESS:
+      /* we can't assume the event is received when it was dropped */
+      GST_DEBUG_OBJECT (pad, "event %s was dropped, mark pending",
+          GST_EVENT_TYPE_NAME (event));
+      GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_PENDING_EVENTS);
+      data->ret = GST_FLOW_OK;
+      break;
     case GST_FLOW_NOT_LINKED:
       /* not linked is not a problem, we are sticky so the event will be
        * sent later but only for non-EOS events */
-      GST_DEBUG_OBJECT (pad, "pad was not linked");
+      GST_DEBUG_OBJECT (pad, "pad was not linked, mark pending");
       if (GST_EVENT_TYPE (event) != GST_EVENT_EOS)
         data->ret = GST_FLOW_OK;
-      /* fallthrough */
+      GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_PENDING_EVENTS);
+      break;
     default:
-      GST_DEBUG_OBJECT (pad, "mark pending events");
+      GST_DEBUG_OBJECT (pad, "result %s, mark pending events",
+          gst_flow_get_name (data->ret));
       GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_PENDING_EVENTS);
       break;
   }
@@ -3337,6 +3345,10 @@ check_sticky (GstPad * pad)
       if (ev && !ev->received) {
         data.ret = gst_pad_push_event_unchecked (pad, gst_event_ref (ev->event),
             GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM);
+        /* the event could have been dropped. Because this can only
+         * happen if the user asked for it, it's not an error */
+        if (data.ret == GST_FLOW_CUSTOM_SUCCESS)
+          data.ret = GST_FLOW_OK;
       }
     }
   }
@@ -3567,7 +3579,7 @@ sticky_failed:
   }
 no_peer:
   {
-    GST_WARNING_OBJECT (pad, "pad has no peer");
+    GST_INFO_OBJECT (pad, "pad has no peer");
     GST_OBJECT_UNLOCK (pad);
     return FALSE;
   }
@@ -4361,8 +4373,9 @@ probe_stopped_unref:
   }
 }
 
+/* must be called with pad object lock */
 static gboolean
-gst_pad_store_sticky_event (GstPad * pad, GstEvent * event, gboolean locked)
+gst_pad_store_sticky_event (GstPad * pad, GstEvent * event)
 {
   guint i, len;
   GstEventType type;
@@ -4410,14 +4423,12 @@ gst_pad_store_sticky_event (GstPad * pad, GstEvent * event, gboolean locked)
 
     switch (GST_EVENT_TYPE (event)) {
       case GST_EVENT_CAPS:
-        if (locked)
-          GST_OBJECT_UNLOCK (pad);
+        GST_OBJECT_UNLOCK (pad);
 
         GST_DEBUG_OBJECT (pad, "notify caps");
         g_object_notify_by_pspec ((GObject *) pad, pspec_caps);
 
-        if (locked)
-          GST_OBJECT_LOCK (pad);
+        GST_OBJECT_LOCK (pad);
         break;
       default:
         break;
@@ -4533,7 +4544,6 @@ probe_stopped:
     switch (ret) {
       case GST_FLOW_CUSTOM_SUCCESS:
         GST_DEBUG_OBJECT (pad, "dropped event");
-        ret = GST_FLOW_OK;
         break;
       default:
         GST_DEBUG_OBJECT (pad, "an error occured %s", gst_flow_get_name (ret));
@@ -4610,10 +4620,10 @@ gst_pad_push_event (GstPad * pad, GstEvent * event)
     if (G_UNLIKELY (GST_PAD_IS_EOS (pad)))
       goto eos;
 
-    /* srcpad sticky events are store immediately, the received flag is set
+    /* srcpad sticky events are stored immediately, the received flag is set
      * to FALSE and will be set to TRUE when we can successfully push the
      * event to the peer pad */
-    if (gst_pad_store_sticky_event (pad, event, TRUE)) {
+    if (gst_pad_store_sticky_event (pad, event)) {
       GST_DEBUG_OBJECT (pad, "event %s updated", GST_EVENT_TYPE_NAME (event));
     }
     if (GST_EVENT_TYPE (event) == GST_EVENT_EOS)
@@ -4625,8 +4635,12 @@ gst_pad_push_event (GstPad * pad, GstEvent * event)
     res = (check_sticky (pad) == GST_FLOW_OK);
   }
   if (!sticky) {
+    GstFlowReturn ret;
+
     /* other events are pushed right away */
-    res = (gst_pad_push_event_unchecked (pad, event, type) == GST_FLOW_OK);
+    ret = gst_pad_push_event_unchecked (pad, event, type);
+    /* dropped events by a probe are not an error */
+    res = (ret == GST_FLOW_OK || ret == GST_FLOW_CUSTOM_SUCCESS);
   } else {
     /* Errors in sticky event pushing are no problem and ignored here
      * as they will cause more meaningful errors during data flow.
@@ -4823,11 +4837,23 @@ gst_pad_send_event_unchecked (GstPad * pad, GstEvent * event,
 
   if (sticky) {
     if (ret == GST_FLOW_OK) {
+      GST_OBJECT_LOCK (pad);
+      /* can't store on flushing pads */
+      if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
+        goto flushing;
+
+      if (G_UNLIKELY (GST_PAD_IS_EOS (pad)))
+        goto eos;
+
       /* after the event function accepted the event, we can store the sticky
        * event on the pad */
-      gst_pad_store_sticky_event (pad, event, FALSE);
+      if (gst_pad_store_sticky_event (pad, event)) {
+        GST_DEBUG_OBJECT (pad, "event %s updated", GST_EVENT_TYPE_NAME (event));
+      }
       if (event_type == GST_EVENT_EOS)
         GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_EOS);
+
+      GST_OBJECT_UNLOCK (pad);
     }
     gst_event_unref (event);
   }

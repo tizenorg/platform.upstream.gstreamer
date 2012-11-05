@@ -85,7 +85,7 @@ am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/gst.m4 \
 	$(top_srcdir)/common/m4/gtk-doc.m4 \
 	$(top_srcdir)/common/m4/introspection.m4 \
-	$(top_srcdir)/common/m4/pkg.m4 \
+	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/m4/ax_pthread.m4 \
 	$(top_srcdir)/m4/check-checks.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
@@ -101,33 +101,60 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 =
-am__EXEEXT_2 = dynamic$(EXEEXT) $(am__EXEEXT_1) elementcreate$(EXEEXT) \
+am__EXEEXT_2 = $(am__EXEEXT_1) elementcreate$(EXEEXT) \
 	elementmake$(EXEEXT) elementfactory$(EXEEXT) \
 	elementget$(EXEEXT) elementlink$(EXEEXT) bin$(EXEEXT) \
 	pad$(EXEEXT) ghostpad$(EXEEXT) helloworld$(EXEEXT) \
 	init$(EXEEXT) query$(EXEEXT) typefind$(EXEEXT) \
-	fakesrc$(EXEEXT) playbin$(EXEEXT) decodebin$(EXEEXT)
+	blockprobe$(EXEEXT) probe$(EXEEXT) appsrc$(EXEEXT) \
+	appsink$(EXEEXT) dynformat$(EXEEXT) effectswitch$(EXEEXT) \
+	testrtpool$(EXEEXT) norebuffer$(EXEEXT) playbin$(EXEEXT) \
+	decodebin$(EXEEXT) playsink$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-bin_SOURCES = bin.c
-bin_OBJECTS = bin.$(OBJEXT)
-bin_LDADD = $(LDADD)
+appsink_SOURCES = appsink.c
+appsink_OBJECTS = appsink.$(OBJEXT)
+appsink_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-bin_DEPENDENCIES =  \
+appsink_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
+appsrc_SOURCES = appsrc.c
+appsrc_OBJECTS = appsrc.$(OBJEXT)
+appsrc_LDADD = $(LDADD)
+appsrc_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
+bin_SOURCES = bin.c
+bin_OBJECTS = bin.$(OBJEXT)
+bin_LDADD = $(LDADD)
+bin_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
+blockprobe_SOURCES = blockprobe.c
+blockprobe_OBJECTS = blockprobe.$(OBJEXT)
+blockprobe_LDADD = $(LDADD)
+blockprobe_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
 decodebin_SOURCES = decodebin.c
 decodebin_OBJECTS = decodebin.$(OBJEXT)
 decodebin_LDADD = $(LDADD)
 decodebin_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
-dynamic_SOURCES = dynamic.c
-dynamic_OBJECTS = dynamic.$(OBJEXT)
-dynamic_LDADD = $(LDADD)
-dynamic_DEPENDENCIES =  \
+dynformat_SOURCES = dynformat.c
+dynformat_OBJECTS = dynformat.$(OBJEXT)
+dynformat_LDADD = $(LDADD)
+dynformat_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
+effectswitch_SOURCES = effectswitch.c
+effectswitch_OBJECTS = effectswitch.$(OBJEXT)
+effectswitch_LDADD = $(LDADD)
+effectswitch_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
 elementcreate_SOURCES = elementcreate.c
@@ -160,12 +187,6 @@ elementmake_LDADD = $(LDADD)
 elementmake_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
-fakesrc_SOURCES = fakesrc.c
-fakesrc_OBJECTS = fakesrc.$(OBJEXT)
-fakesrc_LDADD = $(LDADD)
-fakesrc_DEPENDENCIES =  \
-	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
-	$(am__DEPENDENCIES_1)
 ghostpad_SOURCES = ghostpad.c
 ghostpad_OBJECTS = ghostpad.$(OBJEXT)
 ghostpad_LDADD = $(LDADD)
@@ -184,6 +205,12 @@ init_LDADD = $(LDADD)
 init_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
+norebuffer_SOURCES = norebuffer.c
+norebuffer_OBJECTS = norebuffer.$(OBJEXT)
+norebuffer_LDADD = $(LDADD)
+norebuffer_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
 pad_SOURCES = pad.c
 pad_OBJECTS = pad.$(OBJEXT)
 pad_LDADD = $(LDADD)
@@ -196,12 +223,30 @@ playbin_LDADD = $(LDADD)
 playbin_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
+playsink_SOURCES = playsink.c
+playsink_OBJECTS = playsink.$(OBJEXT)
+playsink_LDADD = $(LDADD)
+playsink_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
+probe_SOURCES = probe.c
+probe_OBJECTS = probe.$(OBJEXT)
+probe_LDADD = $(LDADD)
+probe_DEPENDENCIES =  \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
 query_SOURCES = query.c
 query_OBJECTS = query.$(OBJEXT)
 query_LDADD = $(LDADD)
 query_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
+testrtpool_SOURCES = testrtpool.c
+testrtpool_OBJECTS = testrtpool-testrtpool.$(OBJEXT)
+testrtpool_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+testrtpool_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(testrtpool_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 typefind_SOURCES = typefind.c
 typefind_OBJECTS = typefind.$(OBJEXT)
 typefind_LDADD = $(LDADD)
@@ -234,13 +279,16 @@ am__v_CCLD_0 = @echo "  CCLD  " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN   " $@;
-SOURCES = bin.c decodebin.c dynamic.c elementcreate.c elementfactory.c \
-	elementget.c elementlink.c elementmake.c fakesrc.c ghostpad.c \
-	helloworld.c init.c pad.c playbin.c query.c typefind.c
-DIST_SOURCES = bin.c decodebin.c dynamic.c elementcreate.c \
-	elementfactory.c elementget.c elementlink.c elementmake.c \
-	fakesrc.c ghostpad.c helloworld.c init.c pad.c playbin.c \
-	query.c typefind.c
+SOURCES = appsink.c appsrc.c bin.c blockprobe.c decodebin.c \
+	dynformat.c effectswitch.c elementcreate.c elementfactory.c \
+	elementget.c elementlink.c elementmake.c ghostpad.c \
+	helloworld.c init.c norebuffer.c pad.c playbin.c playsink.c \
+	probe.c query.c testrtpool.c typefind.c
+DIST_SOURCES = appsink.c appsrc.c bin.c blockprobe.c decodebin.c \
+	dynformat.c effectswitch.c elementcreate.c elementfactory.c \
+	elementget.c elementlink.c elementmake.c ghostpad.c \
+	helloworld.c init.c norebuffer.c pad.c playbin.c playsink.c \
+	probe.c query.c testrtpool.c typefind.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -441,6 +489,9 @@ PKG_CONFIG = @PKG_CONFIG@
 PLUGINDIR = @PLUGINDIR@
 POSUB = @POSUB@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 PYTHON = @PYTHON@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -477,6 +528,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -547,7 +599,6 @@ TESTS_ENVIRONMENT = \
 
 EXTRA_DIST = extract.pl
 EXAMPLES = \
-	dynamic \
 	$(GNOME) \
 	elementcreate \
 	elementmake \
@@ -561,9 +612,17 @@ EXAMPLES = \
 	init \
 	query \
 	typefind \
-	fakesrc \
+	blockprobe \
+	probe \
+	appsrc \
+	appsink \
+	dynformat \
+	effectswitch \
+	testrtpool \
+	norebuffer \
 	playbin \
-	decodebin
+	decodebin \
+	playsink 
 
 BUILT_SOURCES = \
 	elementmake.c elementcreate.c elementget.c elementlink.c elementfactory.c \
@@ -573,15 +632,25 @@ BUILT_SOURCES = \
 	helloworld.c \
 	init.c \
 	query.c \
-	typefind.c dynamic.c \
-	fakesrc.c \
-	playbin.c decodebin.c
+	typefind.c \
+	blockprobe.c \
+	probe.c \
+	appsrc.c \
+	appsink.c \
+	dynformat.c \
+	effectswitch.c \
+	testrtpool.c \
+	norebuffer.c \
+	playbin.c decodebin.c \
+	playsink.c
 
 CLEANFILES = core core.* test-registry.* *.gcno *.gcda $(BUILT_SOURCES)
 AM_CFLAGS = $(GST_OBJ_CFLAGS)
 LDADD = $(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(GST_OBJ_LIBS)
 
+testrtpool_LDADD = $(GST_OBJ_LIBS) $(PTHREAD_LIBS)
+testrtpool_CFLAGS = $(GST_OBJ_CFLAGS) $(PTHREAD_CFLAGS)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -626,15 +695,27 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+appsink$(EXEEXT): $(appsink_OBJECTS) $(appsink_DEPENDENCIES) $(EXTRA_appsink_DEPENDENCIES) 
+	@rm -f appsink$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(appsink_OBJECTS) $(appsink_LDADD) $(LIBS)
+appsrc$(EXEEXT): $(appsrc_OBJECTS) $(appsrc_DEPENDENCIES) $(EXTRA_appsrc_DEPENDENCIES) 
+	@rm -f appsrc$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(appsrc_OBJECTS) $(appsrc_LDADD) $(LIBS)
 bin$(EXEEXT): $(bin_OBJECTS) $(bin_DEPENDENCIES) $(EXTRA_bin_DEPENDENCIES) 
 	@rm -f bin$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(bin_OBJECTS) $(bin_LDADD) $(LIBS)
+blockprobe$(EXEEXT): $(blockprobe_OBJECTS) $(blockprobe_DEPENDENCIES) $(EXTRA_blockprobe_DEPENDENCIES) 
+	@rm -f blockprobe$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(blockprobe_OBJECTS) $(blockprobe_LDADD) $(LIBS)
 decodebin$(EXEEXT): $(decodebin_OBJECTS) $(decodebin_DEPENDENCIES) $(EXTRA_decodebin_DEPENDENCIES) 
 	@rm -f decodebin$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(decodebin_OBJECTS) $(decodebin_LDADD) $(LIBS)
-dynamic$(EXEEXT): $(dynamic_OBJECTS) $(dynamic_DEPENDENCIES) $(EXTRA_dynamic_DEPENDENCIES) 
-	@rm -f dynamic$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(dynamic_OBJECTS) $(dynamic_LDADD) $(LIBS)
+dynformat$(EXEEXT): $(dynformat_OBJECTS) $(dynformat_DEPENDENCIES) $(EXTRA_dynformat_DEPENDENCIES) 
+	@rm -f dynformat$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(dynformat_OBJECTS) $(dynformat_LDADD) $(LIBS)
+effectswitch$(EXEEXT): $(effectswitch_OBJECTS) $(effectswitch_DEPENDENCIES) $(EXTRA_effectswitch_DEPENDENCIES) 
+	@rm -f effectswitch$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(effectswitch_OBJECTS) $(effectswitch_LDADD) $(LIBS)
 elementcreate$(EXEEXT): $(elementcreate_OBJECTS) $(elementcreate_DEPENDENCIES) $(EXTRA_elementcreate_DEPENDENCIES) 
 	@rm -f elementcreate$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(elementcreate_OBJECTS) $(elementcreate_LDADD) $(LIBS)
@@ -650,9 +731,6 @@ elementlink$(EXEEXT): $(elementlink_OBJECTS) $(elementlink_DEPENDENCIES) $(EXTRA
 elementmake$(EXEEXT): $(elementmake_OBJECTS) $(elementmake_DEPENDENCIES) $(EXTRA_elementmake_DEPENDENCIES) 
 	@rm -f elementmake$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(elementmake_OBJECTS) $(elementmake_LDADD) $(LIBS)
-fakesrc$(EXEEXT): $(fakesrc_OBJECTS) $(fakesrc_DEPENDENCIES) $(EXTRA_fakesrc_DEPENDENCIES) 
-	@rm -f fakesrc$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(fakesrc_OBJECTS) $(fakesrc_LDADD) $(LIBS)
 ghostpad$(EXEEXT): $(ghostpad_OBJECTS) $(ghostpad_DEPENDENCIES) $(EXTRA_ghostpad_DEPENDENCIES) 
 	@rm -f ghostpad$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(ghostpad_OBJECTS) $(ghostpad_LDADD) $(LIBS)
@@ -662,15 +740,27 @@ helloworld$(EXEEXT): $(helloworld_OBJECTS) $(helloworld_DEPENDENCIES) $(EXTRA_he
 init$(EXEEXT): $(init_OBJECTS) $(init_DEPENDENCIES) $(EXTRA_init_DEPENDENCIES) 
 	@rm -f init$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(init_OBJECTS) $(init_LDADD) $(LIBS)
+norebuffer$(EXEEXT): $(norebuffer_OBJECTS) $(norebuffer_DEPENDENCIES) $(EXTRA_norebuffer_DEPENDENCIES) 
+	@rm -f norebuffer$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(norebuffer_OBJECTS) $(norebuffer_LDADD) $(LIBS)
 pad$(EXEEXT): $(pad_OBJECTS) $(pad_DEPENDENCIES) $(EXTRA_pad_DEPENDENCIES) 
 	@rm -f pad$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(pad_OBJECTS) $(pad_LDADD) $(LIBS)
 playbin$(EXEEXT): $(playbin_OBJECTS) $(playbin_DEPENDENCIES) $(EXTRA_playbin_DEPENDENCIES) 
 	@rm -f playbin$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(playbin_OBJECTS) $(playbin_LDADD) $(LIBS)
+playsink$(EXEEXT): $(playsink_OBJECTS) $(playsink_DEPENDENCIES) $(EXTRA_playsink_DEPENDENCIES) 
+	@rm -f playsink$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(playsink_OBJECTS) $(playsink_LDADD) $(LIBS)
+probe$(EXEEXT): $(probe_OBJECTS) $(probe_DEPENDENCIES) $(EXTRA_probe_DEPENDENCIES) 
+	@rm -f probe$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(probe_OBJECTS) $(probe_LDADD) $(LIBS)
 query$(EXEEXT): $(query_OBJECTS) $(query_DEPENDENCIES) $(EXTRA_query_DEPENDENCIES) 
 	@rm -f query$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(query_OBJECTS) $(query_LDADD) $(LIBS)
+testrtpool$(EXEEXT): $(testrtpool_OBJECTS) $(testrtpool_DEPENDENCIES) $(EXTRA_testrtpool_DEPENDENCIES) 
+	@rm -f testrtpool$(EXEEXT)
+	$(AM_V_CCLD)$(testrtpool_LINK) $(testrtpool_OBJECTS) $(testrtpool_LDADD) $(LIBS)
 typefind$(EXEEXT): $(typefind_OBJECTS) $(typefind_DEPENDENCIES) $(EXTRA_typefind_DEPENDENCIES) 
 	@rm -f typefind$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(typefind_OBJECTS) $(typefind_LDADD) $(LIBS)
@@ -681,21 +771,28 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/appsink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/appsrc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/blockprobe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/decodebin.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dynamic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dynformat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/effectswitch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elementcreate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elementfactory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elementget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elementlink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elementmake.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fakesrc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ghostpad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/helloworld.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/init.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/norebuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playbin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playsink.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/probe.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testrtpool-testrtpool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/typefind.Po@am__quote@
 
 .c.o:
@@ -718,6 +815,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+testrtpool-testrtpool.o: testrtpool.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testrtpool_CFLAGS) $(CFLAGS) -MT testrtpool-testrtpool.o -MD -MP -MF $(DEPDIR)/testrtpool-testrtpool.Tpo -c -o testrtpool-testrtpool.o `test -f 'testrtpool.c' || echo '$(srcdir)/'`testrtpool.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testrtpool-testrtpool.Tpo $(DEPDIR)/testrtpool-testrtpool.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='testrtpool.c' object='testrtpool-testrtpool.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testrtpool_CFLAGS) $(CFLAGS) -c -o testrtpool-testrtpool.o `test -f 'testrtpool.c' || echo '$(srcdir)/'`testrtpool.c
+
+testrtpool-testrtpool.obj: testrtpool.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testrtpool_CFLAGS) $(CFLAGS) -MT testrtpool-testrtpool.obj -MD -MP -MF $(DEPDIR)/testrtpool-testrtpool.Tpo -c -o testrtpool-testrtpool.obj `if test -f 'testrtpool.c'; then $(CYGPATH_W) 'testrtpool.c'; else $(CYGPATH_W) '$(srcdir)/testrtpool.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testrtpool-testrtpool.Tpo $(DEPDIR)/testrtpool-testrtpool.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='testrtpool.c' object='testrtpool-testrtpool.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testrtpool_CFLAGS) $(CFLAGS) -c -o testrtpool-testrtpool.obj `if test -f 'testrtpool.c'; then $(CYGPATH_W) 'testrtpool.c'; else $(CYGPATH_W) '$(srcdir)/testrtpool.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1048,13 +1159,34 @@ init.c: $(top_srcdir)/docs/manual/basics-init.xml
 query.c: $(top_srcdir)/docs/manual/advanced-position.xml
 	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
 
-typefind.c dynamic.c: $(top_srcdir)/docs/manual/advanced-autoplugging.xml
+typefind.c: $(top_srcdir)/docs/manual/advanced-autoplugging.xml
 	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
 
-fakesrc.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+blockprobe.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
 	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
 
-playbin.c decodebin.c: $(top_srcdir)/docs/manual/highlevel-components.xml
+probe.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+appsrc.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+appsink.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+dynformat.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+effectswitch.c: $(top_srcdir)/docs/manual/advanced-dataaccess.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+norebuffer.c: $(top_srcdir)/docs/manual/advanced-buffering.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+playbin.c decodebin.c playsink.c: $(top_srcdir)/docs/manual/highlevel-playback.xml
+	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
+
+testrtpool.c: $(top_srcdir)/docs/manual/advanced-threads.xml
 	$(PERL_PATH) $(srcdir)/extract.pl $@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

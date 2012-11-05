@@ -55,21 +55,22 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/common/check.mak
-check_PROGRAMS = gst/gstatomicqueue$(EXEEXT) gst/gstbuffer$(EXEEXT) \
-	gst/gstbufferlist$(EXEEXT) gst/gstmeta$(EXEEXT) \
-	gst/gstmemory$(EXEEXT) gst/gstbus$(EXEEXT) \
-	gst/gstcaps$(EXEEXT) $(am__EXEEXT_1) gst/gstdatetime$(EXEEXT) \
-	gst/gstinfo$(EXEEXT) gst/gstiterator$(EXEEXT) \
-	gst/gstmessage$(EXEEXT) gst/gstminiobject$(EXEEXT) \
-	gst/gstobject$(EXEEXT) gst/gstpad$(EXEEXT) \
-	gst/gstparamspecs$(EXEEXT) gst/gstpipeline$(EXEEXT) \
-	gst/gstpoll$(EXEEXT) gst/gstsegment$(EXEEXT) \
-	gst/gstsystemclock$(EXEEXT) gst/gstclock$(EXEEXT) \
-	gst/gststructure$(EXEEXT) gst/gsttag$(EXEEXT) \
-	gst/gsttagsetter$(EXEEXT) gst/gsttask$(EXEEXT) \
-	gst/gsttoc$(EXEEXT) gst/gsttocsetter$(EXEEXT) \
-	gst/gstvalue$(EXEEXT) generic/states$(EXEEXT) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3) libs/adapter$(EXEEXT) libs/bitreader$(EXEEXT) \
+check_PROGRAMS = $(am__EXEEXT_1) gst/gstatomicqueue$(EXEEXT) \
+	gst/gstbuffer$(EXEEXT) gst/gstbufferlist$(EXEEXT) \
+	gst/gstmeta$(EXEEXT) gst/gstmemory$(EXEEXT) \
+	gst/gstbus$(EXEEXT) gst/gstcaps$(EXEEXT) $(am__EXEEXT_2) \
+	gst/gstdatetime$(EXEEXT) gst/gstinfo$(EXEEXT) \
+	gst/gstiterator$(EXEEXT) gst/gstmessage$(EXEEXT) \
+	gst/gstminiobject$(EXEEXT) gst/gstobject$(EXEEXT) \
+	gst/gstpad$(EXEEXT) gst/gstparamspecs$(EXEEXT) \
+	gst/gstpipeline$(EXEEXT) gst/gstpoll$(EXEEXT) \
+	gst/gstsegment$(EXEEXT) gst/gstsystemclock$(EXEEXT) \
+	gst/gstclock$(EXEEXT) gst/gststructure$(EXEEXT) \
+	gst/gsttag$(EXEEXT) gst/gsttagsetter$(EXEEXT) \
+	gst/gsttask$(EXEEXT) gst/gsttoc$(EXEEXT) \
+	gst/gsttocsetter$(EXEEXT) gst/gstvalue$(EXEEXT) \
+	generic/states$(EXEEXT) $(am__EXEEXT_3) $(am__EXEEXT_4) \
+	$(am__EXEEXT_5) libs/adapter$(EXEEXT) libs/bitreader$(EXEEXT) \
 	libs/bytereader$(EXEEXT) libs/bytewriter$(EXEEXT) \
 	libs/collectpads$(EXEEXT) libs/gstnetclientclock$(EXEEXT) \
 	libs/gstnettimeprovider$(EXEEXT) libs/transform1$(EXEEXT) \
@@ -103,7 +104,7 @@ am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/gst.m4 \
 	$(top_srcdir)/common/m4/gtk-doc.m4 \
 	$(top_srcdir)/common/m4/introspection.m4 \
-	$(top_srcdir)/common/m4/pkg.m4 \
+	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/m4/ax_pthread.m4 \
 	$(top_srcdir)/m4/check-checks.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
@@ -118,14 +119,15 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_CXX_TRUE@am__EXEEXT_1 = gst/gstcpp$(EXEEXT) \
+@GST_DISABLE_REGISTRY_FALSE@@GST_DISABLE_TRACE_FALSE@am__EXEEXT_1 = gst/gstabi$(EXEEXT)
+@HAVE_CXX_TRUE@am__EXEEXT_2 = gst/gstcpp$(EXEEXT) \
 @HAVE_CXX_TRUE@	libs/gstlibscpp$(EXEEXT)
-@GST_DISABLE_PARSE_FALSE@am__EXEEXT_2 = pipelines/simple-launch-lines$(EXEEXT) \
+@GST_DISABLE_PARSE_FALSE@am__EXEEXT_3 = pipelines/simple-launch-lines$(EXEEXT) \
 @GST_DISABLE_PARSE_FALSE@	pipelines/cleanup$(EXEEXT) \
 @GST_DISABLE_PARSE_FALSE@	pipelines/parse-launch$(EXEEXT)
-@GST_DISABLE_PARSE_TRUE@am__EXEEXT_2 =  \
+@GST_DISABLE_PARSE_TRUE@am__EXEEXT_3 =  \
 @GST_DISABLE_PARSE_TRUE@	pipelines/parse-disabled$(EXEEXT)
-@GST_DISABLE_REGISTRY_FALSE@am__EXEEXT_3 = gst/gst$(EXEEXT) \
+@GST_DISABLE_REGISTRY_FALSE@am__EXEEXT_4 = gst/gst$(EXEEXT) \
 @GST_DISABLE_REGISTRY_FALSE@	gst/gstbin$(EXEEXT) \
 @GST_DISABLE_REGISTRY_FALSE@	gst/gstchildproxy$(EXEEXT) \
 @GST_DISABLE_REGISTRY_FALSE@	gst/gstcontroller$(EXEEXT) \
@@ -162,6 +164,7 @@ CONFIG_CLEAN_VPATH_FILES =
 @GST_DISABLE_REGISTRY_FALSE@	pipelines/seek$(EXEEXT) \
 @GST_DISABLE_REGISTRY_FALSE@	pipelines/stress$(EXEEXT) \
 @GST_DISABLE_REGISTRY_FALSE@	pipelines/queue-error$(EXEEXT)
+am__EXEEXT_5 = libs/libsabi$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 elements_capsfilter_SOURCES = elements/capsfilter.c
 elements_capsfilter_OBJECTS = capsfilter.$(OBJEXT)
@@ -276,6 +279,12 @@ gst_gst_SOURCES = gst/gst.c
 gst_gst_OBJECTS = gst.$(OBJEXT)
 gst_gst_LDADD = $(LDADD)
 gst_gst_DEPENDENCIES = $(top_builddir)/libs/gst/check/libgstcheck-@GST_API_VERSION@.la \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
+gst_gstabi_SOURCES = gst/gstabi.c
+gst_gstabi_OBJECTS = gstabi.$(OBJEXT)
+gst_gstabi_LDADD = $(LDADD)
+gst_gstabi_DEPENDENCIES = $(top_builddir)/libs/gst/check/libgstcheck-@GST_API_VERSION@.la \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1)
 gst_gstatomicqueue_SOURCES = gst/gstatomicqueue.c
@@ -587,6 +596,12 @@ libs_gstnettimeprovider_OBJECTS = gstnettimeprovider.$(OBJEXT)
 libs_gstnettimeprovider_DEPENDENCIES =  \
 	$(top_builddir)/libs/gst/net/libgstnet-@GST_API_VERSION@.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+libs_libsabi_SOURCES = libs/libsabi.c
+libs_libsabi_OBJECTS = libsabi.$(OBJEXT)
+libs_libsabi_LDADD = $(LDADD)
+libs_libsabi_DEPENDENCIES = $(top_builddir)/libs/gst/check/libgstcheck-@GST_API_VERSION@.la \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
+	$(am__DEPENDENCIES_1)
 libs_queuearray_SOURCES = libs/queuearray.c
 libs_queuearray_OBJECTS = queuearray.$(OBJEXT)
 libs_queuearray_LDADD = $(LDADD)
@@ -701,16 +716,16 @@ SOURCES = elements/capsfilter.c elements/fakesink.c elements/fakesrc.c \
 	elements/funnel.c elements/identity.c elements/multiqueue.c \
 	elements/queue.c elements/queue2.c elements/selector.c \
 	elements/tee.c elements/valve.c generic/sinks.c \
-	generic/states.c gst/gst.c gst/gstatomicqueue.c gst/gstbin.c \
-	gst/gstbuffer.c gst/gstbufferlist.c gst/gstbus.c gst/gstcaps.c \
-	gst/gstchildproxy.c gst/gstclock.c gst/gstcontroller.c \
-	$(gst_gstcpp_SOURCES) gst/gstdatetime.c gst/gstelement.c \
-	gst/gstelementfactory.c gst/gstevent.c gst/gstghostpad.c \
-	gst/gstinfo.c gst/gstiterator.c gst/gstmemory.c \
-	gst/gstmessage.c gst/gstmeta.c gst/gstminiobject.c \
-	gst/gstobject.c gst/gstpad.c gst/gstparamspecs.c \
-	gst/gstpipeline.c gst/gstplugin.c gst/gstpoll.c \
-	gst/gstpreset.c gst/gstquery.c gst/gstregistry.c \
+	generic/states.c gst/gst.c gst/gstabi.c gst/gstatomicqueue.c \
+	gst/gstbin.c gst/gstbuffer.c gst/gstbufferlist.c gst/gstbus.c \
+	gst/gstcaps.c gst/gstchildproxy.c gst/gstclock.c \
+	gst/gstcontroller.c $(gst_gstcpp_SOURCES) gst/gstdatetime.c \
+	gst/gstelement.c gst/gstelementfactory.c gst/gstevent.c \
+	gst/gstghostpad.c gst/gstinfo.c gst/gstiterator.c \
+	gst/gstmemory.c gst/gstmessage.c gst/gstmeta.c \
+	gst/gstminiobject.c gst/gstobject.c gst/gstpad.c \
+	gst/gstparamspecs.c gst/gstpipeline.c gst/gstplugin.c \
+	gst/gstpoll.c gst/gstpreset.c gst/gstquery.c gst/gstregistry.c \
 	gst/gstsegment.c gst/gststructure.c gst/gstsystemclock.c \
 	gst/gsttag.c gst/gsttagsetter.c gst/gsttask.c gst/gsttoc.c \
 	gst/gsttocsetter.c gst/gsturi.c gst/gstutils.c gst/gstvalue.c \
@@ -718,17 +733,18 @@ SOURCES = elements/capsfilter.c elements/fakesink.c elements/fakesrc.c \
 	libs/bytereader.c libs/bytewriter.c libs/collectpads.c \
 	libs/controller.c $(libs_gstlibscpp_SOURCES) \
 	libs/gstnetclientclock.c libs/gstnettimeprovider.c \
-	libs/queuearray.c libs/transform1.c libs/typefindhelper.c \
-	pipelines/cleanup.c pipelines/parse-disabled.c \
-	pipelines/parse-launch.c pipelines/queue-error.c \
-	pipelines/seek.c pipelines/simple-launch-lines.c \
-	pipelines/stress.c tools/gstinspect.c
+	libs/libsabi.c libs/queuearray.c libs/transform1.c \
+	libs/typefindhelper.c pipelines/cleanup.c \
+	pipelines/parse-disabled.c pipelines/parse-launch.c \
+	pipelines/queue-error.c pipelines/seek.c \
+	pipelines/simple-launch-lines.c pipelines/stress.c \
+	tools/gstinspect.c
 DIST_SOURCES = elements/capsfilter.c elements/fakesink.c \
 	elements/fakesrc.c elements/fdsrc.c elements/filesink.c \
 	elements/filesrc.c elements/funnel.c elements/identity.c \
 	elements/multiqueue.c elements/queue.c elements/queue2.c \
 	elements/selector.c elements/tee.c elements/valve.c \
-	generic/sinks.c generic/states.c gst/gst.c \
+	generic/sinks.c generic/states.c gst/gst.c gst/gstabi.c \
 	gst/gstatomicqueue.c gst/gstbin.c gst/gstbuffer.c \
 	gst/gstbufferlist.c gst/gstbus.c gst/gstcaps.c \
 	gst/gstchildproxy.c gst/gstclock.c gst/gstcontroller.c \
@@ -746,11 +762,12 @@ DIST_SOURCES = elements/capsfilter.c elements/fakesink.c \
 	libs/bytereader.c libs/bytewriter.c libs/collectpads.c \
 	libs/controller.c $(libs_gstlibscpp_SOURCES) \
 	libs/gstnetclientclock.c libs/gstnettimeprovider.c \
-	libs/queuearray.c libs/transform1.c libs/typefindhelper.c \
-	pipelines/cleanup.c pipelines/parse-disabled.c \
-	pipelines/parse-launch.c pipelines/queue-error.c \
-	pipelines/seek.c pipelines/simple-launch-lines.c \
-	pipelines/stress.c tools/gstinspect.c
+	libs/libsabi.c libs/queuearray.c libs/transform1.c \
+	libs/typefindhelper.c pipelines/cleanup.c \
+	pipelines/parse-disabled.c pipelines/parse-launch.c \
+	pipelines/queue-error.c pipelines/seek.c \
+	pipelines/simple-launch-lines.c pipelines/stress.c \
+	tools/gstinspect.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -952,6 +969,9 @@ PKG_CONFIG = @PKG_CONFIG@
 PLUGINDIR = @PLUGINDIR@
 POSUB = @POSUB@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 PYTHON = @PYTHON@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -988,6 +1008,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -1063,6 +1084,11 @@ SUPPRESSIONS = $(top_srcdir)/common/gst.supp
 # These tests don't even build any longer:
 #   gst/gstindex.c
 @GST_DISABLE_PARSE_TRUE@PARSE_CHECKS = pipelines/parse-disabled
+
+# Do not run the abi test in case any option which causes the API to change has
+# been used
+@GST_DISABLE_REGISTRY_FALSE@@GST_DISABLE_TRACE_FALSE@ABI_CHECKS = gst/gstabi
+LIBSABI_CHECKS = libs/libsabi
 @HAVE_CXX_FALSE@CXX_CHECKS = 
 @HAVE_CXX_TRUE@CXX_CHECKS = gst/gstcpp libs/gstlibscpp
 @GST_DISABLE_REGISTRY_FALSE@REGISTRY_CHECKS = \
@@ -1308,6 +1334,9 @@ gst/$(am__dirstamp):
 gst/gst$(EXEEXT): $(gst_gst_OBJECTS) $(gst_gst_DEPENDENCIES) $(EXTRA_gst_gst_DEPENDENCIES) gst/$(am__dirstamp)
 	@rm -f gst/gst$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(gst_gst_OBJECTS) $(gst_gst_LDADD) $(LIBS)
+gst/gstabi$(EXEEXT): $(gst_gstabi_OBJECTS) $(gst_gstabi_DEPENDENCIES) $(EXTRA_gst_gstabi_DEPENDENCIES) gst/$(am__dirstamp)
+	@rm -f gst/gstabi$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(gst_gstabi_OBJECTS) $(gst_gstabi_LDADD) $(LIBS)
 gst/gstatomicqueue$(EXEEXT): $(gst_gstatomicqueue_OBJECTS) $(gst_gstatomicqueue_DEPENDENCIES) $(EXTRA_gst_gstatomicqueue_DEPENDENCIES) gst/$(am__dirstamp)
 	@rm -f gst/gstatomicqueue$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(gst_gstatomicqueue_OBJECTS) $(gst_gstatomicqueue_LDADD) $(LIBS)
@@ -1467,6 +1496,9 @@ libs/gstnetclientclock$(EXEEXT): $(libs_gstnetclientclock_OBJECTS) $(libs_gstnet
 libs/gstnettimeprovider$(EXEEXT): $(libs_gstnettimeprovider_OBJECTS) $(libs_gstnettimeprovider_DEPENDENCIES) $(EXTRA_libs_gstnettimeprovider_DEPENDENCIES) libs/$(am__dirstamp)
 	@rm -f libs/gstnettimeprovider$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(libs_gstnettimeprovider_OBJECTS) $(libs_gstnettimeprovider_LDADD) $(LIBS)
+libs/libsabi$(EXEEXT): $(libs_libsabi_OBJECTS) $(libs_libsabi_DEPENDENCIES) $(EXTRA_libs_libsabi_DEPENDENCIES) libs/$(am__dirstamp)
+	@rm -f libs/libsabi$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(libs_libsabi_OBJECTS) $(libs_libsabi_LDADD) $(LIBS)
 libs/queuearray$(EXEEXT): $(libs_queuearray_OBJECTS) $(libs_queuearray_DEPENDENCIES) $(EXTRA_libs_queuearray_DEPENDENCIES) libs/$(am__dirstamp)
 	@rm -f libs/queuearray$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(libs_queuearray_OBJECTS) $(libs_queuearray_LDADD) $(LIBS)
@@ -1530,6 +1562,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filesink.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/funnel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gst.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstabi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstatomicqueue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstbin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstbuffer.Po@am__quote@
@@ -1576,6 +1609,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gstvalue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/identity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsabi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/multiqueue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse-disabled.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse-launch.Po@am__quote@
@@ -1852,6 +1886,20 @@ gst.obj: gst/gst.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gst/gst.c' object='gst.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gst.obj `if test -f 'gst/gst.c'; then $(CYGPATH_W) 'gst/gst.c'; else $(CYGPATH_W) '$(srcdir)/gst/gst.c'; fi`
+
+gstabi.o: gst/gstabi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gstabi.o -MD -MP -MF $(DEPDIR)/gstabi.Tpo -c -o gstabi.o `test -f 'gst/gstabi.c' || echo '$(srcdir)/'`gst/gstabi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gstabi.Tpo $(DEPDIR)/gstabi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gst/gstabi.c' object='gstabi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gstabi.o `test -f 'gst/gstabi.c' || echo '$(srcdir)/'`gst/gstabi.c
+
+gstabi.obj: gst/gstabi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gstabi.obj -MD -MP -MF $(DEPDIR)/gstabi.Tpo -c -o gstabi.obj `if test -f 'gst/gstabi.c'; then $(CYGPATH_W) 'gst/gstabi.c'; else $(CYGPATH_W) '$(srcdir)/gst/gstabi.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gstabi.Tpo $(DEPDIR)/gstabi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gst/gstabi.c' object='gstabi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gstabi.obj `if test -f 'gst/gstabi.c'; then $(CYGPATH_W) 'gst/gstabi.c'; else $(CYGPATH_W) '$(srcdir)/gst/gstabi.c'; fi`
 
 gstatomicqueue.o: gst/gstatomicqueue.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gstatomicqueue.o -MD -MP -MF $(DEPDIR)/gstatomicqueue.Tpo -c -o gstatomicqueue.o `test -f 'gst/gstatomicqueue.c' || echo '$(srcdir)/'`gst/gstatomicqueue.c
@@ -2552,6 +2600,20 @@ gstnettimeprovider.obj: libs/gstnettimeprovider.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libs/gstnettimeprovider.c' object='gstnettimeprovider.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gstnettimeprovider.obj `if test -f 'libs/gstnettimeprovider.c'; then $(CYGPATH_W) 'libs/gstnettimeprovider.c'; else $(CYGPATH_W) '$(srcdir)/libs/gstnettimeprovider.c'; fi`
+
+libsabi.o: libs/libsabi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libsabi.o -MD -MP -MF $(DEPDIR)/libsabi.Tpo -c -o libsabi.o `test -f 'libs/libsabi.c' || echo '$(srcdir)/'`libs/libsabi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsabi.Tpo $(DEPDIR)/libsabi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libs/libsabi.c' object='libsabi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libsabi.o `test -f 'libs/libsabi.c' || echo '$(srcdir)/'`libs/libsabi.c
+
+libsabi.obj: libs/libsabi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libsabi.obj -MD -MP -MF $(DEPDIR)/libsabi.Tpo -c -o libsabi.obj `if test -f 'libs/libsabi.c'; then $(CYGPATH_W) 'libs/libsabi.c'; else $(CYGPATH_W) '$(srcdir)/libs/libsabi.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsabi.Tpo $(DEPDIR)/libsabi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='libs/libsabi.c' object='libsabi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libsabi.obj `if test -f 'libs/libsabi.c'; then $(CYGPATH_W) 'libs/libsabi.c'; else $(CYGPATH_W) '$(srcdir)/libs/libsabi.c'; fi`
 
 queuearray.o: libs/queuearray.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT queuearray.o -MD -MP -MF $(DEPDIR)/queuearray.Tpo -c -o queuearray.o `test -f 'libs/queuearray.c' || echo '$(srcdir)/'`libs/queuearray.c

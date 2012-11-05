@@ -250,7 +250,7 @@ the variables and set the default category.
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>my_category<span class="gtkdoc opt">);</span>     <span class="gtkdoc slc">// define category (statically)</span>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>my_category<span class="gtkdoc opt">);</span>     <span class="gtkdoc slc">// define category (statically)</span>
 <span class="gtkdoc ppc">#define GST_CAT_DEFAULT my_category</span>     <span class="gtkdoc slc">// set as default</span><span class="gtkdoc ppc"></span></pre></td>
       </tr>
     </tbody>
@@ -266,7 +266,7 @@ After that you only need to initialize the category.
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-INIT:CAPS">GST_DEBUG_CATEGORY_INIT</a></span> <span class="gtkdoc opt">(</span>my_category<span class="gtkdoc opt">,</span> <span class="string">&quot;my category&quot;</span><span class="gtkdoc opt">,</span>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-INIT:CAPS">GST_DEBUG_CATEGORY_INIT</a></span> <span class="gtkdoc opt">(</span>my_category<span class="gtkdoc opt">,</span> <span class="string">&quot;my category&quot;</span><span class="gtkdoc opt">,</span>
                          <span class="number">0</span><span class="gtkdoc opt">,</span> <span class="string">&quot;This is my very own&quot;</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
@@ -1272,12 +1272,12 @@ category is not found, but GST_CAT_DEFAULT is defined, that is assigned to
 4
 5
 6</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>gst_myplugin_debug<span class="gtkdoc opt">);</span>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>gst_myplugin_debug<span class="gtkdoc opt">);</span>
 <span class="gtkdoc ppc">#define GST_CAT_DEFAULT gst_myplugin_debug</span>
-<span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>GST_CAT_PERFORMANCE<span class="gtkdoc opt">);</span>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-STATIC:CAPS">GST_DEBUG_CATEGORY_STATIC</a></span> <span class="gtkdoc opt">(</span>GST_CAT_PERFORMANCE<span class="gtkdoc opt">);</span>
 <span class="gtkdoc opt">...</span>
-<span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-INIT:CAPS">GST_DEBUG_CATEGORY_INIT</a></span> <span class="gtkdoc opt">(</span>gst_myplugin_debug<span class="gtkdoc opt">,</span> <span class="string">&quot;myplugin&quot;</span><span class="gtkdoc opt">,</span> <span class="number">0</span><span class="gtkdoc opt">,</span> <span class="string">&quot;nice element&quot;</span><span class="gtkdoc opt">);</span>
-<span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-GET:CAPS">GST_DEBUG_CATEGORY_GET</a></span> <span class="gtkdoc opt">(</span>GST_CAT_PERFORMANCE<span class="gtkdoc opt">,</span> <span class="string">&quot;GST_PERFORMANCE&quot;</span><span class="gtkdoc opt">);</span></pre></td>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-INIT:CAPS">GST_DEBUG_CATEGORY_INIT</a></span> <span class="gtkdoc opt">(</span>gst_myplugin_debug<span class="gtkdoc opt">,</span> <span class="string">&quot;myplugin&quot;</span><span class="gtkdoc opt">,</span> <span class="number">0</span><span class="gtkdoc opt">,</span> <span class="string">&quot;nice element&quot;</span><span class="gtkdoc opt">);</span>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-DEBUG-CATEGORY-GET:CAPS">GST_DEBUG_CATEGORY_GET</a></span> <span class="gtkdoc opt">(</span>GST_CAT_PERFORMANCE<span class="gtkdoc opt">,</span> <span class="string">&quot;GST_PERFORMANCE&quot;</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2440,7 +2440,7 @@ Example:
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function">printf</span><span class="gtkdoc opt">(</span><span class="string">&quot;%&quot;</span> GST_TIME_FORMAT <span class="string">&quot;</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-TIME-ARGS:CAPS">GST_TIME_ARGS</a></span><span class="gtkdoc opt">(</span>ts<span class="gtkdoc opt">));</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function">printf</span><span class="gtkdoc opt">(</span><span class="string">&quot;%&quot;</span> GST_TIME_FORMAT <span class="string">&quot;</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-TIME-ARGS:CAPS">GST_TIME_ARGS</a></span><span class="gtkdoc opt">(</span>ts<span class="gtkdoc opt">));</span></pre></td>
       </tr>
     </tbody>
   </table>

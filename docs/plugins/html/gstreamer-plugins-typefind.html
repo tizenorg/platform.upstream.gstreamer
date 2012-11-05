@@ -51,18 +51,18 @@
 <pre class="synopsis">
   <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
    +----<a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
-         +----<a href="../gstreamer-1.0/GstObject.html">GstObject</a>
-               +----<a href="../gstreamer-1.0/GstElement.html">GstElement</a>
+         +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html">GstObject</a>
+               +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html">GstElement</a>
                      +----GstTypeFindElement
 </pre>
 </div>
 <div class="refsect1">
 <a name="gstreamer-plugins-typefind.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--caps" title='The "caps" property'>caps</a>"                     <a href="../gstreamer-1.0/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read
+  "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--caps" title='The "caps" property'>caps</a>"                     <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read
   "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--maximum" title='The "maximum" property'>maximum</a>"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
   "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--minimum" title='The "minimum" property'>minimum</a>"                  <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>                 : Read / Write
-  "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--force-caps" title='The "force-caps" property'>force-caps</a>"               <a href="../gstreamer-1.0/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read / Write
+  "<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement--force-caps" title='The "force-caps" property'>force-caps</a>"               <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -85,12 +85,12 @@ emitted, either from the streaming thread or the application thread
 state change function).
 </p>
 <p>
-Plugins can register custom typefinders by using <a href="../gstreamer-1.0/GstTypeFindFactory.html"><span class="type">GstTypeFindFactory</span></a>.
+Plugins can register custom typefinders by using <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTypeFindFactory.html"><span class="type">GstTypeFindFactory</span></a>.
 </p>
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
 <div class="refsect2">
-<a name="idp12038496"></a><h3>Element Information</h3>
+<a name="idp8383824"></a><h3>Element Information</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -113,7 +113,7 @@ Plugins can register custom typefinders by using <a href="../gstreamer-1.0/GstTy
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp12045904"></a><h3>Element Pads</h3>
+<a name="idp8391232"></a><h3>Element Pads</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -175,7 +175,7 @@ Opaque <a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement"
 <a name="gstreamer-plugins-typefind.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="GstTypeFindElement--caps"></a><h3>The <code class="literal">"caps"</code> property</h3>
-<pre class="programlisting">  "caps"                     <a href="../gstreamer-1.0/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read</pre>
+<pre class="programlisting">  "caps"                     <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read</pre>
 <p>detected capabilities in stream.</p>
 </div>
 <hr>
@@ -197,7 +197,7 @@ Opaque <a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement"
 <hr>
 <div class="refsect2">
 <a name="GstTypeFindElement--force-caps"></a><h3>The <code class="literal">"force-caps"</code> property</h3>
-<pre class="programlisting">  "force-caps"               <a href="../gstreamer-1.0/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read / Write</pre>
+<pre class="programlisting">  "force-caps"               <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>*              : Read / Write</pre>
 <p>force caps without doing a typefind.</p>
 </div>
 </div>
@@ -207,7 +207,7 @@ Opaque <a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement"
 <a name="GstTypeFindElement-have-type"></a><h3>The <code class="literal">"have-type"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="gstreamer-plugins-typefind.html#GstTypeFindElement"><span class="type">GstTypeFindElement</span></a> *typefind,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#guint"><span class="type">guint</span></a>               probability,
-                                                        <a href="../gstreamer-1.0/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>            *caps,
+                                                        <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#GstCaps"><span class="type">GstCaps</span></a>            *caps,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>            user_data)        : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-FIRST:CAPS"><code class="literal">Run First</code></a></pre>
 <p>
 This signal gets emitted when the type and its probability has

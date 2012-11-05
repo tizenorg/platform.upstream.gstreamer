@@ -186,7 +186,7 @@ of the object.
 <p>
 </p>
 <div class="refsect2">
-<a name="idp27685152"></a><h3>controlled properties</h3>
+<a name="idp28871792"></a><h3>controlled properties</h3>
 <p>
 Controlled properties offers a lightweight way to adjust gobject
 properties over stream-time. It works by using time-stamped value pairs that
@@ -999,7 +999,7 @@ if no control-rate was set.</td>
 <pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            gst_object_sync_values              (<em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *object</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstClock.html#GstClockTime" title="GstClockTime"><span class="type">GstClockTime</span></a> timestamp</code></em>);</pre>
 <p>
-Sets the properties of the object, according to the <a href="../gstreamer-1.0/GstControlSource.html"><span class="type">GstControlSources</span></a> that
+Sets the properties of the object, according to the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstControlSource.html"><span class="type">GstControlSources</span></a> that
 (maybe) handle them and for the given timestamp.
 </p>
 <p>
@@ -1082,8 +1082,8 @@ or not.</td>
                                                          <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *property_name</code></em>,
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> disabled</code></em>);</pre>
 <p>
-This function is used to disable the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstController.html"><span class="type">GstController</span></a> on a property for
-some time, i.e. <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstController.html#gst-controller-sync-values"><code class="function">gst_controller_sync_values()</code></a> will do nothing for the
+This function is used to disable the <span class="type">GstController</span> on a property for
+some time, i.e. <code class="function">gst_controller_sync_values()</code> will do nothing for the
 property.
 </p>
 <div class="variablelist"><table border="0">

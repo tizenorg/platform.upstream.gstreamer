@@ -141,7 +141,7 @@ The following code example shows you how to create a GstFileSrc element.
 <p>
 </p>
 <div class="example">
-<a name="idp18064352"></a><p class="title"><b>Example 6. Using an element factory</b></p>
+<a name="idp21432256"></a><p class="title"><b>Example 6. Using an element factory</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -163,11 +163,11 @@ The following code example shows you how to create a GstFileSrc element.
 GstElement <span class="gtkdoc opt">*</span>src<span class="gtkdoc opt">;</span>
 GstElementFactory <span class="gtkdoc opt">*</span>srcfactory<span class="gtkdoc opt">;</span>
 
-<span class="function"><a href="../gstreamer-1.0/gstreamer-Gst.html#gst-init">gst_init</a></span> <span class="gtkdoc opt">(&amp;</span>argc<span class="gtkdoc opt">, &amp;</span>argv<span class="gtkdoc opt">);</span>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-Gst.html#gst-init">gst_init</a></span> <span class="gtkdoc opt">(&amp;</span>argc<span class="gtkdoc opt">, &amp;</span>argv<span class="gtkdoc opt">);</span>
 
-srcfactory <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/GstElementFactory.html#gst-element-factory-find">gst_element_factory_find</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;filesrc&quot;</span><span class="gtkdoc opt">);</span>
+srcfactory <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElementFactory.html#gst-element-factory-find">gst_element_factory_find</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;filesrc&quot;</span><span class="gtkdoc opt">);</span>
 <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span> <span class="gtkdoc opt">(</span>srcfactory <span class="gtkdoc opt">!=</span> NULL<span class="gtkdoc opt">);</span>
-src <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/GstElementFactory.html#gst-element-factory-create">gst_element_factory_create</a></span> <span class="gtkdoc opt">(</span>srcfactory<span class="gtkdoc opt">,</span> <span class="string">&quot;src&quot;</span><span class="gtkdoc opt">);</span>
+src <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElementFactory.html#gst-element-factory-create">gst_element_factory_create</a></span> <span class="gtkdoc opt">(</span>srcfactory<span class="gtkdoc opt">,</span> <span class="string">&quot;src&quot;</span><span class="gtkdoc opt">);</span>
 <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span> <span class="gtkdoc opt">(</span>src <span class="gtkdoc opt">!=</span> NULL<span class="gtkdoc opt">);</span>
 <span class="gtkdoc opt">...</span></pre></td>
       </tr>

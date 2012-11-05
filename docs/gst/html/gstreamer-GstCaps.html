@@ -150,7 +150,7 @@ given pad can handle. They are also stored in the <a class="link" href="GstRegis
 a description of the <a class="link" href="GstElement.html" title="GstElement"><span class="type">GstElement</span></a>.
 </p>
 <p>
-Caps are exposed on the element pads using the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#gst-pad-get-caps"><code class="function">gst_pad_get_caps()</code></a> pad
+Caps are exposed on the element pads using the <code class="function">gst_pad_get_caps()</code> pad
 function. This function describes the possible types that the pad can
 handle or produce at runtime.
 </p>
@@ -160,7 +160,7 @@ A <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><
 <p>
 </p>
 <div class="example">
-<a name="idp17423056"></a><p class="title"><b>Example 4. Creating caps</b></p>
+<a name="idp18325072"></a><p class="title"><b>Example 4. Creating caps</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -174,7 +174,7 @@ A <a class="link" href="gstreamer-GstCaps.html#GstCaps" title="struct GstCaps"><
 7
 8</pre></td>
         <td class="listing_code"><pre class="programlisting">GstCaps <span class="gtkdoc opt">*</span>caps<span class="gtkdoc opt">;</span>
-caps <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstCaps.html#gst-caps-new-simple">gst_caps_new_simple</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;video/x-raw&quot;</span><span class="gtkdoc opt">,</span>
+caps <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#gst-caps-new-simple">gst_caps_new_simple</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;video/x-raw&quot;</span><span class="gtkdoc opt">,</span>
      <span class="string">&quot;format&quot;</span><span class="gtkdoc opt">,</span> G_TYPE_STRING<span class="gtkdoc opt">,</span> <span class="string">&quot;I420&quot;</span><span class="gtkdoc opt">,</span>
      <span class="string">&quot;framerate&quot;</span><span class="gtkdoc opt">,</span> GST_TYPE_FRACTION<span class="gtkdoc opt">,</span> <span class="number">25</span><span class="gtkdoc opt">,</span> <span class="number">1</span><span class="gtkdoc opt">,</span>
      <span class="string">&quot;pixel-aspect-ratio&quot;</span><span class="gtkdoc opt">,</span> GST_TYPE_FRACTION<span class="gtkdoc opt">,</span> <span class="number">1</span><span class="gtkdoc opt">,</span> <span class="number">1</span><span class="gtkdoc opt">,</span>
@@ -1582,7 +1582,7 @@ For debugging purposes its easier to do something like this:
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-LOG:CAPS">GST_LOG</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;caps are %&quot;</span> GST_PTR_FORMAT<span class="gtkdoc opt">,</span> caps<span class="gtkdoc opt">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-LOG:CAPS">GST_LOG</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;caps are %&quot;</span> GST_PTR_FORMAT<span class="gtkdoc opt">,</span> caps<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>

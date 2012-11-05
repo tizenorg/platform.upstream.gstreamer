@@ -105,7 +105,7 @@ am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/gst.m4 \
 	$(top_srcdir)/common/m4/gtk-doc.m4 \
 	$(top_srcdir)/common/m4/introspection.m4 \
-	$(top_srcdir)/common/m4/pkg.m4 \
+	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/m4/ax_pthread.m4 \
 	$(top_srcdir)/m4/check-checks.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
@@ -353,6 +353,9 @@ PKG_CONFIG = @PKG_CONFIG@
 PLUGINDIR = @PLUGINDIR@
 POSUB = @POSUB@
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 PYTHON = @PYTHON@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -389,6 +392,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -888,14 +892,12 @@ upload: $(FORMATS)
 	if echo $(FORMATS) | grep ps > /dev/null; then export SRC="$$SRC $(DOC).ps"; fi; \
 	if echo $(FORMATS) | grep pdf > /dev/null; then export SRC="$$SRC $(DOC).pdf"; fi; \
 	\
-	# upload releases to both 0.10.X/ and head/ subdirectories \
-	if test "x$(PACKAGE_VERSION_NANO)" = x0; then \
-	  export DIR=$(DOC_BASE)/gstreamer/$(VERSION)/$(DOC); \
-	  echo Uploading $$SRC to $(DOC_SERVER):$$DIR; \
-	  ssh $(DOC_SERVER) mkdir -p $$DIR; \
-	  rsync -rv -e ssh --delete $$SRC $(DOC_SERVER):$$DIR; \
-	  ssh $(DOC_SERVER) chmod -R g+w $$DIR; \
-	fi; \
+	# upload releases to both X.Y/ and head/ subdirectories \
+	export DIR=$(DOC_BASE)/gstreamer/$(PACKAGE_VERSION_MAJOR).$(PACKAGE_VERSION_MINOR)/$(DOC); \
+	echo Uploading $$SRC to $(DOC_SERVER):$$DIR; \
+	ssh $(DOC_SERVER) mkdir -p $$DIR; \
+	rsync -rv -e ssh --delete $$SRC $(DOC_SERVER):$$DIR; \
+	ssh $(DOC_SERVER) chmod -R g+w $$DIR; \
 	\
 	export DIR=$(DOC_BASE)/gstreamer/head/$(DOC); \
 	echo Uploading $$SRC to $(DOC_SERVER):$$DIR; \

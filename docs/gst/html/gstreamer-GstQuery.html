@@ -284,7 +284,7 @@ The following example shows how to query the duration of a pipeline:
 <p>
 </p>
 <div class="example">
-<a name="idp39816480"></a><p class="title"><b>Example 12. Query duration on a pipeline</b></p>
+<a name="idp40600640"></a><p class="title"><b>Example 12. Query duration on a pipeline</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -304,17 +304,17 @@ The following example shows how to query the duration of a pipeline:
 13</pre></td>
         <td class="listing_code"><pre class="programlisting">GstQuery <span class="gtkdoc opt">*</span>query<span class="gtkdoc opt">;</span>
 gboolean res<span class="gtkdoc opt">;</span>
-query <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstQuery.html#gst-query-new-duration">gst_query_new_duration</a></span> <span class="gtkdoc opt">(</span>GST_FORMAT_TIME<span class="gtkdoc opt">);</span>
-res <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/GstElement.html#gst-element-query">gst_element_query</a></span> <span class="gtkdoc opt">(</span>pipeline<span class="gtkdoc opt">,</span> query<span class="gtkdoc opt">);</span>
+query <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstQuery.html#gst-query-new-duration">gst_query_new_duration</a></span> <span class="gtkdoc opt">(</span>GST_FORMAT_TIME<span class="gtkdoc opt">);</span>
+res <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#gst-element-query">gst_element_query</a></span> <span class="gtkdoc opt">(</span>pipeline<span class="gtkdoc opt">,</span> query<span class="gtkdoc opt">);</span>
 <span class="keyword">if</span> <span class="gtkdoc opt">(</span>res<span class="gtkdoc opt">) {</span>
   gint64 duration<span class="gtkdoc opt">;</span>
-  <span class="function"><a href="../gstreamer-1.0/gstreamer-GstQuery.html#gst-query-parse-duration">gst_query_parse_duration</a></span> <span class="gtkdoc opt">(</span>query<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">, &amp;</span>duration<span class="gtkdoc opt">);</span>
-  <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;duration = %&quot;</span>GST_TIME_FORMAT<span class="gtkdoc opt">,</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstInfo.html#GST-TIME-ARGS:CAPS">GST_TIME_ARGS</a></span> <span class="gtkdoc opt">(</span>duration<span class="gtkdoc opt">));</span>
+  <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstQuery.html#gst-query-parse-duration">gst_query_parse_duration</a></span> <span class="gtkdoc opt">(</span>query<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">, &amp;</span>duration<span class="gtkdoc opt">);</span>
+  <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;duration = %&quot;</span>GST_TIME_FORMAT<span class="gtkdoc opt">,</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstInfo.html#GST-TIME-ARGS:CAPS">GST_TIME_ARGS</a></span> <span class="gtkdoc opt">(</span>duration<span class="gtkdoc opt">));</span>
 <span class="gtkdoc opt">}</span>
 <span class="keyword">else</span> <span class="gtkdoc opt">{</span>
   <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;duration query failed...&quot;</span><span class="gtkdoc opt">);</span>
 <span class="gtkdoc opt">}</span>
-<span class="function"><a href="../gstreamer-1.0/gstreamer-GstQuery.html#gst-query-unref">gst_query_unref</a></span> <span class="gtkdoc opt">(</span>query<span class="gtkdoc opt">);</span></pre></td>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstQuery.html#gst-query-unref">gst_query_unref</a></span> <span class="gtkdoc opt">(</span>query<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2034,7 +2034,7 @@ Configures the buffering stats values in <em class="parameter"><code>query</code
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>buffering_left</code></em> :</span></p></td>
-<td>amount of buffering time left</td>
+<td>amount of buffering time left in milliseconds</td>
 </tr>
 </tbody>
 </table></div>
@@ -2074,7 +2074,8 @@ Extracts the buffering stats values from <em class="parameter"><code>query</code
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>buffering_left</code></em> :</span></p></td>
-<td>amount of buffering time left, or NULL. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+<td>amount of buffering time left in
+milliseconds, or NULL. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>

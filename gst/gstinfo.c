@@ -129,6 +129,8 @@
 
 #endif /* !GST_DISABLE_GST_DEBUG */
 
+extern gboolean gst_is_initialized (void);
+
 /* we want these symbols exported even if debug is disabled, to maintain
  * ABI compatibility. Unless GST_REMOVE_DISABLED is defined. */
 #if !defined(GST_DISABLE_GST_DEBUG) || !defined(GST_REMOVE_DISABLED)
@@ -219,7 +221,7 @@ dladdr (void *address, Dl_info * dl)
 static void gst_debug_reset_threshold (gpointer category, gpointer unused);
 static void gst_debug_reset_all_thresholds (void);
 
-#ifdef HAVE_PRINTF_EXTENSION
+#ifdef GST_USING_PRINTF_EXTENSION
 static int _gst_info_printf_extension_ptr (FILE * stream,
     const struct printf_info *info, const void *const *args);
 static int _gst_info_printf_extension_segment (FILE * stream,
@@ -331,7 +333,7 @@ _priv_gst_debug_init (void)
   /* get time we started for debugging messages */
   _priv_gst_info_start_time = gst_util_get_timestamp ();
 
-#ifdef HAVE_PRINTF_EXTENSION
+#ifdef GST_USING_PRINTF_EXTENSION
 #ifdef HAVE_REGISTER_PRINTF_SPECIFIER
   register_printf_specifier (GST_PTR_FORMAT[0], _gst_info_printf_extension_ptr,
       _gst_info_printf_extension_arginfo);
@@ -720,7 +722,7 @@ gst_debug_print_object (gpointer ptr)
   return g_strdup_printf ("%p", ptr);
 }
 
-#ifdef HAVE_PRINTF_EXTENSION
+#ifdef GST_USING_PRINTF_EXTENSION
 
 static gchar *
 gst_debug_print_segment (gpointer ptr)
@@ -763,7 +765,7 @@ gst_debug_print_segment (gpointer ptr)
   }
 }
 
-#endif /* HAVE_PRINTF_EXTENSION */
+#endif /* GST_USING_PRINTF_EXTENSION */
 
 /**
  * gst_debug_construct_term_color:
@@ -1104,8 +1106,9 @@ gst_debug_add_log_function (GstLogFunction func, gpointer user_data,
   __log_functions = g_slist_prepend (list, entry);
   g_mutex_unlock (&__log_func_mutex);
 
-  GST_DEBUG ("prepended log function %p (user data %p) to log functions",
-      func, user_data);
+  if (gst_is_initialized ())
+    GST_DEBUG ("prepended log function %p (user data %p) to log functions",
+        func, user_data);
 }
 
 static gint
@@ -1180,8 +1183,9 @@ gst_debug_remove_log_function (GstLogFunction func)
   removals =
       gst_debug_remove_with_compare_func
       (gst_debug_compare_log_function_by_func, (gpointer) func);
-  GST_DEBUG ("removed log function %p %d times from log function list", func,
-      removals);
+  if (gst_is_initialized ())
+    GST_DEBUG ("removed log function %p %d times from log function list", func,
+        removals);
 
   return removals;
 }
@@ -1202,9 +1206,11 @@ gst_debug_remove_log_function_by_data (gpointer data)
   removals =
       gst_debug_remove_with_compare_func
       (gst_debug_compare_log_function_by_data, data);
-  GST_DEBUG
-      ("removed %d log functions with user data %p from log function list",
-      removals, data);
+
+  if (gst_is_initialized ())
+    GST_DEBUG
+        ("removed %d log functions with user data %p from log function list",
+        removals, data);
 
   return removals;
 }
@@ -1311,8 +1317,9 @@ gst_debug_reset_threshold (gpointer category, gpointer unused)
 
     walk = g_slist_next (walk);
     if (g_pattern_match_string (entry->pat, cat->name)) {
-      GST_LOG ("category %s matches pattern %p - gets set to level %d",
-          cat->name, entry->pat, entry->level);
+      if (gst_is_initialized ())
+        GST_LOG ("category %s matches pattern %p - gets set to level %d",
+            cat->name, entry->pat, entry->level);
       gst_debug_category_set_threshold (cat, entry->level);
       goto exit;
     }
@@ -1338,8 +1345,9 @@ for_each_threshold_by_entry (gpointer data, gpointer user_data)
   LevelNameEntry *entry = (LevelNameEntry *) user_data;
 
   if (g_pattern_match_string (entry->pat, cat->name)) {
-    GST_LOG ("category %s matches pattern %p - gets set to level %d",
-        cat->name, entry->pat, entry->level);
+    if (gst_is_initialized ())
+      GST_LOG ("category %s matches pattern %p - gets set to level %d",
+          cat->name, entry->pat, entry->level);
     gst_debug_category_set_threshold (cat, entry->level);
   }
 }
@@ -1655,7 +1663,7 @@ _gst_debug_register_funcptr (GstDebugFuncPtr func, const gchar * ptrname)
 
 /*** PRINTF EXTENSIONS ********************************************************/
 
-#ifdef HAVE_PRINTF_EXTENSION
+#ifdef GST_USING_PRINTF_EXTENSION
 static int
 _gst_info_printf_extension_ptr (FILE * stream, const struct printf_info *info,
     const void *const *args)
@@ -1712,7 +1720,7 @@ _gst_info_printf_extension_arginfo (const struct printf_info *info, size_t n,
   }
   return 1;
 }
-#endif /* HAVE_PRINTF_EXTENSION */
+#endif /* GST_USING_PRINTF_EXTENSION */
 
 static void
 gst_info_dump_mem_line (gchar * linebuf, gsize linebuf_size,

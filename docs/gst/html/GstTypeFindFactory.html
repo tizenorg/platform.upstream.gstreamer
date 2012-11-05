@@ -73,7 +73,7 @@ the section <GTKDOCLINK HREF="gstreamer-Writing-typefind-functions">
 <p>
 </p>
 <div class="example">
-<a name="idp12151600"></a><p class="title"><b>Example 13. how to write a simple typefinder</b></p>
+<a name="idp27698816"></a><p class="title"><b>Example 13. how to write a simple typefinder</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -138,7 +138,7 @@ the section <GTKDOCLINK HREF="gstreamer-Writing-typefind-functions">
   MyTypeFind <span class="gtkdoc opt">*</span>find <span class="gtkdoc opt">= (</span>MyTypeFind <span class="gtkdoc opt">*)</span> data<span class="gtkdoc opt">;</span>
   <span class="keyword">if</span> <span class="gtkdoc opt">(</span>probability <span class="gtkdoc opt">&gt;</span> find<span class="gtkdoc opt">-&gt;</span>probability<span class="gtkdoc opt">) {</span>
     find<span class="gtkdoc opt">-&gt;</span>probability <span class="gtkdoc opt">=</span> probability<span class="gtkdoc opt">;</span>
-    <span class="function"><a href="../gstreamer-1.0/gstreamer-GstCaps.html#gst-caps-replace">gst_caps_replace</a></span> <span class="gtkdoc opt">(&amp;</span>find<span class="gtkdoc opt">-&gt;</span>caps<span class="gtkdoc opt">,</span> caps<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstCaps.html#gst-caps-replace">gst_caps_replace</a></span> <span class="gtkdoc opt">(&amp;</span>find<span class="gtkdoc opt">-&gt;</span>caps<span class="gtkdoc opt">,</span> caps<span class="gtkdoc opt">);</span>
   <span class="gtkdoc opt">}</span>
 <span class="gtkdoc opt">}</span>
 <span class="gtkdoc kwb">static</span> GstCaps <span class="gtkdoc opt">*</span>
@@ -147,11 +147,11 @@ the section <GTKDOCLINK HREF="gstreamer-Writing-typefind-functions">
   GList <span class="gtkdoc opt">*</span>walk<span class="gtkdoc opt">, *</span>type_list<span class="gtkdoc opt">;</span>
   MyTypeFind find <span class="gtkdoc opt">= {</span>data<span class="gtkdoc opt">,</span> size<span class="gtkdoc opt">,</span> <span class="number">0</span><span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">};</span>
   GstTypeFind gst_find <span class="gtkdoc opt">= {</span>my_peek<span class="gtkdoc opt">,</span> my_suggest<span class="gtkdoc opt">, &amp;</span>find<span class="gtkdoc opt">, };</span>
-  walk <span class="gtkdoc opt">=</span> type_list <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/GstTypeFindFactory.html#gst-type-find-factory-get-list">gst_type_find_factory_get_list</a></span> <span class="gtkdoc opt">();</span>
+  walk <span class="gtkdoc opt">=</span> type_list <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTypeFindFactory.html#gst-type-find-factory-get-list">gst_type_find_factory_get_list</a></span> <span class="gtkdoc opt">();</span>
   <span class="keyword">while</span> <span class="gtkdoc opt">(</span>walk<span class="gtkdoc opt">) {</span>
     GstTypeFindFactory <span class="gtkdoc opt">*</span>factory <span class="gtkdoc opt">=</span> <span class="function">GST_TYPE_FIND_FACTORY</span> <span class="gtkdoc opt">(</span>walk<span class="gtkdoc opt">-&gt;</span>data<span class="gtkdoc opt">);</span>
     walk <span class="gtkdoc opt">=</span> <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#g-list-next">g_list_next</a></span> <span class="gtkdoc opt">(</span>walk<span class="gtkdoc opt">)</span>
-    <span class="function"><a href="../gstreamer-1.0/GstTypeFindFactory.html#gst-type-find-factory-call-function">gst_type_find_factory_call_function</a></span> <span class="gtkdoc opt">(</span>factory<span class="gtkdoc opt">, &amp;</span>gst_find<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstTypeFindFactory.html#gst-type-find-factory-call-function">gst_type_find_factory_call_function</a></span> <span class="gtkdoc opt">(</span>factory<span class="gtkdoc opt">, &amp;</span>gst_find<span class="gtkdoc opt">);</span>
   <span class="gtkdoc opt">}</span>
   <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#g-list-free">g_list_free</a></span> <span class="gtkdoc opt">(</span>type_list<span class="gtkdoc opt">);</span>
   <span class="keyword">return</span> find<span class="gtkdoc opt">.</span>caps<span class="gtkdoc opt">;</span>

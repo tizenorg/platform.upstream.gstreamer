@@ -174,7 +174,7 @@ preset_get_paths (GstPreset * preset, const gchar ** preset_user_path,
     if (!(preset_path = g_type_get_qdata (type, preset_system_path_quark))) {
       gchar *preset_dir;
 
-      /* system presets in '$GST_DATADIR/gstreamer-0.10/presets/GstAudioPanorama.prs' */
+      /* system presets in '$GST_DATADIR/gstreamer-1.0/presets/GstAudioPanorama.prs' */
       preset_dir = g_build_filename (GST_DATADIR, "gstreamer-" GST_API_VERSION,
           "presets", NULL);
       GST_INFO_OBJECT (preset, "system_preset_dir: '%s'", preset_dir);
@@ -390,7 +390,6 @@ preset_get_keyfile (GstPreset * preset)
         if (presets)
           g_key_file_free (presets);
         presets = in_user;
-        version = version_user;
       }
     }
 

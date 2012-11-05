@@ -206,7 +206,7 @@ To do that <a class="link" href="gstreamer-GstEvent.html#gst-event-new-seek" tit
 the needed parameters to specify seeking time and mode.
 </p>
 <div class="example">
-<a name="idp22881984"></a><p class="title"><b>Example 8. performing a seek on a pipeline</b></p>
+<a name="idp23273888"></a><p class="title"><b>Example 8. performing a seek on a pipeline</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -231,13 +231,13 @@ gboolean result<span class="gtkdoc opt">;</span>
 <span class="gtkdoc opt">...</span>
 <span class="gtkdoc slc">// construct a seek event to play the media from second 2 to 5, flush</span>
 <span class="gtkdoc slc">// the pipeline to decrease latency.</span>
-event <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstEvent.html#gst-event-new-seek">gst_event_new_seek</a></span> <span class="gtkdoc opt">(</span><span class="number">1.0</span><span class="gtkdoc opt">,</span> 
+event <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstEvent.html#gst-event-new-seek">gst_event_new_seek</a></span> <span class="gtkdoc opt">(</span><span class="number">1.0</span><span class="gtkdoc opt">,</span> 
    GST_FORMAT_TIME<span class="gtkdoc opt">,</span> 
    GST_SEEK_FLAG_FLUSH<span class="gtkdoc opt">,</span>
    GST_SEEK_TYPE_SET<span class="gtkdoc opt">,</span> <span class="number">2</span> <span class="gtkdoc opt">*</span> GST_SECOND<span class="gtkdoc opt">,</span>
    GST_SEEK_TYPE_SET<span class="gtkdoc opt">,</span> <span class="number">5</span> <span class="gtkdoc opt">*</span> GST_SECOND<span class="gtkdoc opt">);</span>
 <span class="gtkdoc opt">...</span>
-result <span class="gtkdoc opt">=</span> <span class="function"><a href="../gstreamer-1.0/GstElement.html#gst-element-send-event">gst_element_send_event</a></span> <span class="gtkdoc opt">(</span>pipeline<span class="gtkdoc opt">,</span> event<span class="gtkdoc opt">);</span>
+result <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#gst-element-send-event">gst_element_send_event</a></span> <span class="gtkdoc opt">(</span>pipeline<span class="gtkdoc opt">,</span> event<span class="gtkdoc opt">);</span>
 <span class="keyword">if</span> <span class="gtkdoc opt">(!</span>result<span class="gtkdoc opt">)</span>
   <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Message-Logging.html#g-warning">g_warning</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;seek failed&quot;</span><span class="gtkdoc opt">);</span>
 <span class="gtkdoc opt">...</span></pre></td>

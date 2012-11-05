@@ -118,6 +118,7 @@
 <ANCHOR id="GstBaseSink--sync" href="gstreamer-libs-1.0/GstBaseSink.html#GstBaseSink--sync">
 <ANCHOR id="GstBaseSink--throttle-time" href="gstreamer-libs-1.0/GstBaseSink.html#GstBaseSink--throttle-time">
 <ANCHOR id="GstBaseSink--ts-offset" href="gstreamer-libs-1.0/GstBaseSink.html#GstBaseSink--ts-offset">
+<ANCHOR id="GstBaseSink.see-also" href="gstreamer-libs-1.0/GstBaseSink.html#GstBaseSink.see-also">
 <ANCHOR id="GstBaseTransform" href="gstreamer-libs-1.0/GstBaseTransform.html">
 <ANCHOR id="GstBaseTransform.synopsis" href="gstreamer-libs-1.0/GstBaseTransform.html#GstBaseTransform.synopsis">
 <ANCHOR id="GstBaseTransform.object-hierarchy" href="gstreamer-libs-1.0/GstBaseTransform.html#GstBaseTransform.object-hierarchy">
@@ -128,6 +129,7 @@
 <ANCHOR id="GstBaseTransformClass" href="gstreamer-libs-1.0/GstBaseTransform.html#GstBaseTransformClass">
 <ANCHOR id="gst-base-transform-is-passthrough" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-is-passthrough">
 <ANCHOR id="gst-base-transform-set-passthrough" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-set-passthrough">
+<ANCHOR id="gst-base-transform-set-prefer-passthrough" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-set-prefer-passthrough">
 <ANCHOR id="gst-base-transform-is-in-place" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-is-in-place">
 <ANCHOR id="gst-base-transform-set-in-place" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-set-in-place">
 <ANCHOR id="gst-base-transform-is-qos-enabled" href="gstreamer-libs-1.0/GstBaseTransform.html#gst-base-transform-is-qos-enabled">

@@ -147,7 +147,7 @@ typedef GstFlowReturn (*GstCollectPadsFunction) (GstCollectPads *pads, gpointer 
  * GstCollectPadsBufferFunction:
  * @pads: the #GstCollectPads that trigered the callback
  * @data: the #GstCollectData of pad that has received the buffer
- * @buffer: the #GstBuffer
+ * @buffer: (transfer full): the #GstBuffer
  * @user_data: user data passed to gst_collect_pads_set_buffer_function()
  *
  * A function that will be called when a (considered oldest) buffer can be muxed.
@@ -217,7 +217,7 @@ typedef gboolean (*GstCollectPadsQueryFunction)        (GstCollectPads *pads, Gs
  * GstCollectPadsClipFunction:
  * @pads: a #GstCollectPads
  * @data: a #GstCollectData
- * @inbuffer: the input #GstBuffer
+ * @inbuffer: (transfer full): the input #GstBuffer
  * @outbuffer: the output #GstBuffer
  * @user_data: user data
  *

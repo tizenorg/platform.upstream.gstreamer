@@ -154,7 +154,6 @@ typedef enum {
  * Note that the custom return values should not be exposed outside of the
  * element scope.
  */
-/* FIXME 0.11: remove custom flow returns */
 typedef enum {
   /* custom success starts here */
   GST_FLOW_CUSTOM_SUCCESS_2 = 102,
@@ -309,7 +308,8 @@ typedef GstFlowReturn		(*GstPadChainListFunction)	(GstPad *pad, GstObject *paren
  *
  * This function is installed on a source pad with
  * gst_pad_set_getrange_function() and can only be called on source pads after
- * they are successfully activated with gst_pad_activate_pull().
+ * they are successfully activated with gst_pad_activate_mode() with the
+ * #GST_PAD_MODE_PULL.
  *
  * @offset and @length are always given in byte units. @offset must normally be a value
  * between 0 and the length in bytes of the data available on @pad. The
@@ -562,6 +562,8 @@ GstBufferList* gst_pad_probe_info_get_buffer_list (GstPadProbeInfo * info);
  * blocking type.
  *
  * The callback is allowed to modify the data pointer in @info.
+ *
+ * Returns: a #GstPadProbeReturn
  */
 typedef GstPadProbeReturn   (*GstPadProbeCallback)   (GstPad *pad, GstPadProbeInfo *info,
                                                       gpointer user_data);

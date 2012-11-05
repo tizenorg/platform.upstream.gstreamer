@@ -122,7 +122,7 @@ The basic use pattern of an iterator is as follows:
 <p>
 </p>
 <div class="example">
-<a name="idp21236752"></a><p class="title"><b>Example 9. Using an iterator</b></p>
+<a name="idp23894336"></a><p class="title"><b>Example 9. Using an iterator</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -153,14 +153,14 @@ The basic use pattern of an iterator is as follows:
         <td class="listing_code"><pre class="programlisting">it <span class="gtkdoc opt">=</span> <span class="function">_get_iterator</span><span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">);</span>
 done <span class="gtkdoc opt">=</span> FALSE<span class="gtkdoc opt">;</span>
 <span class="keyword">while</span> <span class="gtkdoc opt">(!</span>done<span class="gtkdoc opt">) {</span>
-  <span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../gstreamer-1.0/gstreamer-GstIterator.html#gst-iterator-next">gst_iterator_next</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">, &amp;</span>item<span class="gtkdoc opt">)) {</span>
+  <span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#gst-iterator-next">gst_iterator_next</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">, &amp;</span>item<span class="gtkdoc opt">)) {</span>
     <span class="keyword">case</span> GST_ITERATOR_OK<span class="gtkdoc opt">:</span>
       <span class="gtkdoc opt">...</span> use<span class="gtkdoc opt">/</span>change item here<span class="gtkdoc opt">...</span>
       <span class="function"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#g-value-reset">g_value_reset</a></span> <span class="gtkdoc opt">(&amp;</span>item<span class="gtkdoc opt">);</span>
       <span class="keyword">break</span><span class="gtkdoc opt">;</span>
     <span class="keyword">case</span> GST_ITERATOR_RESYNC<span class="gtkdoc opt">:</span>
       <span class="gtkdoc opt">...</span>rollback changes to items<span class="gtkdoc opt">...</span>
-      <span class="function"><a href="../gstreamer-1.0/gstreamer-GstIterator.html#gst-iterator-resync">gst_iterator_resync</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">);</span>
+      <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#gst-iterator-resync">gst_iterator_resync</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">);</span>
       <span class="keyword">break</span><span class="gtkdoc opt">;</span>
     <span class="keyword">case</span> GST_ITERATOR_ERROR<span class="gtkdoc opt">:</span>
       <span class="gtkdoc opt">...</span>wrong parameters were given<span class="gtkdoc opt">...</span>
@@ -172,7 +172,7 @@ done <span class="gtkdoc opt">=</span> FALSE<span class="gtkdoc opt">;</span>
   <span class="gtkdoc opt">}</span>
 <span class="gtkdoc opt">}</span>
 <span class="function"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#g-value-unset">g_value_unset</a></span> <span class="gtkdoc opt">(&amp;</span>item<span class="gtkdoc opt">);</span>
-<span class="function"><a href="../gstreamer-1.0/gstreamer-GstIterator.html#gst-iterator-free">gst_iterator_free</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">);</span></pre></td>
+<span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstIterator.html#gst-iterator-free">gst_iterator_free</a></span> <span class="gtkdoc opt">(</span>it<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>

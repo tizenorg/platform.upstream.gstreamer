@@ -50,8 +50,8 @@ enum                <a class="link" href="gstreamer-plugins-tee.html#GstTeePullM
 <pre class="synopsis">
   <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
    +----<a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
-         +----<a href="../gstreamer-1.0/GstObject.html">GstObject</a>
-               +----<a href="../gstreamer-1.0/GstElement.html">GstElement</a>
+         +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html">GstObject</a>
+               +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html">GstElement</a>
                      +----GstTee
 </pre>
 </div>
@@ -64,7 +64,7 @@ enum                <a class="link" href="gstreamer-plugins-tee.html#GstTeePullM
   "<a class="link" href="gstreamer-plugins-tee.html#GstTee--num-src-pads" title='The "num-src-pads" property'>num-src-pads</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read
   "<a class="link" href="gstreamer-plugins-tee.html#GstTee--silent" title='The "silent" property'>silent</a>"                   <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read / Write / Construct
   "<a class="link" href="gstreamer-plugins-tee.html#GstTee--pull-mode" title='The "pull-mode" property'>pull-mode</a>"                <a class="link" href="gstreamer-plugins-tee.html#GstTeePullMode" title="enum GstTeePullMode"><span class="type">GstTeePullMode</span></a>        : Read / Write / Construct
-  "<a class="link" href="gstreamer-plugins-tee.html#GstTee--alloc-pad" title='The "alloc-pad" property'>alloc-pad</a>"                <a href="../gstreamer-1.0/GstPad.html"><span class="type">GstPad</span></a>*               : Read / Write
+  "<a class="link" href="gstreamer-plugins-tee.html#GstTee--alloc-pad" title='The "alloc-pad" property'>alloc-pad</a>"                <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>*               : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -83,7 +83,7 @@ branch would stall the other branches.
 <p>
 </p>
 <div class="refsect2">
-<a name="idp6592416"></a><h3>Example launch line</h3>
+<a name="idp11758608"></a><h3>Example launch line</h3>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -102,7 +102,7 @@ element.
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
 <div class="refsect2">
-<a name="idp6595136"></a><h3>Element Information</h3>
+<a name="idp11761328"></a><h3>Element Information</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -125,7 +125,7 @@ element.
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp12121312"></a><h3>Element Pads</h3>
+<a name="idp12171152"></a><h3>Element Pads</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -258,7 +258,7 @@ disables pull mode.
 <hr>
 <div class="refsect2">
 <a name="GstTee--alloc-pad"></a><h3>The <code class="literal">"alloc-pad"</code> property</h3>
-<pre class="programlisting">  "alloc-pad"                <a href="../gstreamer-1.0/GstPad.html"><span class="type">GstPad</span></a>*               : Read / Write</pre>
+<pre class="programlisting">  "alloc-pad"                <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>*               : Read / Write</pre>
 <p>The pad used for gst_pad_alloc_buffer.</p>
 </div>
 </div>

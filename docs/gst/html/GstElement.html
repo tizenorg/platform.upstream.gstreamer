@@ -87,6 +87,7 @@ enum                <a class="link" href="GstElement.html#GstStateChangeReturn" 
                                                          text,
                                                          debug)
 #define             <a class="link" href="GstElement.html#GST-ELEMENT-IS-LOCKED-STATE:CAPS" title="GST_ELEMENT_IS_LOCKED_STATE()">GST_ELEMENT_IS_LOCKED_STATE</a>         (elem)
+
 #define             <a class="link" href="GstElement.html#GST-ELEMENT-METADATA-AUTHOR:CAPS" title="GST_ELEMENT_METADATA_AUTHOR">GST_ELEMENT_METADATA_AUTHOR</a>
 #define             <a class="link" href="GstElement.html#GST-ELEMENT-METADATA-DESCRIPTION:CAPS" title="GST_ELEMENT_METADATA_DESCRIPTION">GST_ELEMENT_METADATA_DESCRIPTION</a>
 #define             <a class="link" href="GstElement.html#GST-ELEMENT-METADATA-DOC-URI:CAPS" title="GST_ELEMENT_METADATA_DOC_URI">GST_ELEMENT_METADATA_DOC_URI</a>
@@ -526,6 +527,8 @@ state will yield the running_time against the clock.</td>
   gboolean              (*send_event)           (GstElement *element, GstEvent *event);
 
   gboolean              (*query)                (GstElement *element, GstQuery *query);
+
+  gboolean              (*post_message)         (GstElement *element, GstMessage *message);
 };
 </pre>
 <p>
@@ -603,6 +606,11 @@ functionality.
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="GstElementClass.query"></a>query</code></em> ()</span></p></td>
 <td>perform a <a class="link" href="gstreamer-GstQuery.html#GstQuery" title="struct GstQuery"><span class="type">GstQuery</span></a> on the element</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="structfield"><code><a name="GstElementClass.post-message"></a>post_message</code></em> ()</span></p></td>
+<td>called when a message is posted on the element. Chain up to
+the parent class' handler to have it posted on the bus.</td>
 </tr>
 </tbody>
 </table></div>

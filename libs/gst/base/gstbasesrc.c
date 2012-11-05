@@ -121,8 +121,12 @@
  *   // #GST_PAD_SRC and name "src"
  *   gst_element_class_add_pad_template (gstelement_class,
  *       gst_static_pad_template_get (&amp;srctemplate));
- *   // see #GstElementDetails
- *   gst_element_class_set_details (gstelement_class, &amp;details);
+ *
+ *   gst_element_class_set_static_metadata (gstelement_class,
+ *      "Source name",
+ *      "Source",
+ *      "My Source element",
+ *      "The author &lt;my.sink@my.email&gt;");
  * }
  * ]|
  *
@@ -178,6 +182,12 @@ GST_DEBUG_CATEGORY_STATIC (gst_base_src_debug);
 #define GST_LIVE_WAIT_UNTIL(elem, end_time)   g_cond_timed_wait (GST_LIVE_GET_COND (elem), GST_LIVE_GET_LOCK (elem), end_time)
 #define GST_LIVE_SIGNAL(elem)                 g_cond_signal (GST_LIVE_GET_COND (elem));
 #define GST_LIVE_BROADCAST(elem)              g_cond_broadcast (GST_LIVE_GET_COND (elem));
+
+
+#define GST_ASYNC_GET_COND(elem)              (&GST_BASE_SRC_CAST(elem)->priv->async_cond)
+#define GST_ASYNC_WAIT(elem)                  g_cond_wait (GST_ASYNC_GET_COND (elem), GST_OBJECT_GET_LOCK (elem))
+#define GST_ASYNC_SIGNAL(elem)                g_cond_signal (GST_ASYNC_GET_COND (elem));
+
 
 /* BaseSrc signals and args */
 enum
@@ -247,6 +257,8 @@ struct _GstBaseSrcPrivate
   GstBufferPool *pool;
   GstAllocator *allocator;
   GstAllocationParams params;
+
+  GCond async_cond;
 };
 
 static GstElementClass *parent_class = NULL;
@@ -440,6 +452,7 @@ gst_base_src_init (GstBaseSrc * basesrc, gpointer g_class)
   basesrc->priv->do_timestamp = DEFAULT_DO_TIMESTAMP;
   g_atomic_int_set (&basesrc->priv->have_events, FALSE);
 
+  g_cond_init (&basesrc->priv->async_cond);
   basesrc->priv->start_result = GST_FLOW_FLUSHING;
   GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTED);
   GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTING);
@@ -458,6 +471,7 @@ gst_base_src_finalize (GObject * object)
 
   g_mutex_clear (&basesrc->live_lock);
   g_cond_clear (&basesrc->live_cond);
+  g_cond_clear (&basesrc->priv->async_cond);
 
   event_p = &basesrc->pending_seek;
   gst_event_replace (event_p, NULL);
@@ -777,7 +791,7 @@ gst_base_src_get_do_timestamp (GstBaseSrc * src)
  * @src: The source
  * @start: The new start value for the segment
  * @stop: Stop value for the new segment
- * @position: The position value for the new segent
+ * @time: The new time value for the start of the new segent
  *
  * Prepare a new seamless segment for emission downstream. This function must
  * only be called by derived sub-classes, and only from the create() function,
@@ -790,25 +804,27 @@ gst_base_src_get_do_timestamp (GstBaseSrc * src)
  */
 gboolean
 gst_base_src_new_seamless_segment (GstBaseSrc * src, gint64 start, gint64 stop,
-    gint64 position)
+    gint64 time)
 {
   gboolean res = TRUE;
-
-  GST_DEBUG_OBJECT (src,
-      "Starting new seamless segment. Start %" GST_TIME_FORMAT " stop %"
-      GST_TIME_FORMAT " position %" GST_TIME_FORMAT, GST_TIME_ARGS (start),
-      GST_TIME_ARGS (stop), GST_TIME_ARGS (position));
 
   GST_OBJECT_LOCK (src);
 
   src->segment.base = gst_segment_to_running_time (&src->segment,
       src->segment.format, src->segment.position);
-  src->segment.start = start;
+  src->segment.position = src->segment.start = start;
   src->segment.stop = stop;
-  src->segment.position = position;
+  src->segment.time = time;
 
-  /* forward, we send data from position to stop */
+  /* Mark pending segment. Will be sent before next data */
   src->priv->segment_pending = TRUE;
+
+  GST_DEBUG_OBJECT (src,
+      "Starting new seamless segment. Start %" GST_TIME_FORMAT " stop %"
+      GST_TIME_FORMAT " time %" GST_TIME_FORMAT " base %" GST_TIME_FORMAT,
+      GST_TIME_ARGS (start), GST_TIME_ARGS (stop), GST_TIME_ARGS (time),
+      GST_TIME_ARGS (src->segment.base));
+
   GST_OBJECT_UNLOCK (src);
 
   src->priv->discont = TRUE;
@@ -3085,6 +3101,8 @@ gst_base_src_start (GstBaseSrc * basesrc)
   gboolean result;
 
   GST_LIVE_LOCK (basesrc);
+
+  GST_OBJECT_LOCK (basesrc);
   if (GST_BASE_SRC_IS_STARTING (basesrc))
     goto was_starting;
   if (GST_BASE_SRC_IS_STARTED (basesrc))
@@ -3092,12 +3110,12 @@ gst_base_src_start (GstBaseSrc * basesrc)
 
   basesrc->priv->start_result = GST_FLOW_FLUSHING;
   GST_OBJECT_FLAG_SET (basesrc, GST_BASE_SRC_FLAG_STARTING);
+  gst_segment_init (&basesrc->segment, basesrc->segment.format);
+  GST_OBJECT_UNLOCK (basesrc);
+
   basesrc->num_buffers_left = basesrc->num_buffers;
   basesrc->running = FALSE;
   basesrc->priv->segment_pending = FALSE;
-  GST_OBJECT_LOCK (basesrc);
-  gst_segment_init (&basesrc->segment, basesrc->segment.format);
-  GST_OBJECT_UNLOCK (basesrc);
   GST_LIVE_UNLOCK (basesrc);
 
   bclass = GST_BASE_SRC_GET_CLASS (basesrc);
@@ -3109,8 +3127,12 @@ gst_base_src_start (GstBaseSrc * basesrc)
   if (!result)
     goto could_not_start;
 
-  if (!gst_base_src_is_async (basesrc))
+  if (!gst_base_src_is_async (basesrc)) {
     gst_base_src_start_complete (basesrc, GST_FLOW_OK);
+    /* not really waiting here, we call this to get the result
+     * from the start_complete call */
+    result = gst_base_src_start_wait (basesrc) == GST_FLOW_OK;
+  }
 
   return result;
 
@@ -3118,12 +3140,14 @@ gst_base_src_start (GstBaseSrc * basesrc)
 was_starting:
   {
     GST_DEBUG_OBJECT (basesrc, "was starting");
+    GST_OBJECT_UNLOCK (basesrc);
     GST_LIVE_UNLOCK (basesrc);
     return TRUE;
   }
 was_started:
   {
     GST_DEBUG_OBJECT (basesrc, "was started");
+    GST_OBJECT_UNLOCK (basesrc);
     GST_LIVE_UNLOCK (basesrc);
     return TRUE;
   }
@@ -3226,12 +3250,12 @@ gst_base_src_start_complete (GstBaseSrc * basesrc, GstFlowReturn ret)
       goto no_get_range;
   }
 
-  GST_LIVE_LOCK (basesrc);
+  GST_OBJECT_LOCK (basesrc);
   GST_OBJECT_FLAG_SET (basesrc, GST_BASE_SRC_FLAG_STARTED);
   GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTING);
   basesrc->priv->start_result = ret;
-  GST_LIVE_SIGNAL (basesrc);
-  GST_LIVE_UNLOCK (basesrc);
+  GST_ASYNC_SIGNAL (basesrc);
+  GST_OBJECT_UNLOCK (basesrc);
 
   GST_PAD_STREAM_UNLOCK (basesrc->srcpad);
 
@@ -3257,11 +3281,11 @@ no_get_range:
   }
 error:
   {
-    GST_LIVE_LOCK (basesrc);
+    GST_OBJECT_LOCK (basesrc);
     basesrc->priv->start_result = ret;
     GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTING);
-    GST_LIVE_SIGNAL (basesrc);
-    GST_LIVE_UNLOCK (basesrc);
+    GST_ASYNC_SIGNAL (basesrc);
+    GST_OBJECT_UNLOCK (basesrc);
     return;
   }
 }
@@ -3279,27 +3303,16 @@ gst_base_src_start_wait (GstBaseSrc * basesrc)
 {
   GstFlowReturn result;
 
-  GST_LIVE_LOCK (basesrc);
-  if (G_UNLIKELY (basesrc->priv->flushing))
-    goto flushing;
-
+  GST_OBJECT_LOCK (basesrc);
   while (GST_BASE_SRC_IS_STARTING (basesrc)) {
-    GST_LIVE_WAIT (basesrc);
-    if (G_UNLIKELY (basesrc->priv->flushing))
-      goto flushing;
+    GST_ASYNC_WAIT (basesrc);
   }
   result = basesrc->priv->start_result;
-  GST_LIVE_UNLOCK (basesrc);
+  GST_OBJECT_UNLOCK (basesrc);
+
+  GST_DEBUG_OBJECT (basesrc, "got %s", gst_flow_get_name (result));
 
   return result;
-
-  /* ERRORS */
-flushing:
-  {
-    GST_DEBUG_OBJECT (basesrc, "we are flushing");
-    GST_LIVE_UNLOCK (basesrc);
-    return GST_FLOW_FLUSHING;
-  }
 }
 
 static gboolean
@@ -3315,15 +3328,15 @@ gst_base_src_stop (GstBaseSrc * basesrc)
   /* stop the task */
   gst_pad_stop_task (basesrc->srcpad);
 
-  GST_LIVE_LOCK (basesrc);
+  GST_OBJECT_LOCK (basesrc);
   if (!GST_BASE_SRC_IS_STARTED (basesrc) && !GST_BASE_SRC_IS_STARTING (basesrc))
     goto was_stopped;
 
   GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTING);
   GST_OBJECT_FLAG_UNSET (basesrc, GST_BASE_SRC_FLAG_STARTED);
   basesrc->priv->start_result = GST_FLOW_FLUSHING;
-  GST_LIVE_SIGNAL (basesrc);
-  GST_LIVE_UNLOCK (basesrc);
+  GST_ASYNC_SIGNAL (basesrc);
+  GST_OBJECT_UNLOCK (basesrc);
 
   bclass = GST_BASE_SRC_GET_CLASS (basesrc);
   if (bclass->stop)
@@ -3336,7 +3349,7 @@ gst_base_src_stop (GstBaseSrc * basesrc)
 was_stopped:
   {
     GST_DEBUG_OBJECT (basesrc, "was started");
-    GST_LIVE_UNLOCK (basesrc);
+    GST_OBJECT_UNLOCK (basesrc);
     return TRUE;
   }
 }

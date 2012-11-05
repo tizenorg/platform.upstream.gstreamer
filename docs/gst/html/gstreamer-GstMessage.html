@@ -273,13 +273,13 @@ The basic use pattern of posting a message on a <a class="link" href="GstBus.htm
 <p>
 </p>
 <div class="example">
-<a name="idp29705072"></a><p class="title"><b>Example 10. Posting a <a class="link" href="gstreamer-GstMessage.html#GstMessage" title="struct GstMessage"><span class="type">GstMessage</span></a></b></p>
+<a name="idp30603584"></a><p class="title"><b>Example 10. Posting a <a class="link" href="gstreamer-GstMessage.html#GstMessage" title="struct GstMessage"><span class="type">GstMessage</span></a></b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="../gstreamer-1.0/GstBus.html#gst-bus-post">gst_bus_post</a></span> <span class="gtkdoc opt">(</span>bus<span class="gtkdoc opt">,</span> <span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#gst-message-new-eos">gst_message_new_eos</a></span><span class="gtkdoc opt">());</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBus.html#gst-bus-post">gst_bus_post</a></span> <span class="gtkdoc opt">(</span>bus<span class="gtkdoc opt">,</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#gst-message-new-eos">gst_message_new_eos</a></span><span class="gtkdoc opt">());</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1082,14 +1082,14 @@ Typical usage of this function might be:
 16
 17</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="gtkdoc opt">...</span>
-<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
+<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
   <span class="keyword">case</span> GST_MESSAGE_ERROR<span class="gtkdoc opt">: {</span>
     GError <span class="gtkdoc opt">*</span>err <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
     gchar <span class="gtkdoc opt">*</span>dbg_info <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
     
-    <span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#gst-message-parse-error">gst_message_parse_error</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>err<span class="gtkdoc opt">, &amp;</span>dbg_info<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#gst-message-parse-error">gst_message_parse_error</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>err<span class="gtkdoc opt">, &amp;</span>dbg_info<span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-printerr">g_printerr</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;ERROR from element %s: %s</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span>
-        <span class="function"><a href="../gstreamer-1.0/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">),</span> err<span class="gtkdoc opt">-&gt;</span>message<span class="gtkdoc opt">);</span>
+        <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">),</span> err<span class="gtkdoc opt">-&gt;</span>message<span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-printerr">g_printerr</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Debugging info: %s</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">, (</span>dbg_info<span class="gtkdoc opt">)</span> ? dbg_info <span class="gtkdoc opt">:</span> <span class="string">&quot;none&quot;</span><span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#g-error-free">g_error_free</a></span> <span class="gtkdoc opt">(</span>err<span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Memory-Allocation.html#g-free">g_free</a></span> <span class="gtkdoc opt">(</span>dbg_info<span class="gtkdoc opt">);</span>
@@ -1333,14 +1333,14 @@ Typical usage of this function might be:
 13
 14</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="gtkdoc opt">...</span>
-<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
+<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
   <span class="keyword">case</span> GST_MESSAGE_TAG<span class="gtkdoc opt">: {</span>
     GstTagList <span class="gtkdoc opt">*</span>tags <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
     
-    <span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#gst-message-parse-tag">gst_message_parse_tag</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>tags<span class="gtkdoc opt">);</span>
-    <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Got tags from element %s</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> <span class="function"><a href="../gstreamer-1.0/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">));</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#gst-message-parse-tag">gst_message_parse_tag</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>tags<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Got tags from element %s</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">));</span>
     <span class="function">handle_tags</span> <span class="gtkdoc opt">(</span>tags<span class="gtkdoc opt">);</span>
-    <span class="function"><a href="../gstreamer-1.0/gstreamer-GstTagList.html#gst-tag-list-unref">gst_tag_list_unref</a></span> <span class="gtkdoc opt">(</span>tags<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstTagList.html#gst-tag-list-unref">gst_tag_list_unref</a></span> <span class="gtkdoc opt">(</span>tags<span class="gtkdoc opt">);</span>
     <span class="keyword">break</span><span class="gtkdoc opt">;</span>
   <span class="gtkdoc opt">}</span>
   <span class="gtkdoc opt">...</span>
@@ -1591,15 +1591,15 @@ Typical usage of this function might be:
 14
 15</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="gtkdoc opt">...</span>
-<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
+<span class="keyword">switch</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#GST-MESSAGE-TYPE:CAPS">GST_MESSAGE_TYPE</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">)) {</span>
   <span class="keyword">case</span> GST_MESSAGE_STATE_CHANGED<span class="gtkdoc opt">: {</span>
     GstState old_state<span class="gtkdoc opt">,</span> new_state<span class="gtkdoc opt">;</span>
     
-    <span class="function"><a href="../gstreamer-1.0/gstreamer-GstMessage.html#gst-message-parse-state-changed">gst_message_parse_state_changed</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>old_state<span class="gtkdoc opt">, &amp;</span>new_state<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">);</span>
+    <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMessage.html#gst-message-parse-state-changed">gst_message_parse_state_changed</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">, &amp;</span>old_state<span class="gtkdoc opt">, &amp;</span>new_state<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Element %s changed state from %s to %s.</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span>
-        <span class="function"><a href="../gstreamer-1.0/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">),</span>
-        <span class="function"><a href="../gstreamer-1.0/GstElement.html#gst-element-state-get-name">gst_element_state_get_name</a></span> <span class="gtkdoc opt">(</span>old_state<span class="gtkdoc opt">),</span>
-        <span class="function"><a href="../gstreamer-1.0/GstElement.html#gst-element-state-get-name">gst_element_state_get_name</a></span> <span class="gtkdoc opt">(</span>new_state<span class="gtkdoc opt">));</span>
+        <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html#GST-OBJECT-NAME:CAPS">GST_OBJECT_NAME</a></span> <span class="gtkdoc opt">(</span>msg<span class="gtkdoc opt">-&gt;</span>src<span class="gtkdoc opt">),</span>
+        <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#gst-element-state-get-name">gst_element_state_get_name</a></span> <span class="gtkdoc opt">(</span>old_state<span class="gtkdoc opt">),</span>
+        <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html#gst-element-state-get-name">gst_element_state_get_name</a></span> <span class="gtkdoc opt">(</span>new_state<span class="gtkdoc opt">));</span>
     <span class="keyword">break</span><span class="gtkdoc opt">;</span>
   <span class="gtkdoc opt">}</span>
   <span class="gtkdoc opt">...</span>

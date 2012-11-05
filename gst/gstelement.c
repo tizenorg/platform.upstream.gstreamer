@@ -130,6 +130,9 @@ static GstStateChangeReturn gst_element_set_state_func (GstElement * element,
 static gboolean gst_element_set_clock_func (GstElement * element,
     GstClock * clock);
 static void gst_element_set_bus_func (GstElement * element, GstBus * bus);
+static gboolean gst_element_post_message_default (GstElement * element,
+    GstMessage * message);
+
 
 static gboolean gst_element_default_send_event (GstElement * element,
     GstEvent * event);
@@ -235,6 +238,7 @@ gst_element_class_init (GstElementClass * klass)
   klass->query = GST_DEBUG_FUNCPTR (gst_element_default_query);
   klass->send_event = GST_DEBUG_FUNCPTR (gst_element_default_send_event);
   klass->numpadtemplates = 0;
+  klass->post_message = GST_DEBUG_FUNCPTR (gst_element_post_message_default);
 
   klass->elementfactory = NULL;
 }
@@ -1283,6 +1287,10 @@ gst_element_class_set_metadata (GstElementClass * klass,
     const gchar * description, const gchar * author)
 {
   g_return_if_fail (GST_IS_ELEMENT_CLASS (klass));
+  g_return_if_fail (longname != NULL && *longname != '\0');
+  g_return_if_fail (classification != NULL && *classification != '\0');
+  g_return_if_fail (description != NULL && *description != '\0');
+  g_return_if_fail (author != NULL && *author != '\0');
 
   gst_structure_id_set ((GstStructure *) klass->metadata,
       GST_QUARK (ELEMENT_METADATA_LONGNAME), G_TYPE_STRING, longname,
@@ -1320,6 +1328,10 @@ gst_element_class_set_static_metadata (GstElementClass * klass,
   GValue val = G_VALUE_INIT;
 
   g_return_if_fail (GST_IS_ELEMENT_CLASS (klass));
+  g_return_if_fail (longname != NULL && *longname != '\0');
+  g_return_if_fail (classification != NULL && *classification != '\0');
+  g_return_if_fail (description != NULL && *description != '\0');
+  g_return_if_fail (author != NULL && *author != '\0');
 
   g_value_init (&val, G_TYPE_STRING);
 
@@ -1654,22 +1666,8 @@ gst_element_query (GstElement * element, GstQuery * query)
   return result;
 }
 
-/**
- * gst_element_post_message:
- * @element: a #GstElement posting the message
- * @message: (transfer full): a #GstMessage to post
- *
- * Post a message on the element's #GstBus. This function takes ownership of the
- * message; if you want to access the message after this call, you should add an
- * additional reference before calling.
- *
- * Returns: %TRUE if the message was successfully posted. The function returns
- * %FALSE if the element did not have a bus.
- *
- * MT safe.
- */
-gboolean
-gst_element_post_message (GstElement * element, GstMessage * message)
+static gboolean
+gst_element_post_message_default (GstElement * element, GstMessage * message)
 {
   GstBus *bus;
   gboolean result = FALSE;
@@ -1702,6 +1700,34 @@ no_bus:
     gst_message_unref (message);
     return FALSE;
   }
+}
+
+/**
+ * gst_element_post_message:
+ * @element: a #GstElement posting the message
+ * @message: (transfer full): a #GstMessage to post
+ *
+ * Post a message on the element's #GstBus. This function takes ownership of the
+ * message; if you want to access the message after this call, you should add an
+ * additional reference before calling.
+ *
+ * Returns: %TRUE if the message was successfully posted. The function returns
+ * %FALSE if the element did not have a bus.
+ *
+ * MT safe.
+ */
+gboolean
+gst_element_post_message (GstElement * element, GstMessage * message)
+{
+  GstElementClass *klass;
+
+  g_return_val_if_fail (GST_IS_ELEMENT (element), FALSE);
+
+  klass = GST_ELEMENT_GET_CLASS (element);
+  if (klass->post_message)
+    return klass->post_message (element, message);
+
+  return FALSE;
 }
 
 /**

@@ -52,9 +52,9 @@ enum                <a class="link" href="gstreamer-plugins-fakesink.html#GstFak
 <pre class="synopsis">
   <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
    +----<a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
-         +----<a href="../gstreamer-1.0/GstObject.html">GstObject</a>
-               +----<a href="../gstreamer-1.0/GstElement.html">GstElement</a>
-                     +----<a href="../gstreamer-libs-1.0/GstBaseSink.html">GstBaseSink</a>
+         +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html">GstObject</a>
+               +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html">GstElement</a>
+                     +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSink.html">GstBaseSink</a>
                            +----GstFakeSink
 </pre>
 </div>
@@ -86,7 +86,7 @@ Dummy sink that swallows everything.
 <p>
 </p>
 <div class="refsect2">
-<a name="idp9474080"></a><h3>Example launch line</h3>
+<a name="idp5610160"></a><h3>Example launch line</h3>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -104,7 +104,7 @@ Dummy sink that swallows everything.
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
 <div class="refsect2">
-<a name="idp6125200"></a><h3>Element Information</h3>
+<a name="idp10697840"></a><h3>Element Information</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -127,7 +127,7 @@ Dummy sink that swallows everything.
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp6132624"></a><h3>Element Pads</h3>
+<a name="idp10705376"></a><h3>Element Pads</h3>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -285,8 +285,8 @@ Possible state change errors for the state-error property.
 <div class="refsect2">
 <a name="GstFakeSink-handoff"></a><h3>The <code class="literal">"handoff"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="gstreamer-plugins-fakesink.html#GstFakeSink"><span class="type">GstFakeSink</span></a> *fakesink,
-                                                        <a href="../gstreamer-1.0/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a>   *buffer,
-                                                        <a href="../gstreamer-1.0/GstPad.html"><span class="type">GstPad</span></a>      *pad,
+                                                        <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a>   *buffer,
+                                                        <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>      *pad,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>     user_data)      : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
 <p>
 This signal gets emitted before unreffing the buffer.
@@ -317,8 +317,8 @@ This signal gets emitted before unreffing the buffer.
 <div class="refsect2">
 <a name="GstFakeSink-preroll-handoff"></a><h3>The <code class="literal">"preroll-handoff"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="gstreamer-plugins-fakesink.html#GstFakeSink"><span class="type">GstFakeSink</span></a> *fakesink,
-                                                        <a href="../gstreamer-1.0/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a>   *buffer,
-                                                        <a href="../gstreamer-1.0/GstPad.html"><span class="type">GstPad</span></a>      *pad,
+                                                        <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a>   *buffer,
+                                                        <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html"><span class="type">GstPad</span></a>      *pad,
                                                         <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>     user_data)      : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
 <p>
 This signal gets emitted before unreffing the buffer.

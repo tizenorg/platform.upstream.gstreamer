@@ -38,17 +38,13 @@ endif
 
 # Do not run the abi test in case any option which causes the API to change has
 # been used
-if FALSE
 if !GST_DISABLE_REGISTRY
 if !GST_DISABLE_TRACE
 ABI_CHECKS = gst/gstabi
 endif
 endif
-endif
 
-if FALSE
 LIBSABI_CHECKS = libs/libsabi
-endif
 
 if HAVE_CXX
 CXX_CHECKS = gst/gstcpp libs/gstlibscpp

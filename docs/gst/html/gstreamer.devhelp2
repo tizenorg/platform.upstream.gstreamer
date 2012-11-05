@@ -71,7 +71,7 @@
     <sub name="Annotation Glossary" link="annotation-glossary.html"/>
   </chapters>
   <functions>
-    <keyword type="" name="Environment variables" link="gst-running.html#idp9674784"/>
+    <keyword type="" name="Environment variables" link="gst-running.html#idp8488400"/>
     <keyword type="function" name="gst_init ()" link="gstreamer-Gst.html#gst-init"/>
     <keyword type="function" name="gst_init_check ()" link="gstreamer-Gst.html#gst-init-check"/>
     <keyword type="function" name="gst_init_get_option_group ()" link="gstreamer-Gst.html#gst-init-get-option-group"/>
@@ -105,7 +105,7 @@
     <keyword type="function" name="gst_atomic_queue_peek ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-peek"/>
     <keyword type="function" name="gst_atomic_queue_pop ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-pop"/>
     <keyword type="function" name="gst_atomic_queue_length ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-length"/>
-    <keyword type="" name="Notes" link="GstBin.html#idp9938176"/>
+    <keyword type="" name="Notes" link="GstBin.html#idp11985136"/>
     <keyword type="struct" name="struct GstBin" link="GstBin.html#GstBin-struct"/>
     <keyword type="struct" name="struct GstBinClass" link="GstBin.html#GstBinClass"/>
     <keyword type="function" name="gst_bin_new ()" link="GstBin.html#gst-bin-new"/>
@@ -906,7 +906,7 @@
     <keyword type="function" name="gst_mini_object_replace ()" link="gstreamer-GstMiniObject.html#gst-mini-object-replace"/>
     <keyword type="function" name="gst_mini_object_take ()" link="gstreamer-GstMiniObject.html#gst-mini-object-take"/>
     <keyword type="function" name="gst_mini_object_steal ()" link="gstreamer-GstMiniObject.html#gst-mini-object-steal"/>
-    <keyword type="" name="controlled properties" link="GstObject.html#idp27685152"/>
+    <keyword type="" name="controlled properties" link="GstObject.html#idp28871792"/>
     <keyword type="struct" name="struct GstObject" link="GstObject.html#GstObject-struct"/>
     <keyword type="struct" name="struct GstObjectClass" link="GstObject.html#GstObjectClass"/>
     <keyword type="enum" name="enum GstObjectFlags" link="GstObject.html#GstObjectFlags"/>

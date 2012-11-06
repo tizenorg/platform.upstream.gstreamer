@@ -48,7 +48,7 @@ installing new plug-ins.
 Summary:        Streaming-Media Framework Runtime -- Introspection bindings
 Group:          System/Libraries
 
-%description -n typelib-Gst-
+%description -n typelib-Gst
 GStreamer is a streaming-media framework, based on graphs of filters
 which operate on media data. Applications using this library can do
 anything from real-time sound processing to playing videos, and just
@@ -138,7 +138,7 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %{_libdir}/*.so.*
 
-%files -n typelib--Gst
+%files -n typelib-Gst
 %defattr(-, root, root)
 %{_libdir}/girepository-1.0/Gst-1.0.typelib
 %{_libdir}/girepository-1.0/GstBase-1.0.typelib

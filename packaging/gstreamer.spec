@@ -44,11 +44,11 @@ about anything else media-related.  Its plug-in-based architecture
 means that new data types or processing capabilities can be added by
 installing new plug-ins.
 
-%package -n typelib-1_0-Gst-1_0
+%package -n typelib-Gst
 Summary:        Streaming-Media Framework Runtime -- Introspection bindings
 Group:          System/Libraries
 
-%description -n typelib-1_0-Gst-1_0
+%description -n typelib-Gst-
 GStreamer is a streaming-media framework, based on graphs of filters
 which operate on media data. Applications using this library can do
 anything from real-time sound processing to playing videos, and just
@@ -81,7 +81,7 @@ Requires:       %{name} = %{version}
 # gstreamer-utils is required for the gstreamer-provides rpm magic.
 Requires:       gstreamer-utils = %{version}
 Requires:       libgstreamer = %{version}
-Requires:       typelib-1_0-Gst-1_0 = %{version}
+Requires:       typelib-Gst = %{version}
 
 %description devel
 This package contains all necessary include files and libraries needed
@@ -138,7 +138,7 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %{_libdir}/*.so.*
 
-%files -n typelib-1_0-Gst-1_0
+%files -n typelib--Gst
 %defattr(-, root, root)
 %{_libdir}/girepository-1.0/Gst-1.0.typelib
 %{_libdir}/girepository-1.0/GstBase-1.0.typelib

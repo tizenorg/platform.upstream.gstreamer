@@ -1,3 +1,5 @@
+%bcond_with introspection
+
 Name:           gstreamer
 %define _name   gstreamer
 Version:        1.0.2
@@ -19,7 +21,9 @@ BuildRequires:  flex
 BuildRequires:  glib2-devel >= 2.32.0
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
+%if %{with introspection}
 BuildRequires:  gobject-introspection-devel >= 1.31.1
+%endif
 Requires:       libgstreamer >= %{version}
 
 %description
@@ -81,7 +85,9 @@ Requires:       %{name} = %{version}
 # gstreamer-utils is required for the gstreamer-provides rpm magic.
 Requires:       gstreamer-utils = %{version}
 Requires:       libgstreamer = %{version}
+%if %{with introspection} 
 Requires:       typelib-Gst = %{version}
+%endif
 
 %description devel
 This package contains all necessary include files and libraries needed
@@ -99,7 +105,9 @@ export V=1
 NOCONFIGURE=1 ./autogen.sh
 export CFLAGS="%{optflags} -fno-strict-aliasing"
 %configure\
+%if %{with introspection}
         --enable-introspection\
+%endif
 	--disable-static
 make %{?_smp_mflags}
 
@@ -138,6 +146,8 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %{_libdir}/*.so.*
 
+
+%if %{with introspection} 
 %files -n typelib-Gst
 %defattr(-, root, root)
 %{_libdir}/girepository-1.0/Gst-1.0.typelib
@@ -145,6 +155,7 @@ rm -rf %{buildroot}
 %{_libdir}/girepository-1.0/GstCheck-1.0.typelib
 %{_libdir}/girepository-1.0/GstController-1.0.typelib
 %{_libdir}/girepository-1.0/GstNet-1.0.typelib
+%endif
 
 %files utils
 %defattr(-, root, root)
@@ -159,6 +170,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 %{_libexecdir}/rpm/gstreamer-provides
 %{_libexecdir}/rpm/fileattrs/gstreamer.attr
+%if %{with introspection} 
 %{_datadir}/gir-1.0/*.gir
+%endif
 
 %changelog

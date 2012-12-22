@@ -144,21 +144,21 @@ in 512-byte chunks could be implemented like this:
 21
 22
 23
-24
-25</pre></td>
+24</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">static</span> GstFlowReturn
-<span class="function">sink_pad_chain</span> <span class="gtkdoc opt">(</span>GstPad <span class="gtkdoc opt">*</span>pad<span class="gtkdoc opt">,</span> GstBuffer <span class="gtkdoc opt">*</span>buffer<span class="gtkdoc opt">)</span>
+<span class="function">sink_pad_chain</span> <span class="gtkdoc opt">(</span>GstPad <span class="gtkdoc opt">*</span>pad<span class="gtkdoc opt">,</span> GstObject <span class="gtkdoc opt">*</span>parent<span class="gtkdoc opt">,</span> GstBuffer <span class="gtkdoc opt">*</span>buffer<span class="gtkdoc opt">)</span>
 <span class="gtkdoc opt">{</span>
   MyElement <span class="gtkdoc opt">*</span><span class="keyword">this</span><span class="gtkdoc opt">;</span>
   GstAdapter <span class="gtkdoc opt">*</span>adapter<span class="gtkdoc opt">;</span>
   GstFlowReturn ret <span class="gtkdoc opt">=</span> GST_FLOW_OK<span class="gtkdoc opt">;</span>
 
-  <span class="gtkdoc slc">// will give the element an extra ref; remember to drop it</span>
-  <span class="keyword">this</span> <span class="gtkdoc opt">=</span> <span class="function">MY_ELEMENT</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#gst-pad-get-parent">gst_pad_get_parent</a></span> <span class="gtkdoc opt">(</span>pad<span class="gtkdoc opt">));</span>
+  <span class="keyword">this</span> <span class="gtkdoc opt">=</span> <span class="function">MY_ELEMENT</span> <span class="gtkdoc opt">(</span>parent<span class="gtkdoc opt">);</span>
+
   adapter <span class="gtkdoc opt">=</span> <span class="keyword">this</span><span class="gtkdoc opt">-&gt;</span>adapter<span class="gtkdoc opt">;</span>
 
   <span class="gtkdoc slc">// put buffer into adapter</span>
   <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#gst-adapter-push">gst_adapter_push</a></span> <span class="gtkdoc opt">(</span>adapter<span class="gtkdoc opt">,</span> buffer<span class="gtkdoc opt">);</span>
+
   <span class="gtkdoc slc">// while we can read out 512 bytes, process them</span>
   <span class="keyword">while</span> <span class="gtkdoc opt">(</span><span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#gst-adapter-available">gst_adapter_available</a></span> <span class="gtkdoc opt">(</span>adapter<span class="gtkdoc opt">) &gt;=</span> <span class="number">512</span> <span class="gtkdoc opt">&amp;&amp;</span> ret <span class="gtkdoc opt">==</span> GST_FLOW_OK<span class="gtkdoc opt">) {</span>
     <span class="gtkdoc kwb">const</span> guint8 <span class="gtkdoc opt">*</span>data <span class="gtkdoc opt">=</span> <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#gst-adapter-map">gst_adapter_map</a></span> <span class="gtkdoc opt">(</span>adapter<span class="gtkdoc opt">,</span> <span class="number">512</span><span class="gtkdoc opt">);</span>
@@ -167,8 +167,6 @@ in 512-byte chunks could be implemented like this:
     <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#gst-adapter-unmap">gst_adapter_unmap</a></span> <span class="gtkdoc opt">(</span>adapter<span class="gtkdoc opt">);</span>
     <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstAdapter.html#gst-adapter-flush">gst_adapter_flush</a></span> <span class="gtkdoc opt">(</span>adapter<span class="gtkdoc opt">,</span> <span class="number">512</span><span class="gtkdoc opt">);</span>
   <span class="gtkdoc opt">}</span>
-
-  <span class="function"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html#gst-object-unref">gst_object_unref</a></span> <span class="gtkdoc opt">(</span><span class="keyword">this</span><span class="gtkdoc opt">);</span>
   <span class="keyword">return</span> ret<span class="gtkdoc opt">;</span>
 <span class="gtkdoc opt">}</span></pre></td>
       </tr>
@@ -309,7 +307,7 @@ element stores the buffer so that it has access to it outside of the bounds
 of its chain function, the buffer will have an invalid data pointer after
 your element flushes the bytes. In that case you should use
 <a class="link" href="GstAdapter.html#gst-adapter-take" title="gst_adapter_take ()"><code class="function">gst_adapter_take()</code></a>, which returns a freshly-allocated buffer that you can set
-as <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a> malloc_data or the potentially more performant
+as <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstBuffer.html#GstBuffer"><span class="type">GstBuffer</span></a> memory or the potentially more performant
 <a class="link" href="GstAdapter.html#gst-adapter-take-buffer" title="gst_adapter_take_buffer ()"><code class="function">gst_adapter_take_buffer()</code></a>.
 </p>
 <p>

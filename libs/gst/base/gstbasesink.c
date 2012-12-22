@@ -84,7 +84,7 @@
  * element receives EOS in PAUSED, preroll completes, the event is queued and an
  * EOS message is posted when going to PLAYING.
  *
- * #GstBaseSink will internally use the #GST_EVENT_NEWSEGMENT events to schedule
+ * #GstBaseSink will internally use the #GST_EVENT_SEGMENT events to schedule
  * synchronisation and clipping of buffers. Buffers that fall completely outside
  * of the current segment are dropped. Buffers that fall partially in the
  * segment are rendered (and prerolled). Subclasses should do any subbuffer
@@ -2788,6 +2788,7 @@ gst_base_sink_flush_stop (GstBaseSink * basesink, GstPad * pad,
     basesink->have_newsegment = FALSE;
     if (reset_time) {
       gst_segment_init (&basesink->segment, GST_FORMAT_UNDEFINED);
+      GST_ELEMENT_START_TIME (basesink) = 0;
     }
   }
   GST_OBJECT_UNLOCK (basesink);
@@ -4250,16 +4251,24 @@ gst_base_sink_get_position (GstBaseSink * basesink, GstFormat format,
         last = start;
       else
         last = stop;
+
+      GST_DEBUG_OBJECT (basesink, "in PAUSED using last %" GST_TIME_FORMAT,
+          GST_TIME_ARGS (last));
     } else {
       /* in playing, use last stop time as upper bound */
       if (start == -1 || segment->rate > 0.0)
         last = stop;
       else
         last = start;
+
+      GST_DEBUG_OBJECT (basesink, "in PLAYING using last %" GST_TIME_FORMAT,
+          GST_TIME_ARGS (last));
     }
   } else {
     /* convert last stop to stream time */
     last = gst_segment_to_stream_time (segment, oformat, segment->position);
+
+    GST_DEBUG_OBJECT (basesink, "in using last %" G_GINT64_FORMAT, last);
   }
 
   if (in_paused) {

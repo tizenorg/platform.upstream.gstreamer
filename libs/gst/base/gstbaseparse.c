@@ -35,7 +35,7 @@
  *   <listitem><para>handles state changes</para></listitem>
  *   <listitem><para>can operate in pull mode or push mode</para></listitem>
  *   <listitem><para>handles seeking in both modes</para></listitem>
- *   <listitem><para>handles events (NEWSEGMENT/EOS/FLUSH)</para></listitem>
+ *   <listitem><para>handles events (SEGMENT/EOS/FLUSH)</para></listitem>
  *   <listitem><para>
  *        handles queries (POSITION/DURATION/SEEKING/FORMAT/CONVERT)
  *   </para></listitem>
@@ -218,6 +218,7 @@
 
 #define MIN_FRAMES_TO_POST_BITRATE 10
 #define TARGET_DIFFERENCE          (20 * GST_SECOND)
+#define MAX_INDEX_ENTRIES          4096
 
 GST_DEBUG_CATEGORY_STATIC (gst_base_parse_debug);
 #define GST_CAT_DEFAULT gst_base_parse_debug
@@ -304,6 +305,7 @@ struct _GstBaseParsePrivate
   gint64 upstream_size;
   /* minimum distance between two index entries */
   GstClockTimeDiff idx_interval;
+  guint64 idx_byte_interval;
   /* ts and offset of last entry added */
   GstClockTime index_last_ts;
   gint64 index_last_offset;
@@ -743,6 +745,7 @@ gst_base_parse_reset (GstBaseParse * parse)
   parse->priv->upstream_size = 0;
   parse->priv->upstream_has_duration = FALSE;
   parse->priv->idx_interval = 0;
+  parse->priv->idx_byte_interval = 0;
   parse->priv->exact_position = TRUE;
   parse->priv->seen_keyframe = FALSE;
 
@@ -1117,6 +1120,12 @@ gst_base_parse_sink_default (GstBaseParse * parse, GstEvent * event)
       /* See if any bitrate tags were posted */
       gst_base_parse_handle_tag (parse, event);
       break;
+
+    case GST_EVENT_STREAM_START:
+      if (parse->priv->pad_mode != GST_PAD_MODE_PULL)
+        forward_immediate = TRUE;
+      break;
+
     default:
       break;
   }
@@ -1565,9 +1574,11 @@ gst_base_parse_add_index_entry (GstBaseParse * parse, guint64 offset,
 
     /* FIXME need better helper data structure that handles these issues
      * related to ongoing collecting of index entries */
-    if (parse->priv->index_last_offset >= (gint64) offset) {
-      GST_DEBUG_OBJECT (parse, "already have entries up to offset "
-          "0x%08" G_GINT64_MODIFIER "x", parse->priv->index_last_offset);
+    if (parse->priv->index_last_offset + parse->priv->idx_byte_interval >=
+        (gint64) offset) {
+      GST_LOG_OBJECT (parse,
+          "already have entries up to offset 0x%08" G_GINT64_MODIFIER "x",
+          parse->priv->index_last_offset + parse->priv->idx_byte_interval);
       goto exit;
     }
 
@@ -1627,6 +1638,7 @@ gst_base_parse_check_seekability (GstBaseParse * parse)
   gboolean seekable = FALSE;
   gint64 start = -1, stop = -1;
   guint idx_interval = 0;
+  guint64 idx_byte_interval = 0;
 
   query = gst_query_new_seeking (GST_FORMAT_BYTES);
   if (!gst_pad_peer_query (parse->sinkpad, query)) {
@@ -1657,6 +1669,14 @@ gst_base_parse_check_seekability (GstBaseParse * parse)
       idx_interval = 500;
     else
       idx_interval = 1000;
+
+    /* ensure that even for large files (e.g. very long audio files), the index
+     * stays reasonably-size, with some arbitrary limit to the total number of
+     * index entries */
+    idx_byte_interval = (stop - start) / MAX_INDEX_ENTRIES;
+    GST_DEBUG_OBJECT (parse,
+        "Limiting index entries to %d, indexing byte interval %"
+        G_GUINT64_FORMAT " bytes", MAX_INDEX_ENTRIES, idx_byte_interval);
   }
 
 done:
@@ -1669,6 +1689,7 @@ done:
 
   GST_DEBUG_OBJECT (parse, "idx_interval: %ums", idx_interval);
   parse->priv->idx_interval = idx_interval * GST_MSECOND;
+  parse->priv->idx_byte_interval = idx_byte_interval;
 }
 
 /* some misc checks on upstream */
@@ -1787,9 +1808,10 @@ gst_base_parse_handle_buffer (GstBaseParse * parse, GstBuffer * buffer,
   g_return_val_if_fail (skip != NULL || flushed != NULL, GST_FLOW_ERROR);
 
   GST_LOG_OBJECT (parse,
-      "handling buffer of size %" G_GSIZE_FORMAT " with ts %" GST_TIME_FORMAT
-      ", duration %" GST_TIME_FORMAT, gst_buffer_get_size (buffer),
-      GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (buffer)),
+      "handling buffer of size %" G_GSIZE_FORMAT " with dts %" GST_TIME_FORMAT
+      ", pts %" GST_TIME_FORMAT ", duration %" GST_TIME_FORMAT,
+      gst_buffer_get_size (buffer), GST_TIME_ARGS (GST_BUFFER_DTS (buffer)),
+      GST_TIME_ARGS (GST_BUFFER_PTS (buffer)),
       GST_TIME_ARGS (GST_BUFFER_DURATION (buffer)));
 
   /* track what is being flushed during this single round of frame processing */
@@ -1887,8 +1909,9 @@ gst_base_parse_handle_and_push_frame (GstBaseParse * parse,
       parse->priv->first_frame_offset = offset;
       parse->priv->first_frame_pts = GST_BUFFER_PTS (buffer);
       parse->priv->first_frame_dts = GST_BUFFER_DTS (buffer);
-      GST_DEBUG_OBJECT (parse, "subclass provided ts %" GST_TIME_FORMAT
-          " for first frame at offset %" G_GINT64_FORMAT,
+      GST_DEBUG_OBJECT (parse, "subclass provided dts %" GST_TIME_FORMAT
+          ", pts %" GST_TIME_FORMAT " for first frame at offset %"
+          G_GINT64_FORMAT, GST_TIME_ARGS (parse->priv->first_frame_dts),
           GST_TIME_ARGS (parse->priv->first_frame_pts),
           parse->priv->first_frame_offset);
       if (!GST_CLOCK_TIME_IS_VALID (parse->priv->duration)) {
@@ -1976,9 +1999,11 @@ gst_base_parse_push_frame (GstBaseParse * parse, GstBaseParseFrame * frame)
   buffer = frame->buffer;
 
   GST_LOG_OBJECT (parse,
-      "processing buffer of size %" G_GSIZE_FORMAT " with ts %" GST_TIME_FORMAT
-      ", duration %" GST_TIME_FORMAT, gst_buffer_get_size (buffer),
-      GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (buffer)),
+      "processing buffer of size %" G_GSIZE_FORMAT " with dts %" GST_TIME_FORMAT
+      ", pts %" GST_TIME_FORMAT ", duration %" GST_TIME_FORMAT,
+      gst_buffer_get_size (buffer),
+      GST_TIME_ARGS (GST_BUFFER_DTS (buffer)),
+      GST_TIME_ARGS (GST_BUFFER_PTS (buffer)),
       GST_TIME_ARGS (GST_BUFFER_DURATION (buffer)));
 
   /* update stats */
@@ -1996,8 +2021,8 @@ gst_base_parse_push_frame (GstBaseParse * parse, GstBaseParseFrame * frame)
       (parse->priv->framecount % parse->priv->update_interval) == 0)
     gst_base_parse_update_duration (parse);
 
-  if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer))
-    last_start = last_stop = GST_BUFFER_TIMESTAMP (buffer);
+  if (GST_BUFFER_PTS_IS_VALID (buffer))
+    last_start = last_stop = GST_BUFFER_PTS (buffer);
   if (last_start != GST_CLOCK_TIME_NONE
       && GST_BUFFER_DURATION_IS_VALID (buffer))
     last_stop = last_start + GST_BUFFER_DURATION (buffer);
@@ -2011,7 +2036,7 @@ gst_base_parse_push_frame (GstBaseParse * parse, GstBaseParseFrame * frame)
     gst_base_parse_check_media (parse);
   }
 
-  /* Push pending events, including NEWSEGMENT events */
+  /* Push pending events, including SEGMENT events */
   if (G_UNLIKELY (parse->priv->pending_events)) {
     GList *r = g_list_reverse (parse->priv->pending_events);
     GList *l;
@@ -2045,7 +2070,7 @@ gst_base_parse_push_frame (GstBaseParse * parse, GstBaseParseFrame * frame)
         GST_DEBUG_OBJECT (parse,
             "Gap of %" G_GINT64_FORMAT " ns detected in stream " "(%"
             GST_TIME_FORMAT " -> %" GST_TIME_FORMAT "). "
-            "Sending updated NEWSEGMENT events", diff,
+            "Sending updated SEGMENT events", diff,
             GST_TIME_ARGS (parse->segment.position),
             GST_TIME_ARGS (last_start));
 
@@ -2301,10 +2326,11 @@ gst_base_parse_send_buffers (GstBaseParse * parse)
   /* send buffers */
   while (send) {
     buf = GST_BUFFER_CAST (send->data);
-    GST_LOG_OBJECT (parse, "pushing buffer %p, timestamp %"
-        GST_TIME_FORMAT ", duration %" GST_TIME_FORMAT
+    GST_LOG_OBJECT (parse, "pushing buffer %p, dts %"
+        GST_TIME_FORMAT ", pts %" GST_TIME_FORMAT ", duration %" GST_TIME_FORMAT
         ", offset %" G_GINT64_FORMAT, buf,
-        GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (buf)),
+        GST_TIME_ARGS (GST_BUFFER_DTS (buf)),
+        GST_TIME_ARGS (GST_BUFFER_PTS (buf)),
         GST_TIME_ARGS (GST_BUFFER_DURATION (buf)), GST_BUFFER_OFFSET (buf));
 
     /* iterate output queue an push downstream */
@@ -2583,8 +2609,12 @@ gst_base_parse_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
 
   if (G_LIKELY (buffer)) {
     GST_LOG_OBJECT (parse,
-        "buffer size: %" G_GSIZE_FORMAT ", offset = %" G_GINT64_FORMAT,
-        gst_buffer_get_size (buffer), GST_BUFFER_OFFSET (buffer));
+        "buffer size: %" G_GSIZE_FORMAT ", offset = %" G_GINT64_FORMAT
+        ", dts %" GST_TIME_FORMAT ", pts %" GST_TIME_FORMAT,
+        gst_buffer_get_size (buffer), GST_BUFFER_OFFSET (buffer),
+        GST_TIME_ARGS (GST_BUFFER_DTS (buffer)),
+        GST_TIME_ARGS (GST_BUFFER_PTS (buffer)));
+
     if (G_UNLIKELY (parse->priv->passthrough)) {
       GstBaseParseFrame frame;
 
@@ -3009,7 +3039,7 @@ pause:
       push_eos = TRUE;
     }
     if (push_eos) {
-      /* Push pending events, including NEWSEGMENT events */
+      /* Push pending events, including SEGMENT events */
       if (G_UNLIKELY (parse->priv->pending_events)) {
         GList *r = g_list_reverse (parse->priv->pending_events);
         GList *l;
@@ -3978,10 +4008,10 @@ gst_base_parse_handle_seek (GstBaseParse * parse, GstEvent * event)
 
     GST_DEBUG_OBJECT (parse, "Created newseg format %d, "
         "start = %" GST_TIME_FORMAT ", stop = %" GST_TIME_FORMAT
-        ", pos = %" GST_TIME_FORMAT, format,
+        ", time = %" GST_TIME_FORMAT, format,
         GST_TIME_ARGS (parse->segment.start),
         GST_TIME_ARGS (parse->segment.stop),
-        GST_TIME_ARGS (parse->segment.start));
+        GST_TIME_ARGS (parse->segment.time));
 
     /* one last chance in pull mode to stay accurate;
      * maybe scan and subclass can find where to go */

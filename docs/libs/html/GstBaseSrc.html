@@ -114,7 +114,7 @@ types of sources are supported:
 <p>
 The source can be configured to operate in any <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GstFormat"><span class="type">GstFormat</span></a> with the
 <a class="link" href="GstBaseSrc.html#gst-base-src-set-format" title="gst_base_src_set_format ()"><code class="function">gst_base_src_set_format()</code></a> method. The currently set format determines
-the format of the internal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstSegment.html#GstSegment"><span class="type">GstSegment</span></a> and any <span class="type">GST_EVENT_NEWSEGMENT</span>
+the format of the internal <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstSegment.html#GstSegment"><span class="type">GstSegment</span></a> and any <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstEvent.html#GST-EVENT-SEGMENT:CAPS"><span class="type">GST_EVENT_SEGMENT</span></a>
 events. The default format for <a class="link" href="GstBaseSrc.html" title="GstBaseSrc"><span class="type">GstBaseSrc</span></a> is <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GST-FORMAT-BYTES:CAPS"><span class="type">GST_FORMAT_BYTES</span></a>.
 </p>
 <p>
@@ -248,7 +248,7 @@ should install a pad template in its class_init function, like so:
 <p>
 </p>
 <div class="refsect2">
-<a name="idp6837152"></a><h3>Controlled shutdown of live sources in applications</h3>
+<a name="idp7488336"></a><h3>Controlled shutdown of live sources in applications</h3>
 <p>
 Applications that record from a live source may want to stop recording
 in a controlled way, so that the recording is stopped, but the data
@@ -591,7 +591,7 @@ be GST_STATE_CHANGE_NO_PREROLL.
                                                          <em class="parameter"><code><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstFormat.html#GstFormat"><span class="type">GstFormat</span></a> format</code></em>);</pre>
 <p>
 Sets the default format of the source. This will be the format used
-for sending NEW_SEGMENT events and for performing seeks.
+for sending SEGMENT events and for performing seeks.
 </p>
 <p>
 If a format of GST_FORMAT_BYTES is set, the element will be able to

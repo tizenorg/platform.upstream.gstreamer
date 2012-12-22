@@ -52,10 +52,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@HAVE_PTHREAD_TRUE@am__append_1 = testrtpool.c
+@HAVE_PTHREAD_TRUE@am__append_2 = testrtpool
 TESTS = bin$(EXEEXT) elementcreate$(EXEEXT) elementfactory$(EXEEXT) \
 	elementget$(EXEEXT) elementlink$(EXEEXT) elementmake$(EXEEXT) \
 	ghostpad$(EXEEXT) init$(EXEEXT)
-noinst_PROGRAMS = $(am__EXEEXT_2)
+noinst_PROGRAMS = $(am__EXEEXT_3)
 subdir = tests/examples/manual
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -101,15 +103,16 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 =
-am__EXEEXT_2 = $(am__EXEEXT_1) elementcreate$(EXEEXT) \
+@HAVE_PTHREAD_TRUE@am__EXEEXT_2 = testrtpool$(EXEEXT)
+am__EXEEXT_3 = $(am__EXEEXT_1) elementcreate$(EXEEXT) \
 	elementmake$(EXEEXT) elementfactory$(EXEEXT) \
 	elementget$(EXEEXT) elementlink$(EXEEXT) bin$(EXEEXT) \
 	pad$(EXEEXT) ghostpad$(EXEEXT) helloworld$(EXEEXT) \
 	init$(EXEEXT) query$(EXEEXT) typefind$(EXEEXT) \
 	blockprobe$(EXEEXT) probe$(EXEEXT) appsrc$(EXEEXT) \
 	appsink$(EXEEXT) dynformat$(EXEEXT) effectswitch$(EXEEXT) \
-	testrtpool$(EXEEXT) norebuffer$(EXEEXT) playbin$(EXEEXT) \
-	decodebin$(EXEEXT) playsink$(EXEEXT)
+	norebuffer$(EXEEXT) playbin$(EXEEXT) decodebin$(EXEEXT) \
+	playsink$(EXEEXT) $(am__EXEEXT_2)
 PROGRAMS = $(noinst_PROGRAMS)
 appsink_SOURCES = appsink.c
 appsink_OBJECTS = appsink.$(OBJEXT)
@@ -598,52 +601,16 @@ TESTS_ENVIRONMENT = \
         GST_PLUGIN_PATH=$(top_builddir)/plugins
 
 EXTRA_DIST = extract.pl
-EXAMPLES = \
-	$(GNOME) \
-	elementcreate \
-	elementmake \
-	elementfactory \
-	elementget \
-	elementlink \
-	bin \
-	pad \
-	ghostpad \
-	helloworld \
-	init \
-	query \
-	typefind \
-	blockprobe \
-	probe \
-	appsrc \
-	appsink \
-	dynformat \
-	effectswitch \
-	testrtpool \
-	norebuffer \
-	playbin \
-	decodebin \
-	playsink 
-
-BUILT_SOURCES = \
-	elementmake.c elementcreate.c elementget.c elementlink.c elementfactory.c \
-	bin.c \
-	pad.c ghostpad.c \
-	gnome.c \
-	helloworld.c \
-	init.c \
-	query.c \
-	typefind.c \
-	blockprobe.c \
-	probe.c \
-	appsrc.c \
-	appsink.c \
-	dynformat.c \
-	effectswitch.c \
-	testrtpool.c \
-	norebuffer.c \
-	playbin.c decodebin.c \
-	playsink.c
-
+EXAMPLES = $(GNOME) elementcreate elementmake elementfactory \
+	elementget elementlink bin pad ghostpad helloworld init query \
+	typefind blockprobe probe appsrc appsink dynformat \
+	effectswitch norebuffer playbin decodebin playsink \
+	$(am__append_2)
+BUILT_SOURCES = elementmake.c elementcreate.c elementget.c \
+	elementlink.c elementfactory.c bin.c pad.c ghostpad.c gnome.c \
+	helloworld.c init.c query.c typefind.c blockprobe.c probe.c \
+	appsrc.c appsink.c dynformat.c effectswitch.c norebuffer.c \
+	playbin.c decodebin.c playsink.c $(am__append_1)
 CLEANFILES = core core.* test-registry.* *.gcno *.gcda $(BUILT_SOURCES)
 AM_CFLAGS = $(GST_OBJ_CFLAGS)
 LDADD = $(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \

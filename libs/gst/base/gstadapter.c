@@ -45,18 +45,19 @@
  * in 512-byte chunks could be implemented like this:
  * |[
  * static GstFlowReturn
- * sink_pad_chain (GstPad *pad, GstBuffer *buffer)
+ * sink_pad_chain (GstPad *pad, GstObject *parent, GstBuffer *buffer)
  * {
  *   MyElement *this;
  *   GstAdapter *adapter;
  *   GstFlowReturn ret = GST_FLOW_OK;
  *
- *   // will give the element an extra ref; remember to drop it
- *   this = MY_ELEMENT (gst_pad_get_parent (pad));
+ *   this = MY_ELEMENT (parent);
+ *
  *   adapter = this->adapter;
  *
  *   // put buffer into adapter
  *   gst_adapter_push (adapter, buffer);
+ *
  *   // while we can read out 512 bytes, process them
  *   while (gst_adapter_available (adapter) >= 512 && ret == GST_FLOW_OK) {
  *     const guint8 *data = gst_adapter_map (adapter, 512);
@@ -65,8 +66,6 @@
  *     gst_adapter_unmap (adapter);
  *     gst_adapter_flush (adapter, 512);
  *   }
- *
- *   gst_object_unref (this);
  *   return ret;
  * }
  * ]|
@@ -421,7 +420,7 @@ gst_adapter_try_to_merge_up (GstAdapter * adapter, gsize size)
  * of its chain function, the buffer will have an invalid data pointer after
  * your element flushes the bytes. In that case you should use
  * gst_adapter_take(), which returns a freshly-allocated buffer that you can set
- * as #GstBuffer malloc_data or the potentially more performant
+ * as #GstBuffer memory or the potentially more performant
  * gst_adapter_take_buffer().
  *
  * Returns #NULL if @size bytes are not available.

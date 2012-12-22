@@ -35,7 +35,7 @@
  *
  * The source can be configured to operate in any #GstFormat with the
  * gst_base_src_set_format() method. The currently set format determines
- * the format of the internal #GstSegment and any #GST_EVENT_NEWSEGMENT
+ * the format of the internal #GstSegment and any #GST_EVENT_SEGMENT
  * events. The default format for #GstBaseSrc is #GST_FORMAT_BYTES.
  *
  * #GstBaseSrc always supports push mode scheduling. If the following
@@ -577,7 +577,7 @@ gst_base_src_is_live (GstBaseSrc * src)
  * @format: the format to use
  *
  * Sets the default format of the source. This will be the format used
- * for sending NEW_SEGMENT events and for performing seeks.
+ * for sending SEGMENT events and for performing seeks.
  *
  * If a format of GST_FORMAT_BYTES is set, the element will be able to
  * operate in pull mode if the #GstBaseSrcClass.is_seekable() returns TRUE.
@@ -3265,7 +3265,7 @@ seek_failed:
   {
     GST_PAD_STREAM_UNLOCK (basesrc->srcpad);
     GST_ERROR_OBJECT (basesrc, "Failed to perform initial seek");
-    gst_base_src_set_flushing (basesrc, TRUE, FALSE, NULL);
+    gst_base_src_stop (basesrc);
     if (event)
       gst_event_unref (event);
     ret = GST_FLOW_ERROR;
@@ -3274,7 +3274,7 @@ seek_failed:
 no_get_range:
   {
     GST_PAD_STREAM_UNLOCK (basesrc->srcpad);
-    gst_base_src_set_flushing (basesrc, TRUE, FALSE, NULL);
+    gst_base_src_stop (basesrc);
     GST_ERROR_OBJECT (basesrc, "Cannot operate in pull mode, stopping");
     ret = GST_FLOW_ERROR;
     goto error;

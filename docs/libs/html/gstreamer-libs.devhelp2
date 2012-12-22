@@ -64,7 +64,7 @@
     <keyword type="macro" name="GST_BASE_PARSE_LOST_SYNC()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-LOST-SYNC:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_SINK_PAD()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-SINK-PAD:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_SRC_PAD()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-SRC-PAD:CAPS"/>
-    <keyword type="" name="Controlled shutdown of live sources in applications" link="GstBaseSrc.html#idp6837152"/>
+    <keyword type="" name="Controlled shutdown of live sources in applications" link="GstBaseSrc.html#idp7488336"/>
     <keyword type="struct" name="struct GstBaseSrc" link="GstBaseSrc.html#GstBaseSrc-struct"/>
     <keyword type="struct" name="struct GstBaseSrcClass" link="GstBaseSrc.html#GstBaseSrcClass"/>
     <keyword type="enum" name="enum GstBaseSrcFlags" link="GstBaseSrc.html#GstBaseSrcFlags"/>
@@ -130,8 +130,8 @@
     <keyword type="property" name="The &quot;sync&quot; property" link="GstBaseSink.html#GstBaseSink--sync"/>
     <keyword type="property" name="The &quot;throttle-time&quot; property" link="GstBaseSink.html#GstBaseSink--throttle-time"/>
     <keyword type="property" name="The &quot;ts-offset&quot; property" link="GstBaseSink.html#GstBaseSink--ts-offset"/>
-    <keyword type="" name="Use Cases" link="GstBaseTransform.html#idp6797872"/>
-    <keyword type="" name="Sub-class settable flags on GstBaseTransform" link="GstBaseTransform.html#idp9811680"/>
+    <keyword type="" name="Use Cases" link="GstBaseTransform.html#idp10171040"/>
+    <keyword type="" name="Sub-class settable flags on GstBaseTransform" link="GstBaseTransform.html#idp10069680"/>
     <keyword type="struct" name="struct GstBaseTransform" link="GstBaseTransform.html#GstBaseTransform-struct"/>
     <keyword type="struct" name="struct GstBaseTransformClass" link="GstBaseTransform.html#GstBaseTransformClass"/>
     <keyword type="function" name="gst_base_transform_is_passthrough ()" link="GstBaseTransform.html#gst-base-transform-is-passthrough"/>

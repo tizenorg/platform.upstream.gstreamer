@@ -751,8 +751,9 @@ Additional flags to control the allocation of a buffer
 </tr>
 <tr>
 <td><p><a name="GST-BUFFER-POOL-ACQUIRE-FLAG-DONTWAIT:CAPS"></a><span class="term"><code class="literal">GST_BUFFER_POOL_ACQUIRE_FLAG_DONTWAIT</code></span></p></td>
-<td>don't wait for buffer. This makes the
-acquire_buffer method return GST_FLOW_EOS.
+<td>when the bufferpool is empty, acquire_buffer
+will by default block until a buffer is released into the pool again. Setting
+this flag makes acquire_buffer return <a class="link" href="GstPad.html#GST-FLOW-EOS:CAPS"><span class="type">GST_FLOW_EOS</span></a> instead of blocking.
 </td>
 </tr>
 <tr>

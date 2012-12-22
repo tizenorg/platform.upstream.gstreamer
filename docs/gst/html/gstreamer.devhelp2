@@ -71,7 +71,7 @@
     <sub name="Annotation Glossary" link="annotation-glossary.html"/>
   </chapters>
   <functions>
-    <keyword type="" name="Environment variables" link="gst-running.html#idp8488400"/>
+    <keyword type="" name="Environment variables" link="gst-running.html#idp9354048"/>
     <keyword type="function" name="gst_init ()" link="gstreamer-Gst.html#gst-init"/>
     <keyword type="function" name="gst_init_check ()" link="gstreamer-Gst.html#gst-init-check"/>
     <keyword type="function" name="gst_init_get_option_group ()" link="gstreamer-Gst.html#gst-init-get-option-group"/>
@@ -105,7 +105,7 @@
     <keyword type="function" name="gst_atomic_queue_peek ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-peek"/>
     <keyword type="function" name="gst_atomic_queue_pop ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-pop"/>
     <keyword type="function" name="gst_atomic_queue_length ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-length"/>
-    <keyword type="" name="Notes" link="GstBin.html#idp11985136"/>
+    <keyword type="" name="Notes" link="GstBin.html#idp10700448"/>
     <keyword type="struct" name="struct GstBin" link="GstBin.html#GstBin-struct"/>
     <keyword type="struct" name="struct GstBinClass" link="GstBin.html#GstBinClass"/>
     <keyword type="function" name="gst_bin_new ()" link="GstBin.html#gst-bin-new"/>
@@ -906,7 +906,7 @@
     <keyword type="function" name="gst_mini_object_replace ()" link="gstreamer-GstMiniObject.html#gst-mini-object-replace"/>
     <keyword type="function" name="gst_mini_object_take ()" link="gstreamer-GstMiniObject.html#gst-mini-object-take"/>
     <keyword type="function" name="gst_mini_object_steal ()" link="gstreamer-GstMiniObject.html#gst-mini-object-steal"/>
-    <keyword type="" name="controlled properties" link="GstObject.html#idp28871792"/>
+    <keyword type="" name="controlled properties" link="GstObject.html#idp30100592"/>
     <keyword type="struct" name="struct GstObject" link="GstObject.html#GstObject-struct"/>
     <keyword type="struct" name="struct GstObjectClass" link="GstObject.html#GstObjectClass"/>
     <keyword type="enum" name="enum GstObjectFlags" link="GstObject.html#GstObjectFlags"/>
@@ -986,16 +986,6 @@
     <keyword type="function" name="gst_pad_is_active ()" link="GstPad.html#gst-pad-is-active"/>
     <keyword type="enum" name="enum GstPadProbeReturn" link="GstPad.html#GstPadProbeReturn"/>
     <keyword type="enum" name="enum GstPadProbeType" link="GstPad.html#GstPadProbeType"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_BLOCKING" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCKING:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-DOWNSTREAM:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-UPSTREAM:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-DOWNSTREAM:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_DATA_UPSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-UPSTREAM:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_DATA_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-BOTH:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_EVENT_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-EVENT-BOTH:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_QUERY_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-QUERY-BOTH:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_ALL_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-ALL-BOTH:CAPS"/>
-    <keyword type="macro" name="GST_PAD_PROBE_TYPE_SCHEDULING" link="GstPad.html#GST-PAD-PROBE-TYPE-SCHEDULING:CAPS"/>
     <keyword type="struct" name="struct GstPadProbeInfo" link="GstPad.html#GstPadProbeInfo"/>
     <keyword type="macro" name="GST_PAD_PROBE_INFO_TYPE()" link="GstPad.html#GST-PAD-PROBE-INFO-TYPE:CAPS"/>
     <keyword type="macro" name="GST_PAD_PROBE_INFO_ID()" link="GstPad.html#GST-PAD-PROBE-INFO-ID:CAPS"/>
@@ -2258,6 +2248,16 @@
     <keyword type="constant" name="GST_PAD_PROBE_TYPE_QUERY_UPSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-QUERY-UPSTREAM:CAPS"/>
     <keyword type="constant" name="GST_PAD_PROBE_TYPE_PUSH" link="GstPad.html#GST-PAD-PROBE-TYPE-PUSH:CAPS"/>
     <keyword type="constant" name="GST_PAD_PROBE_TYPE_PULL" link="GstPad.html#GST-PAD-PROBE-TYPE-PULL:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_BLOCKING" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCKING:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-DOWNSTREAM:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_DATA_UPSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-UPSTREAM:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_DATA_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-DATA-BOTH:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-DOWNSTREAM:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM" link="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-UPSTREAM:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_EVENT_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-EVENT-BOTH:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_QUERY_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-QUERY-BOTH:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_ALL_BOTH" link="GstPad.html#GST-PAD-PROBE-TYPE-ALL-BOTH:CAPS"/>
+    <keyword type="constant" name="GST_PAD_PROBE_TYPE_SCHEDULING" link="GstPad.html#GST-PAD-PROBE-TYPE-SCHEDULING:CAPS"/>
     <keyword type="constant" name="GST_PAD_TEMPLATE_FLAG_LAST" link="GstPadTemplate.html#GST-PAD-TEMPLATE-FLAG-LAST:CAPS"/>
     <keyword type="constant" name="GST_PAD_ALWAYS" link="GstPadTemplate.html#GST-PAD-ALWAYS:CAPS"/>
     <keyword type="constant" name="GST_PAD_SOMETIMES" link="GstPadTemplate.html#GST-PAD-SOMETIMES:CAPS"/>

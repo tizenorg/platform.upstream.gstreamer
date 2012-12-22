@@ -215,7 +215,7 @@ element receives EOS in PAUSED, preroll completes, the event is queued and an
 EOS message is posted when going to PLAYING.
 </p>
 <p>
-<a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> will internally use the <span class="type">GST_EVENT_NEWSEGMENT</span> events to schedule
+<a class="link" href="GstBaseSink.html" title="GstBaseSink"><span class="type">GstBaseSink</span></a> will internally use the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstEvent.html#GST-EVENT-SEGMENT:CAPS"><span class="type">GST_EVENT_SEGMENT</span></a> events to schedule
 synchronisation and clipping of buffers. Buffers that fall completely outside
 of the current segment are dropped. Buffers that fall partially in the
 segment are rendered (and prerolled). Subclasses should do any subbuffer

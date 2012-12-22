@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.6.2.  */
+/* A Bison parser, made by GNU Bison 2.5.  */
 
 /* Bison interface for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,15 +30,6 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef PRIV_GST_PARSE_YY_GRAMMAR_TAB_H
-# define PRIV_GST_PARSE_YY_GRAMMAR_TAB_H
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int priv_gst_parse_yydebug;
-#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -57,10 +48,12 @@ extern int priv_gst_parse_yydebug;
 #endif
 
 
+
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-/* Line 2049 of yacc.c  */
+
+/* Line 2068 of yacc.c  */
 #line 632 "./grammar.y"
 
     gchar *s;
@@ -71,8 +64,9 @@ typedef union YYSTYPE
     graph_t *g;
 
 
-/* Line 2049 of yacc.c  */
-#line 76 "grammar.tab.h"
+
+/* Line 2068 of yacc.c  */
+#line 70 "grammar.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -80,18 +74,5 @@ typedef union YYSTYPE
 #endif
 
 
-#ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
-int priv_gst_parse_yyparse (void *YYPARSE_PARAM);
-#else
-int priv_gst_parse_yyparse ();
-#endif
-#else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
-int priv_gst_parse_yyparse (void *scanner, graph_t *graph);
-#else
-int priv_gst_parse_yyparse ();
-#endif
-#endif /* ! YYPARSE_PARAM */
 
-#endif /* !PRIV_GST_PARSE_YY_GRAMMAR_TAB_H  */
+

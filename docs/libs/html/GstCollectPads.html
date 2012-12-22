@@ -1063,7 +1063,9 @@ Unref the buffer after use.</td>
                                                          <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> user_data</code></em>);</pre>
 <p>
 Set the callback function and user data that will be called with
-the oldest buffer when all pads have been collected.
+the oldest buffer when all pads have been collected, or NULL on EOS.
+If a buffer is passed, the callback owns a reference and must unref
+it.
 </p>
 <p>
 MT safe.

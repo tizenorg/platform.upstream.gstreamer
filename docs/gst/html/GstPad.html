@@ -95,16 +95,6 @@ const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.htm
 
 enum                <a class="link" href="GstPad.html#GstPadProbeReturn" title="enum GstPadProbeReturn">GstPadProbeReturn</a>;
 enum                <a class="link" href="GstPad.html#GstPadProbeType" title="enum GstPadProbeType">GstPadProbeType</a>;
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-BLOCKING:CAPS" title="GST_PAD_PROBE_TYPE_BLOCKING">GST_PAD_PROBE_TYPE_BLOCKING</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-DOWNSTREAM:CAPS" title="GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM">GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-BLOCK-UPSTREAM:CAPS" title="GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM">GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-DATA-DOWNSTREAM:CAPS" title="GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM">GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-DATA-UPSTREAM:CAPS" title="GST_PAD_PROBE_TYPE_DATA_UPSTREAM">GST_PAD_PROBE_TYPE_DATA_UPSTREAM</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-DATA-BOTH:CAPS" title="GST_PAD_PROBE_TYPE_DATA_BOTH">GST_PAD_PROBE_TYPE_DATA_BOTH</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-EVENT-BOTH:CAPS" title="GST_PAD_PROBE_TYPE_EVENT_BOTH">GST_PAD_PROBE_TYPE_EVENT_BOTH</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-QUERY-BOTH:CAPS" title="GST_PAD_PROBE_TYPE_QUERY_BOTH">GST_PAD_PROBE_TYPE_QUERY_BOTH</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-ALL-BOTH:CAPS" title="GST_PAD_PROBE_TYPE_ALL_BOTH">GST_PAD_PROBE_TYPE_ALL_BOTH</a>
-#define             <a class="link" href="GstPad.html#GST-PAD-PROBE-TYPE-SCHEDULING:CAPS" title="GST_PAD_PROBE_TYPE_SCHEDULING">GST_PAD_PROBE_TYPE_SCHEDULING</a>
 struct              <a class="link" href="GstPad.html#GstPadProbeInfo" title="struct GstPadProbeInfo">GstPadProbeInfo</a>;
 #define             <a class="link" href="GstPad.html#GST-PAD-PROBE-INFO-TYPE:CAPS" title="GST_PAD_PROBE_INFO_TYPE()">GST_PAD_PROBE_INFO_TYPE</a>             (d)
 #define             <a class="link" href="GstPad.html#GST-PAD-PROBE-INFO-ID:CAPS" title="GST_PAD_PROBE_INFO_ID()">GST_PAD_PROBE_INFO_ID</a>               (d)
@@ -1581,7 +1571,19 @@ Different return values for the <a class="link" href="GstPad.html#GstPadProbeCal
   GST_PAD_PROBE_TYPE_QUERY_UPSTREAM   = (1 &lt;&lt; 10),
   /* flags to select scheduling mode */
   GST_PAD_PROBE_TYPE_PUSH             = (1 &lt;&lt; 12),
-  GST_PAD_PROBE_TYPE_PULL             = (1 &lt;&lt; 13)
+  GST_PAD_PROBE_TYPE_PULL             = (1 &lt;&lt; 13),
+
+  /* flag combinations */
+  GST_PAD_PROBE_TYPE_BLOCKING         = GST_PAD_PROBE_TYPE_IDLE | GST_PAD_PROBE_TYPE_BLOCK,
+  GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM  = GST_PAD_PROBE_TYPE_BUFFER | GST_PAD_PROBE_TYPE_BUFFER_LIST | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM,
+  GST_PAD_PROBE_TYPE_DATA_UPSTREAM    = GST_PAD_PROBE_TYPE_EVENT_UPSTREAM,
+  GST_PAD_PROBE_TYPE_DATA_BOTH        = GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM | GST_PAD_PROBE_TYPE_DATA_UPSTREAM,
+  GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM = GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM,
+  GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM   = GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_DATA_UPSTREAM,
+  GST_PAD_PROBE_TYPE_EVENT_BOTH       = GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM | GST_PAD_PROBE_TYPE_EVENT_UPSTREAM,
+  GST_PAD_PROBE_TYPE_QUERY_BOTH       = GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM | GST_PAD_PROBE_TYPE_QUERY_UPSTREAM,
+  GST_PAD_PROBE_TYPE_ALL_BOTH         = GST_PAD_PROBE_TYPE_DATA_BOTH | GST_PAD_PROBE_TYPE_QUERY_BOTH,
+  GST_PAD_PROBE_TYPE_SCHEDULING       = GST_PAD_PROBE_TYPE_PUSH | GST_PAD_PROBE_TYPE_PULL
 } GstPadProbeType;
 </pre>
 <p>
@@ -1655,63 +1657,58 @@ blocking probe.
 <td>probe pull
 </td>
 </tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-BLOCKING:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_BLOCKING</code></span></p></td>
+<td>probe and block at the next opportunity, at data flow or when idle
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-DATA-DOWNSTREAM:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM</code></span></p></td>
+<td>probe downstream data (buffers, buffer lists, and events)
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-DATA-UPSTREAM:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_DATA_UPSTREAM</code></span></p></td>
+<td>probe upstream data (events)
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-DATA-BOTH:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_DATA_BOTH</code></span></p></td>
+<td>probe upstream and downstream data (buffers, buffer lists, and events)
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-BLOCK-DOWNSTREAM:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM</code></span></p></td>
+<td>probe and block downstream data (buffers, buffer lists, and events)
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-BLOCK-UPSTREAM:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM</code></span></p></td>
+<td>probe and block upstream data (events)
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-EVENT-BOTH:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_EVENT_BOTH</code></span></p></td>
+<td>probe upstream and downstream events
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-QUERY-BOTH:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_QUERY_BOTH</code></span></p></td>
+<td>probe upstream and downstream queries
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-ALL-BOTH:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_ALL_BOTH</code></span></p></td>
+<td>probe upstream events and queries and downstream buffers, buffer lists, events and queries
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-PAD-PROBE-TYPE-SCHEDULING:CAPS"></a><span class="term"><code class="literal">GST_PAD_PROBE_TYPE_SCHEDULING</code></span></p></td>
+<td>probe push and pull
+</td>
+</tr>
 </tbody>
 </table></div>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-BLOCKING:CAPS"></a><h3>GST_PAD_PROBE_TYPE_BLOCKING</h3>
-<pre class="programlisting">#define GST_PAD_PROBE_TYPE_BLOCKING         (GST_PAD_PROBE_TYPE_IDLE | GST_PAD_PROBE_TYPE_BLOCK)
-</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-BLOCK-DOWNSTREAM:CAPS"></a><h3>GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM</h3>
-<pre class="programlisting">#define GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM (GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM)
-</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-BLOCK-UPSTREAM:CAPS"></a><h3>GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM</h3>
-<pre class="programlisting">#define GST_PAD_PROBE_TYPE_BLOCK_UPSTREAM   (GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_DATA_UPSTREAM)
-</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-DATA-DOWNSTREAM:CAPS"></a><h3>GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM</h3>
-<pre class="programlisting">#define             GST_PAD_PROBE_TYPE_DATA_DOWNSTREAM</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-DATA-UPSTREAM:CAPS"></a><h3>GST_PAD_PROBE_TYPE_DATA_UPSTREAM</h3>
-<pre class="programlisting">#define GST_PAD_PROBE_TYPE_DATA_UPSTREAM    (GST_PAD_PROBE_TYPE_EVENT_UPSTREAM)
-</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-DATA-BOTH:CAPS"></a><h3>GST_PAD_PROBE_TYPE_DATA_BOTH</h3>
-<pre class="programlisting">#define             GST_PAD_PROBE_TYPE_DATA_BOTH</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-EVENT-BOTH:CAPS"></a><h3>GST_PAD_PROBE_TYPE_EVENT_BOTH</h3>
-<pre class="programlisting">#define             GST_PAD_PROBE_TYPE_EVENT_BOTH</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-QUERY-BOTH:CAPS"></a><h3>GST_PAD_PROBE_TYPE_QUERY_BOTH</h3>
-<pre class="programlisting">#define             GST_PAD_PROBE_TYPE_QUERY_BOTH</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-ALL-BOTH:CAPS"></a><h3>GST_PAD_PROBE_TYPE_ALL_BOTH</h3>
-<pre class="programlisting">#define             GST_PAD_PROBE_TYPE_ALL_BOTH</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GST-PAD-PROBE-TYPE-SCHEDULING:CAPS"></a><h3>GST_PAD_PROBE_TYPE_SCHEDULING</h3>
-<pre class="programlisting">#define GST_PAD_PROBE_TYPE_SCHEDULING       (GST_PAD_PROBE_TYPE_PUSH | GST_PAD_PROBE_TYPE_PULL)
-</pre>
 </div>
 <hr>
 <div class="refsect2">

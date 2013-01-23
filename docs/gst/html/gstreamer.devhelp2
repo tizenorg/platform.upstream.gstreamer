@@ -71,7 +71,7 @@
     <sub name="Annotation Glossary" link="annotation-glossary.html"/>
   </chapters>
   <functions>
-    <keyword type="" name="Environment variables" link="gst-running.html#idp9354048"/>
+    <keyword type="" name="Environment variables" link="gst-running.html#idp8168944"/>
     <keyword type="function" name="gst_init ()" link="gstreamer-Gst.html#gst-init"/>
     <keyword type="function" name="gst_init_check ()" link="gstreamer-Gst.html#gst-init-check"/>
     <keyword type="function" name="gst_init_get_option_group ()" link="gstreamer-Gst.html#gst-init-get-option-group"/>
@@ -105,7 +105,7 @@
     <keyword type="function" name="gst_atomic_queue_peek ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-peek"/>
     <keyword type="function" name="gst_atomic_queue_pop ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-pop"/>
     <keyword type="function" name="gst_atomic_queue_length ()" link="gstreamer-GstAtomicQueue.html#gst-atomic-queue-length"/>
-    <keyword type="" name="Notes" link="GstBin.html#idp10700448"/>
+    <keyword type="" name="Notes" link="GstBin.html#idp9718336"/>
     <keyword type="struct" name="struct GstBin" link="GstBin.html#GstBin-struct"/>
     <keyword type="struct" name="struct GstBinClass" link="GstBin.html#GstBinClass"/>
     <keyword type="function" name="gst_bin_new ()" link="GstBin.html#gst-bin-new"/>
@@ -906,7 +906,7 @@
     <keyword type="function" name="gst_mini_object_replace ()" link="gstreamer-GstMiniObject.html#gst-mini-object-replace"/>
     <keyword type="function" name="gst_mini_object_take ()" link="gstreamer-GstMiniObject.html#gst-mini-object-take"/>
     <keyword type="function" name="gst_mini_object_steal ()" link="gstreamer-GstMiniObject.html#gst-mini-object-steal"/>
-    <keyword type="" name="controlled properties" link="GstObject.html#idp30100592"/>
+    <keyword type="" name="controlled properties" link="GstObject.html#idp28229744"/>
     <keyword type="struct" name="struct GstObject" link="GstObject.html#GstObject-struct"/>
     <keyword type="struct" name="struct GstObjectClass" link="GstObject.html#GstObjectClass"/>
     <keyword type="enum" name="enum GstObjectFlags" link="GstObject.html#GstObjectFlags"/>
@@ -1943,6 +1943,7 @@
     <keyword type="function" name="gst_debug_bin_to_dot_file_with_ts ()" link="gstreamer-GstInfo.html#gst-debug-bin-to-dot-file-with-ts"/>
     <keyword type="constant" name="GST_ALLOCATOR_FLAG_CUSTOM_ALLOC" link="GstAllocator.html#GST-ALLOCATOR-FLAG-CUSTOM-ALLOC:CAPS"/>
     <keyword type="constant" name="GST_ALLOCATOR_FLAG_LAST" link="GstAllocator.html#GST-ALLOCATOR-FLAG-LAST:CAPS"/>
+    <keyword type="constant" name="GST_BIN_FLAG_NO_RESYNC" link="GstBin.html#GST-BIN-FLAG-NO-RESYNC:CAPS"/>
     <keyword type="constant" name="GST_BIN_FLAG_LAST" link="GstBin.html#GST-BIN-FLAG-LAST:CAPS"/>
     <keyword type="constant" name="GST_BUFFER_FLAG_LIVE" link="gstreamer-GstBuffer.html#GST-BUFFER-FLAG-LIVE:CAPS"/>
     <keyword type="constant" name="GST_BUFFER_FLAG_DECODE_ONLY" link="gstreamer-GstBuffer.html#GST-BUFFER-FLAG-DECODE-ONLY:CAPS"/>
@@ -2319,6 +2320,7 @@
     <keyword type="constant" name="GST_SEGMENT_FLAG_SEGMENT" link="gstreamer-GstSegment.html#GST-SEGMENT-FLAG-SEGMENT:CAPS"/>
     <keyword type="constant" name="GST_CLOCK_TYPE_REALTIME" link="GstSystemClock.html#GST-CLOCK-TYPE-REALTIME:CAPS"/>
     <keyword type="constant" name="GST_CLOCK_TYPE_MONOTONIC" link="GstSystemClock.html#GST-CLOCK-TYPE-MONOTONIC:CAPS"/>
+    <keyword type="constant" name="GST_CLOCK_TYPE_OTHER" link="GstSystemClock.html#GST-CLOCK-TYPE-OTHER:CAPS"/>
     <keyword type="constant" name="GST_TAG_MERGE_UNDEFINED" link="gstreamer-GstTagList.html#GST-TAG-MERGE-UNDEFINED:CAPS"/>
     <keyword type="constant" name="GST_TAG_MERGE_REPLACE_ALL" link="gstreamer-GstTagList.html#GST-TAG-MERGE-REPLACE-ALL:CAPS"/>
     <keyword type="constant" name="GST_TAG_MERGE_REPLACE" link="gstreamer-GstTagList.html#GST-TAG-MERGE-REPLACE:CAPS"/>

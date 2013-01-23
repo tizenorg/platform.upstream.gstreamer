@@ -90,7 +90,8 @@ Last reviewed on 2006-03-08 (0.10.4)
 <a name="GstClockType"></a><h3>enum GstClockType</h3>
 <pre class="programlisting">typedef enum {
   GST_CLOCK_TYPE_REALTIME       = 0,
-  GST_CLOCK_TYPE_MONOTONIC      = 1
+  GST_CLOCK_TYPE_MONOTONIC      = 1,
+  GST_CLOCK_TYPE_OTHER          = 2
 } GstClockType;
 </pre>
 <p>
@@ -108,6 +109,11 @@ The different kind of clocks.
 <td><p><a name="GST-CLOCK-TYPE-MONOTONIC:CAPS"></a><span class="term"><code class="literal">GST_CLOCK_TYPE_MONOTONIC</code></span></p></td>
 <td>monotonic time since some unspecified starting
                            point
+</td>
+</tr>
+<tr>
+<td><p><a name="GST-CLOCK-TYPE-OTHER:CAPS"></a><span class="term"><code class="literal">GST_CLOCK_TYPE_OTHER</code></span></p></td>
+<td>some other time source is used (Since: 1.0.5)
 </td>
 </tr>
 </tbody>

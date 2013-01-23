@@ -157,7 +157,7 @@ element is removed from the bin.
 <p>
 </p>
 <div class="refsect2">
-<a name="idp10700448"></a><h3>Notes</h3>
+<a name="idp9718336"></a><h3>Notes</h3>
 <p>
 A <a class="link" href="GstBin.html" title="GstBin"><span class="type">GstBin</span></a> internally intercepts every <a class="link" href="gstreamer-GstMessage.html#GstMessage" title="struct GstMessage"><span class="type">GstMessage</span></a> posted by its children and
 implements the following default behaviour for each of them:
@@ -940,6 +940,7 @@ pad when it is not needed any longer.
 <div class="refsect2">
 <a name="GstBinFlags"></a><h3>enum GstBinFlags</h3>
 <pre class="programlisting">typedef enum {
+  GST_BIN_FLAG_NO_RESYNC = (GST_ELEMENT_FLAG_LAST &lt;&lt; 0),
   /* padding */
   GST_BIN_FLAG_LAST		= (GST_ELEMENT_FLAG_LAST &lt;&lt; 5)
 } GstBinFlags;
@@ -951,12 +952,20 @@ and (un)set using <a class="link" href="GstObject.html#GST-OBJECT-FLAG-SET:CAPS"
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
-<tbody><tr>
+<tbody>
+<tr>
+<td><p><a name="GST-BIN-FLAG-NO-RESYNC:CAPS"></a><span class="term"><code class="literal">GST_BIN_FLAG_NO_RESYNC</code></span></p></td>
+<td>don't resync a state change when elements are
+            added or linked in the bin (Since 1.0.5)
+</td>
+</tr>
+<tr>
 <td><p><a name="GST-BIN-FLAG-LAST:CAPS"></a><span class="term"><code class="literal">GST_BIN_FLAG_LAST</code></span></p></td>
 <td>the last enum in the series of flags for bins.
 Derived classes can use this as first value in a list of flags.
 </td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 </div>
 <hr>

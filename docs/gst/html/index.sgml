@@ -77,6 +77,7 @@
 <ANCHOR id="gst-bin-remove-many" href="gstreamer-1.0/GstBin.html#gst-bin-remove-many">
 <ANCHOR id="gst-bin-find-unlinked-pad" href="gstreamer-1.0/GstBin.html#gst-bin-find-unlinked-pad">
 <ANCHOR id="GstBinFlags" href="gstreamer-1.0/GstBin.html#GstBinFlags">
+<ANCHOR id="GST-BIN-FLAG-NO-RESYNC:CAPS" href="gstreamer-1.0/GstBin.html#GST-BIN-FLAG-NO-RESYNC:CAPS">
 <ANCHOR id="GST-BIN-FLAG-LAST:CAPS" href="gstreamer-1.0/GstBin.html#GST-BIN-FLAG-LAST:CAPS">
 <ANCHOR id="GST-BIN-CHILDREN:CAPS" href="gstreamer-1.0/GstBin.html#GST-BIN-CHILDREN:CAPS">
 <ANCHOR id="GST-BIN-CHILDREN-COOKIE:CAPS" href="gstreamer-1.0/GstBin.html#GST-BIN-CHILDREN-COOKIE:CAPS">
@@ -1974,6 +1975,7 @@
 <ANCHOR id="GstClockType" href="gstreamer-1.0/GstSystemClock.html#GstClockType">
 <ANCHOR id="GST-CLOCK-TYPE-REALTIME:CAPS" href="gstreamer-1.0/GstSystemClock.html#GST-CLOCK-TYPE-REALTIME:CAPS">
 <ANCHOR id="GST-CLOCK-TYPE-MONOTONIC:CAPS" href="gstreamer-1.0/GstSystemClock.html#GST-CLOCK-TYPE-MONOTONIC:CAPS">
+<ANCHOR id="GST-CLOCK-TYPE-OTHER:CAPS" href="gstreamer-1.0/GstSystemClock.html#GST-CLOCK-TYPE-OTHER:CAPS">
 <ANCHOR id="GstSystemClock-struct" href="gstreamer-1.0/GstSystemClock.html#GstSystemClock-struct">
 <ANCHOR id="gst-system-clock-obtain" href="gstreamer-1.0/GstSystemClock.html#gst-system-clock-obtain">
 <ANCHOR id="GstSystemClock.property-details" href="gstreamer-1.0/GstSystemClock.html#GstSystemClock.property-details">

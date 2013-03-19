@@ -7,7 +7,7 @@ Release:        0
 %define gst_branch 1.0
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
-Group:          Productivity/Multimedia/Other
+Group:          Multimedia/Multimedia Framework 
 Url:            http://gstreamer.freedesktop.org/
 Source0:        http://download.gnome.org/sources/gstreamer/1.0/%{_name}-%{version}.tar.xz
 Source1:        gstreamer.macros
@@ -36,7 +36,7 @@ installing new plug-ins.
 
 %package -n libgstreamer
 Summary:        Streaming-Media Framework Runtime
-Group:          System/Libraries
+Group:          Multimedia/Multimedia Framework
 # We want to have core modules installed:
 Requires:       %{name}
 
@@ -50,7 +50,7 @@ installing new plug-ins.
 
 %package -n typelib-Gst
 Summary:        Streaming-Media Framework Runtime -- Introspection bindings
-Group:          System/Libraries
+Group:          Multimedia/Multimedia Framework
 
 %description -n typelib-Gst
 GStreamer is a streaming-media framework, based on graphs of filters
@@ -64,8 +64,7 @@ This package provides the GObject Introspection bindings for GStreamer.
 
 %package utils
 Summary:        Streaming-Media Framework Runtime
-Group:          Productivity/Multimedia/Other
-# Generic name, never used in SuSE:
+Group:          Multimedia/Multimedia Framework
 Provides:       gstreamer:%{_bindir}/gst-launch-%{gst_branch} = %{version}
 # Symbol for unversioned wrappers:
 Provides:       gstreamer-utils_versioned = %{version}
@@ -80,7 +79,7 @@ installing new plug-ins.
 
 %package devel
 Summary:        Include Files and Libraries mandatory for Development
-Group:          Development/Libraries/C and C++
+Group:          Development/Libraries
 Requires:       %{name} = %{version}
 # gstreamer-utils is required for the gstreamer-provides rpm magic.
 Requires:       gstreamer-utils = %{version}
@@ -134,7 +133,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%doc COPYING
+%license COPYING
 %dir %{_datadir}/gstreamer-%{gst_branch}
 %dir %{_datadir}/gstreamer-%{gst_branch}/presets
 %dir %{_libdir}/gstreamer-%{gst_branch}

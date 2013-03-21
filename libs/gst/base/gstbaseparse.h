@@ -328,6 +328,9 @@ gboolean        gst_base_parse_add_index_entry (GstBaseParse * parse,
 void            gst_base_parse_get_upstream_size (GstBaseParse * parse,
                                                 gint64 * upstream_size);
 
+void            gst_base_parse_get_encoded_size (GstBaseParse * parse, 
+                                                gint64 * encoded_size);
+
 void            gst_base_parse_get_index_last_offset (GstBaseParse * parse,
                                                 gint64 * index_last_offset);
 

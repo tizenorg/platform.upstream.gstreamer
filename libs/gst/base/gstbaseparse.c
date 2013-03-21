@@ -335,6 +335,8 @@ struct _GstBaseParsePrivate
   gboolean first_frame; /* check first frame in base parser */
   gint64 remove_from_total; /* remove zero padding */
 #endif
+
+  gint64 encoded_size; /*endcoded size = total size - id3*/
 };
 
 typedef struct _GstBaseParseSeek
@@ -768,6 +770,8 @@ gst_base_parse_reset (GstBaseParse * parse)
   parse->priv->first_frame = TRUE;
   parse->priv->remove_from_total = 0;
 #endif
+
+  parse->priv->encoded_size = 0;
 
   if (parse->priv->pending_segment) {
     gst_event_unref (parse->priv->pending_segment);
@@ -1302,6 +1306,13 @@ gst_base_parse_update_duration (GstBaseParse * baseparse)
     gint64 ptot, dest_value;
 
     qres = gst_pad_query_duration (peer, &pformat, &ptot);
+
+    if (ptot > 0) {
+     parse->priv->encoded_size = ptot;
+     GST_INFO_OBJECT (parse, "[ID3] (ptot) parse->priv->encoded_size :( %" G_GINT64_FORMAT ")",parse->priv->encoded_size);
+     }
+
+    
     gst_object_unref (GST_OBJECT (peer));
     if (qres) {
       if (gst_base_parse_convert (parse, pformat, ptot,
@@ -4156,6 +4167,16 @@ gst_base_parse_get_upstream_size (GstBaseParse * parse, gint64 * upstream_size)
 
   GST_BASE_PARSE_INDEX_LOCK (parse);
   *upstream_size = parse->priv->upstream_size;
+  GST_BASE_PARSE_INDEX_UNLOCK (parse);
+}
+
+void
+gst_base_parse_get_encoded_size (GstBaseParse * parse, gint64 * encoded_size)
+{
+  GST_INFO_OBJECT (parse, "get encoded_size param for child parser");
+
+  GST_BASE_PARSE_INDEX_LOCK (parse);
+  *encoded_size = parse->priv->encoded_size;
   GST_BASE_PARSE_INDEX_UNLOCK (parse);
 }
 

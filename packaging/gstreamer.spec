@@ -1,7 +1,7 @@
 Name:       gstreamer
 Summary:    GStreamer streaming media framework runtime
 Version:    0.10.36
-Release:    5
+Release:    6
 Group:      Applications/Multimedia
 License:    LGPLv2+
 Source0:    %{name}-%{version}.tar.gz

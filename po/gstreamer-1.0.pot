@@ -5,9 +5,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gstreamer 1.0.5\n"
+"Project-Id-Version: gstreamer 1.0.6\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2013-01-04 12:36+0000\n"
+"POT-Creation-Date: 2013-03-22 09:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -295,7 +295,7 @@ msgstr ""
 msgid "No standard error message for domain %s and code %d."
 msgstr ""
 
-#: gst/gstpipeline.c:522
+#: gst/gstpipeline.c:525
 msgid "Selected clock cannot be used in pipeline."
 msgstr ""
 
@@ -1048,25 +1048,29 @@ msgstr ""
 msgid "empty pipeline not allowed"
 msgstr ""
 
-#: libs/gst/base/gstbasesrc.c:2438
+#: libs/gst/base/gstbasesrc.c:2440
 msgid "Internal clock error."
 msgstr ""
 
-#: libs/gst/base/gstbasesrc.c:2790 libs/gst/base/gstbasesrc.c:2799
-#: libs/gst/base/gstbasesink.c:3768 plugins/elements/gstqueue.c:1188
+#: libs/gst/base/gstbasesrc.c:2468
+msgid "Failed to map buffer."
+msgstr ""
+
+#: libs/gst/base/gstbasesrc.c:2808 libs/gst/base/gstbasesrc.c:2817
+#: libs/gst/base/gstbasesink.c:3776 plugins/elements/gstqueue.c:1197
 #: plugins/elements/gstqueue2.c:2565
 msgid "Internal data flow error."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:2674
+#: libs/gst/base/gstbasesink.c:2682
 msgid "A lot of buffers are being dropped."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3132
+#: libs/gst/base/gstbasesink.c:3140
 msgid "Internal data flow problem."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3758
+#: libs/gst/base/gstbasesink.c:3766
 msgid "Internal data stream error."
 msgstr ""
 

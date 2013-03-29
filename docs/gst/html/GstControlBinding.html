@@ -46,9 +46,6 @@
 
 struct              <a class="link" href="GstControlBinding.html#GstControlBinding-struct" title="struct GstControlBinding">GstControlBinding</a>;
 struct              <a class="link" href="GstControlBinding.html#GstControlBindingClass" title="struct GstControlBindingClass">GstControlBindingClass</a>;
-<span class="returnvalue">void</span>                (<a class="link" href="GstControlBinding.html#GstControlBindingConvert" title="GstControlBindingConvert ()">*GstControlBindingConvert</a>)         (<em class="parameter"><code><a class="link" href="GstControlBinding.html" title="GstControlBinding"><span class="type">GstControlBinding</span></a> *binding</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> src_value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *dest_value</code></em>);
 <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="GstControlBinding.html#gst-control-binding-sync-values" title="gst_control_binding_sync_values ()">gst_control_binding_sync_values</a>     (<em class="parameter"><code><a class="link" href="GstControlBinding.html" title="GstControlBinding"><span class="type">GstControlBinding</span></a> *binding</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstObject.html" title="GstObject"><span class="type">GstObject</span></a> *object</code></em>,
                                                          <em class="parameter"><code><a class="link" href="GstClock.html#GstClockTime" title="GstClockTime"><span class="type">GstClockTime</span></a> timestamp</code></em>,
@@ -90,7 +87,10 @@ struct              <a class="link" href="GstControlBinding.html#GstControlBindi
 <div class="refsect1">
 <a name="GstControlBinding.description"></a><h2>Description</h2>
 <p>
-A value mapping object that attaches control sources to gobject properties.
+A base class for value mapping objects that attaches control sources to gobject
+properties. Such an object is taking one or more <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> instances,
+combines them and maps the resulting value to the type and value range of the
+bound property.
 </p>
 </div>
 <div class="refsect1">
@@ -158,33 +158,6 @@ The class structure of <a class="link" href="GstControlBinding.html" title="GstC
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="GstControlBindingClass.get-g-value-array"></a>get_g_value_array</code></em> ()</span></p></td>
 <td></td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<hr>
-<div class="refsect2">
-<a name="GstControlBindingConvert"></a><h3>GstControlBindingConvert ()</h3>
-<pre class="programlisting"><span class="returnvalue">void</span>                (*GstControlBindingConvert)         (<em class="parameter"><code><a class="link" href="GstControlBinding.html" title="GstControlBinding"><span class="type">GstControlBinding</span></a> *binding</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> src_value</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValue</span></a> *dest_value</code></em>);</pre>
-<p>
-Function to map a control-value to the target GValue.
-</p>
-<div class="variablelist"><table border="0">
-<col align="left" valign="top">
-<tbody>
-<tr>
-<td><p><span class="term"><em class="parameter"><code>binding</code></em> :</span></p></td>
-<td>the <a class="link" href="GstControlBinding.html" title="GstControlBinding"><span class="type">GstControlBinding</span></a> instance</td>
-</tr>
-<tr>
-<td><p><span class="term"><em class="parameter"><code>src_value</code></em> :</span></p></td>
-<td>the value returned by the cotnrol source</td>
-</tr>
-<tr>
-<td><p><span class="term"><em class="parameter"><code>dest_value</code></em> :</span></p></td>
-<td>the target GValue</td>
 </tr>
 </tbody>
 </table></div>
@@ -279,7 +252,7 @@ curve or apply a control curve sample by sample.
 <p>
 The values are unboxed and ready to be used. The similar function 
 <a class="link" href="GstControlBinding.html#gst-control-binding-get-g-value-array" title="gst_control_binding_get_g_value_array ()"><code class="function">gst_control_binding_get_g_value_array()</code></a> returns the array as <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Generic-values.html#GValue"><span class="type">GValues</span></a> and is
-better suites for bindings.
+more suitable for bindings.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">

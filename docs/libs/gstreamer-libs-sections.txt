@@ -13,6 +13,44 @@
 # <SUBSECTION Private>
 # </SECTION>
 
+# control binding classes
+
+<SECTION>
+<FILE>gstargbcontrolbinding</FILE>
+<TITLE>GstARGBControlBinding</TITLE>
+<INCLUDE>libs/controller/gstargbcontrolbinding.h</INCLUDE>
+gst_argb_control_binding_new
+<SUBSECTION Standard>
+GstARGBControlBinding
+GstARGBControlBindingClass
+GST_ARGB_CONTROL_BINDING
+GST_ARGB_CONTROL_BINDING_CLASS
+GST_ARGB_CONTROL_BINDING_GET_CLASS
+GST_IS_ARGB_CONTROL_BINDING
+GST_IS_ARGB_CONTROL_BINDING_CLASS
+GST_TYPE_ARGB_CONTROL_BINDING
+gst_argb_control_binding_get_type
+</SECTION>
+
+<SECTION>
+<FILE>gstdirectcontrolbinding</FILE>
+<TITLE>GstDirectControlBinding</TITLE>
+<INCLUDE>libs/controller/gstdirectcontrolbinding.h</INCLUDE>
+gst_direct_control_binding_new
+<SUBSECTION Standard>
+GstDirectControlBindingConvertValue
+GstDirectControlBindingConvertGValue
+GstDirectControlBinding
+GstDirectControlBindingClass
+GST_DIRECT_CONTROL_BINDING
+GST_DIRECT_CONTROL_BINDING_CLASS
+GST_DIRECT_CONTROL_BINDING_GET_CLASS
+GST_IS_DIRECT_CONTROL_BINDING
+GST_IS_DIRECT_CONTROL_BINDING_CLASS
+GST_TYPE_DIRECT_CONTROL_BINDING
+gst_direct_control_binding_get_type
+</SECTION>
+
 # control source classes
 
 <SECTION>
@@ -166,12 +204,12 @@ gst_base_parse_frame_init
 gst_base_parse_frame_free
 
 gst_base_parse_push_frame
+gst_base_parse_finish_frame
 
 GST_BASE_PARSE_DRAINING
 GST_BASE_PARSE_FLAG_DRAINING
 GST_BASE_PARSE_FLAG_LOST_SYNC
 GST_BASE_PARSE_FLOW_DROPPED
-GST_BASE_PARSE_FLOW_QUEUED
 GST_BASE_PARSE_LOST_SYNC
 GST_BASE_PARSE_SINK_PAD
 GST_BASE_PARSE_SRC_PAD

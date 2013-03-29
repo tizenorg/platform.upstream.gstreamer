@@ -27,6 +27,7 @@
 <ANCHOR id="gst-base-parse-frame-init" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#gst-base-parse-frame-init">
 <ANCHOR id="gst-base-parse-frame-free" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#gst-base-parse-frame-free">
 <ANCHOR id="gst-base-parse-push-frame" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#gst-base-parse-push-frame">
+<ANCHOR id="gst-base-parse-finish-frame" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame">
 <ANCHOR id="GST-BASE-PARSE-DRAINING:CAPS" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-DRAINING:CAPS">
 <ANCHOR id="GST-BASE-PARSE-FLAG-DRAINING:CAPS" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-DRAINING:CAPS">
 <ANCHOR id="GST-BASE-PARSE-FLAG-LOST-SYNC:CAPS" href="gstreamer-libs-1.0/gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-LOST-SYNC:CAPS">
@@ -458,6 +459,16 @@
 <ANCHOR id="gst-type-find-helper-for-data" href="gstreamer-libs-1.0/gstreamer-libs-GstTypeFindHelper.html#gst-type-find-helper-for-data">
 <ANCHOR id="GstTypeFindHelperGetRangeFunction" href="gstreamer-libs-1.0/gstreamer-libs-GstTypeFindHelper.html#GstTypeFindHelperGetRangeFunction">
 <ANCHOR id="gst-type-find-helper-get-range" href="gstreamer-libs-1.0/gstreamer-libs-GstTypeFindHelper.html#gst-type-find-helper-get-range">
+<ANCHOR id="gstreamer-libs-GstARGBControlBinding" href="gstreamer-libs-1.0/gstreamer-libs-GstARGBControlBinding.html">
+<ANCHOR id="gstreamer-libs-GstARGBControlBinding.synopsis" href="gstreamer-libs-1.0/gstreamer-libs-GstARGBControlBinding.html#gstreamer-libs-GstARGBControlBinding.synopsis">
+<ANCHOR id="gstreamer-libs-GstARGBControlBinding.description" href="gstreamer-libs-1.0/gstreamer-libs-GstARGBControlBinding.html#gstreamer-libs-GstARGBControlBinding.description">
+<ANCHOR id="gstreamer-libs-GstARGBControlBinding.details" href="gstreamer-libs-1.0/gstreamer-libs-GstARGBControlBinding.html#gstreamer-libs-GstARGBControlBinding.details">
+<ANCHOR id="gst-argb-control-binding-new" href="gstreamer-libs-1.0/gstreamer-libs-GstARGBControlBinding.html#gst-argb-control-binding-new">
+<ANCHOR id="gstreamer-libs-GstDirectControlBinding" href="gstreamer-libs-1.0/gstreamer-libs-GstDirectControlBinding.html">
+<ANCHOR id="gstreamer-libs-GstDirectControlBinding.synopsis" href="gstreamer-libs-1.0/gstreamer-libs-GstDirectControlBinding.html#gstreamer-libs-GstDirectControlBinding.synopsis">
+<ANCHOR id="gstreamer-libs-GstDirectControlBinding.description" href="gstreamer-libs-1.0/gstreamer-libs-GstDirectControlBinding.html#gstreamer-libs-GstDirectControlBinding.description">
+<ANCHOR id="gstreamer-libs-GstDirectControlBinding.details" href="gstreamer-libs-1.0/gstreamer-libs-GstDirectControlBinding.html#gstreamer-libs-GstDirectControlBinding.details">
+<ANCHOR id="gst-direct-control-binding-new" href="gstreamer-libs-1.0/gstreamer-libs-GstDirectControlBinding.html#gst-direct-control-binding-new">
 <ANCHOR id="GstTimedValueControlSource" href="gstreamer-libs-1.0/GstTimedValueControlSource.html">
 <ANCHOR id="GstTimedValueControlSource.synopsis" href="gstreamer-libs-1.0/GstTimedValueControlSource.html#GstTimedValueControlSource.synopsis">
 <ANCHOR id="GstTimedValueControlSource.object-hierarchy" href="gstreamer-libs-1.0/GstTimedValueControlSource.html#GstTimedValueControlSource.object-hierarchy">

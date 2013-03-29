@@ -17,6 +17,8 @@
         <sub name="GstTypeFindHelper" link="gstreamer-libs-GstTypeFindHelper.html"/>
       </sub>
       <sub name="GStreamer Dynamic Parameter Control" link="gstreamer-control.html">
+        <sub name="GstARGBControlBinding" link="gstreamer-libs-GstARGBControlBinding.html"/>
+        <sub name="GstDirectControlBinding" link="gstreamer-libs-GstDirectControlBinding.html"/>
         <sub name="GstTimedValueControlSource" link="GstTimedValueControlSource.html"/>
         <sub name="GstInterpolationControlSource" link="GstInterpolationControlSource.html"/>
         <sub name="GstLFOControlSource" link="GstLFOControlSource.html"/>
@@ -57,6 +59,7 @@
     <keyword type="function" name="gst_base_parse_frame_init ()" link="gstreamer-libs-GstBaseParse.html#gst-base-parse-frame-init"/>
     <keyword type="function" name="gst_base_parse_frame_free ()" link="gstreamer-libs-GstBaseParse.html#gst-base-parse-frame-free"/>
     <keyword type="function" name="gst_base_parse_push_frame ()" link="gstreamer-libs-GstBaseParse.html#gst-base-parse-push-frame"/>
+    <keyword type="function" name="gst_base_parse_finish_frame ()" link="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame"/>
     <keyword type="macro" name="GST_BASE_PARSE_DRAINING()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-DRAINING:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_FLAG_DRAINING" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-DRAINING:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_FLAG_LOST_SYNC" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-LOST-SYNC:CAPS"/>
@@ -64,7 +67,7 @@
     <keyword type="macro" name="GST_BASE_PARSE_LOST_SYNC()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-LOST-SYNC:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_SINK_PAD()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-SINK-PAD:CAPS"/>
     <keyword type="macro" name="GST_BASE_PARSE_SRC_PAD()" link="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-SRC-PAD:CAPS"/>
-    <keyword type="" name="Controlled shutdown of live sources in applications" link="GstBaseSrc.html#idp8135376"/>
+    <keyword type="" name="Controlled shutdown of live sources in applications" link="GstBaseSrc.html#idp6529552"/>
     <keyword type="struct" name="struct GstBaseSrc" link="GstBaseSrc.html#GstBaseSrc-struct"/>
     <keyword type="struct" name="struct GstBaseSrcClass" link="GstBaseSrc.html#GstBaseSrcClass"/>
     <keyword type="enum" name="enum GstBaseSrcFlags" link="GstBaseSrc.html#GstBaseSrcFlags"/>
@@ -130,8 +133,8 @@
     <keyword type="property" name="The &quot;sync&quot; property" link="GstBaseSink.html#GstBaseSink--sync"/>
     <keyword type="property" name="The &quot;throttle-time&quot; property" link="GstBaseSink.html#GstBaseSink--throttle-time"/>
     <keyword type="property" name="The &quot;ts-offset&quot; property" link="GstBaseSink.html#GstBaseSink--ts-offset"/>
-    <keyword type="" name="Use Cases" link="GstBaseTransform.html#idp5226896"/>
-    <keyword type="" name="Sub-class settable flags on GstBaseTransform" link="GstBaseTransform.html#idp10382320"/>
+    <keyword type="" name="Use Cases" link="GstBaseTransform.html#idp10931120"/>
+    <keyword type="" name="Sub-class settable flags on GstBaseTransform" link="GstBaseTransform.html#idp5455552"/>
     <keyword type="struct" name="struct GstBaseTransform" link="GstBaseTransform.html#GstBaseTransform-struct"/>
     <keyword type="struct" name="struct GstBaseTransformClass" link="GstBaseTransform.html#GstBaseTransformClass"/>
     <keyword type="function" name="gst_base_transform_is_passthrough ()" link="GstBaseTransform.html#gst-base-transform-is-passthrough"/>
@@ -426,6 +429,8 @@
     <keyword type="function" name="gst_type_find_helper_for_data ()" link="gstreamer-libs-GstTypeFindHelper.html#gst-type-find-helper-for-data"/>
     <keyword type="function" name="GstTypeFindHelperGetRangeFunction ()" link="gstreamer-libs-GstTypeFindHelper.html#GstTypeFindHelperGetRangeFunction"/>
     <keyword type="function" name="gst_type_find_helper_get_range ()" link="gstreamer-libs-GstTypeFindHelper.html#gst-type-find-helper-get-range"/>
+    <keyword type="function" name="gst_argb_control_binding_new ()" link="gstreamer-libs-GstARGBControlBinding.html#gst-argb-control-binding-new"/>
+    <keyword type="function" name="gst_direct_control_binding_new ()" link="gstreamer-libs-GstDirectControlBinding.html#gst-direct-control-binding-new"/>
     <keyword type="struct" name="struct GstTimedValueControlSource" link="GstTimedValueControlSource.html#GstTimedValueControlSource-struct"/>
     <keyword type="function" name="gst_timed_value_control_source_find_control_point_iter ()" link="GstTimedValueControlSource.html#gst-timed-value-control-source-find-control-point-iter"/>
     <keyword type="function" name="gst_timed_value_control_source_set ()" link="GstTimedValueControlSource.html#gst-timed-value-control-source-set"/>

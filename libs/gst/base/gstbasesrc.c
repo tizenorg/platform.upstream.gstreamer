@@ -2376,7 +2376,9 @@ again:
     GST_CAT_DEBUG_OBJECT (GST_CAT_PERFORMANCE, src, "create function didn't "
         "fill the provided buffer, copying");
 
-    gst_buffer_map (in_buf, &info, GST_MAP_WRITE);
+    if (!gst_buffer_map (in_buf, &info, GST_MAP_WRITE))
+      goto map_failed;
+
     copied_size = gst_buffer_extract (res_buf, 0, info.data, info.size);
     gst_buffer_unmap (in_buf, &info);
     gst_buffer_set_size (in_buf, copied_size);
@@ -2459,6 +2461,15 @@ not_ok:
     GST_DEBUG_OBJECT (src, "create returned %d (%s)", ret,
         gst_flow_get_name (ret));
     return ret;
+  }
+map_failed:
+  {
+    GST_ELEMENT_ERROR (src, RESOURCE, BUSY,
+        (_("Failed to map buffer.")),
+        ("failed to map result buffer in WRITE mode"));
+    if (*buf == NULL)
+      gst_buffer_unref (res_buf);
+    return GST_FLOW_ERROR;
   }
 not_started:
   {
@@ -2566,8 +2577,10 @@ gst_base_src_loop (GstPad * pad)
 
   /* check if we need to renegotiate */
   if (gst_pad_check_reconfigure (pad)) {
-    if (!gst_base_src_negotiate (src))
-      goto not_negotiated;
+    if (!gst_base_src_negotiate (src)) {
+      gst_pad_mark_reconfigure (pad);
+      goto negotiate_failed;
+    }
   }
 
   GST_LIVE_LOCK (src);
@@ -2733,7 +2746,12 @@ not_negotiated:
       GST_DEBUG_OBJECT (src, "Retrying to renegotiate");
       return;
     }
-    GST_DEBUG_OBJECT (src, "Failed to renegotiate");
+    /* fallthrough when push returns NOT_NEGOTIATED and we don't have
+     * a pending negotiation request on our srcpad */
+  }
+negotiate_failed:
+  {
+    GST_DEBUG_OBJECT (src, "Not negotiated");
     ret = GST_FLOW_NOT_NEGOTIATED;
     goto pause;
   }

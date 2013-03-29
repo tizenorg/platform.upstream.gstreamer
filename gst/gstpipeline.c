@@ -290,7 +290,7 @@ reset_start_time (GstPipeline * pipeline, GstClockTime start_time)
 
 /**
  * gst_pipeline_new:
- * @name: name of new pipeline
+ * @name: (allow-none): name of new pipeline
  *
  * Create a new pipeline with the given name.
  *
@@ -405,7 +405,10 @@ gst_pipeline_change_state (GstElement * element, GstStateChange transition)
         } else {
           GST_DEBUG_OBJECT (pipeline,
               "Don't need to update clock, using old clock.");
-          clock = gst_object_ref (cur_clock);
+          /* only try to ref if cur_clock is not NULL */
+          if (cur_clock)
+            gst_object_ref (cur_clock);
+          clock = cur_clock;
         }
 
         if (clock) {

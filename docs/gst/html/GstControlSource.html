@@ -77,21 +77,20 @@ struct              <a class="link" href="GstControlSource.html#GstTimedValue" t
 <a name="GstControlSource.description"></a><h2>Description</h2>
 <p>
 The <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> is a base class for control value sources that could
-be used by <span class="type">GstController</span> to get timestamp-value pairs.
+be used by <span class="type">GstController</span> to get timestamp-value pairs. A control source
+essentially is a function over time, returning gloat values between 0.0 and 1.0.
 </p>
 <p>
-A <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> is used by first getting an instance, binding it to a
-<a href="http://library.gnome.org/devel/gobject/unstable/gobject-GParamSpec.html#GParamSpec"><span class="type">GParamSpec</span></a> (for example by using <code class="function">gst_controller_set_control_source()</code>) and
-then by having it used by the <span class="type">GstController</span> or calling
-<a class="link" href="GstControlSource.html#gst-control-source-get-value" title="gst_control_source_get_value ()"><code class="function">gst_control_source_get_value()</code></a> or <a class="link" href="GstControlSource.html#gst-control-source-get-value-array" title="gst_control_source_get_value_array ()"><code class="function">gst_control_source_get_value_array()</code></a>.
+A <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> is used by first getting an instance of a specific
+control-source, creating a binding for the control-source to the target property
+of the element and then adding the binding to the element. The binding will
+convert the data types and value range to fit to the bound property.
 </p>
 <p>
-For implementing a new <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> one has to implement a
-<span class="type">GstControlSourceBind</span> method, which will depending on the <a href="http://library.gnome.org/devel/gobject/unstable/gobject-GParamSpec.html#GParamSpec"><span class="type">GParamSpec</span></a> set up
-the control source for use and sets the <a class="link" href="GstControlSource.html#GstControlSourceGetValue" title="GstControlSourceGetValue ()"><span class="type">GstControlSourceGetValue</span></a> and
-<a class="link" href="GstControlSource.html#GstControlSourceGetValueArray" title="GstControlSourceGetValueArray ()"><span class="type">GstControlSourceGetValueArray</span></a> functions. These are then used by
-<a class="link" href="GstControlSource.html#gst-control-source-get-value" title="gst_control_source_get_value ()"><code class="function">gst_control_source_get_value()</code></a> or <a class="link" href="GstControlSource.html#gst-control-source-get-value-array" title="gst_control_source_get_value_array ()"><code class="function">gst_control_source_get_value_array()</code></a>
-to get values for specific timestamps.
+For implementing a new <a class="link" href="GstControlSource.html" title="GstControlSource"><span class="type">GstControlSource</span></a> one has to implement
+<a class="link" href="GstControlSource.html#GstControlSourceGetValue" title="GstControlSourceGetValue ()"><span class="type">GstControlSourceGetValue</span></a> and <a class="link" href="GstControlSource.html#GstControlSourceGetValueArray" title="GstControlSourceGetValueArray ()"><span class="type">GstControlSourceGetValueArray</span></a> functions.
+These are then used by <a class="link" href="GstControlSource.html#gst-control-source-get-value" title="gst_control_source_get_value ()"><code class="function">gst_control_source_get_value()</code></a> and
+<a class="link" href="GstControlSource.html#gst-control-source-get-value-array" title="gst_control_source_get_value_array ()"><code class="function">gst_control_source_get_value_array()</code></a> to get values for specific timestamps.
 </p>
 </div>
 <div class="refsect1">

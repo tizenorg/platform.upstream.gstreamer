@@ -157,7 +157,7 @@ element is removed from the bin.
 <p>
 </p>
 <div class="refsect2">
-<a name="idp9718336"></a><h3>Notes</h3>
+<a name="idp10381520"></a><h3>Notes</h3>
 <p>
 A <a class="link" href="GstBin.html" title="GstBin"><span class="type">GstBin</span></a> internally intercepts every <a class="link" href="gstreamer-GstMessage.html#GstMessage" title="struct GstMessage"><span class="type">GstMessage</span></a> posted by its children and
 implements the following default behaviour for each of them:
@@ -620,10 +620,6 @@ MT safe.  Caller owns returned reference.
 Gets an iterator for the elements in this bin.
 </p>
 <p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
-</p>
-<p>
 MT safe.  Caller owns returned value.
 </p>
 <div class="variablelist"><table border="0">
@@ -651,10 +647,6 @@ Gets an iterator for the elements in this bin.
 This iterator recurses into GstBin children.
 </p>
 <p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
-</p>
-<p>
 MT safe.  Caller owns returned value.
 </p>
 <div class="variablelist"><table border="0">
@@ -680,10 +672,6 @@ MT safe.  Caller owns returned value.
 <p>
 Gets an iterator for all elements in the bin that have the
 <a class="link" href="GstElement.html#GST-ELEMENT-FLAG-SINK:CAPS"><span class="type">GST_ELEMENT_FLAG_SINK</span></a> flag set.
-</p>
-<p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
 </p>
 <p>
 MT safe.  Caller owns returned value.
@@ -718,10 +706,6 @@ This function is used internally to perform the state changes
 of the bin elements and for clock selection.
 </p>
 <p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
-</p>
-<p>
 MT safe.  Caller owns returned value.
 </p>
 <div class="variablelist"><table border="0">
@@ -747,10 +731,6 @@ MT safe.  Caller owns returned value.
 <p>
 Gets an iterator for all elements in the bin that have the
 <a class="link" href="GstElement.html#GST-ELEMENT-FLAG-SOURCE:CAPS"><span class="type">GST_ELEMENT_FLAG_SOURCE</span></a> flag set.
-</p>
-<p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
 </p>
 <p>
 MT safe.  Caller owns returned value.
@@ -781,10 +761,6 @@ Looks for all elements inside the bin that implements the given
 interface. You can safely cast all returned elements to the given interface.
 The function recurses inside child bins. The iterator will yield a series
 of <a class="link" href="GstElement.html" title="GstElement"><span class="type">GstElement</span></a> that should be unreffed after use.
-</p>
-<p>
-Each element yielded by the iterator will have its refcount increased, so
-unref after use.
 </p>
 <p>
 MT safe.  Caller owns returned value.

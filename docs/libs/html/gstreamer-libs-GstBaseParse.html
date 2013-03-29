@@ -83,6 +83,9 @@ enum                <a class="link" href="gstreamer-libs-GstBaseParse.html#GstBa
 <span class="returnvalue">void</span>                <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-frame-free" title="gst_base_parse_frame_free ()">gst_base_parse_frame_free</a>           (<em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParseFrame" title="GstBaseParseFrame"><span class="type">GstBaseParseFrame</span></a> *frame</code></em>);
 <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-push-frame" title="gst_base_parse_push_frame ()">gst_base_parse_push_frame</a>           (<em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParse" title="struct GstBaseParse"><span class="type">GstBaseParse</span></a> *parse</code></em>,
                                                          <em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParseFrame" title="GstBaseParseFrame"><span class="type">GstBaseParseFrame</span></a> *frame</code></em>);
+<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame" title="gst_base_parse_finish_frame ()">gst_base_parse_finish_frame</a>         (<em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParse" title="struct GstBaseParse"><span class="type">GstBaseParse</span></a> *parse</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParseFrame" title="GstBaseParseFrame"><span class="type">GstBaseParseFrame</span></a> *frame</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>);
 #define             <a class="link" href="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-DRAINING:CAPS" title="GST_BASE_PARSE_DRAINING()">GST_BASE_PARSE_DRAINING</a>             (parse)
 #define             <a class="link" href="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-DRAINING:CAPS" title="GST_BASE_PARSE_FLAG_DRAINING">GST_BASE_PARSE_FLAG_DRAINING</a>
 #define             <a class="link" href="gstreamer-libs-GstBaseParse.html#GST-BASE-PARSE-FLAG-LOST-SYNC:CAPS" title="GST_BASE_PARSE_FLAG_LOST_SYNC">GST_BASE_PARSE_FLAG_LOST_SYNC</a>
@@ -133,7 +136,7 @@ Description of the parsing mechanism:
     GstBaseParse class calls <em class="parameter"><code>set_sink_caps</code></em> to inform the subclass about
     incoming sinkpad caps. Subclass could already set the srcpad caps
     accordingly, but this might be delayed until calling
-    <code class="function">gst_base_parse_finish_frame()</code> with a non-queued frame.
+    <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame" title="gst_base_parse_finish_frame ()"><code class="function">gst_base_parse_finish_frame()</code></a> with a non-queued frame.
   </p></li>
 <li class="listitem"><p>
      At least at this point subclass needs to tell the GstBaseParse class
@@ -165,10 +168,10 @@ Description of the parsing mechanism:
       data is available.  In push mode this amounts to an
       additional input buffer (thus minimal additional latency), in pull mode
       this amounts to some arbitrary reasonable buffer size increase.
-      Of course, <code class="function">gst_base_parse_set_min_size()</code> could also be used if a very
-      specific known amount of additional data is required.
+      Of course, <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-set-min-frame-size" title="gst_base_parse_set_min_frame_size ()"><code class="function">gst_base_parse_set_min_frame_size()</code></a> could also be used if a
+      very specific known amount of additional data is required.
       If, however, the buffer holds a complete valid frame, it can pass
-      the size of this frame to <code class="function">gst_base_parse_finish_frame()</code>.
+      the size of this frame to <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame" title="gst_base_parse_finish_frame ()"><code class="function">gst_base_parse_finish_frame()</code></a>.
       If acting as a converter, it can also merely indicate consumed input data
       while simultaneously providing custom output data.
       Note that baseclass performs some processing (such as tracking
@@ -248,7 +251,7 @@ Things that subclass need to take care of:
   </p></li>
 <li class="listitem"><p>
      Examine data chunks passed to subclass with <em class="parameter"><code>handle_frame</code></em> and pass
-     proper frame(s) to <code class="function">gst_base_parse_finish_frame()</code>, and setting src pad
+     proper frame(s) to <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame" title="gst_base_parse_finish_frame ()"><code class="function">gst_base_parse_finish_frame()</code></a>, and setting src pad
      caps and timestamps on frame.
   </p></li>
 <li class="listitem"><p>Provide conversion functions</p></li>
@@ -369,7 +372,7 @@ Allows closing external resources.</td>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="GstBaseParseClass.handle-frame"></a>handle_frame</code></em> ()</span></p></td>
 <td>Parses the input data into valid frames as defined by subclass
-which should be passed to <code class="function">gst_base_parse_finish_frame()</code>.
+which should be passed to <a class="link" href="gstreamer-libs-GstBaseParse.html#gst-base-parse-finish-frame" title="gst_base_parse_finish_frame ()"><code class="function">gst_base_parse_finish_frame()</code></a>.
 The frame's input buffer is guaranteed writable,
 whereas the input frame ownership is held by caller
 (so subclass should make a copy if it needs to hang on).
@@ -959,6 +962,51 @@ This must be called with sinkpad STREAM_LOCK held.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstFlowReturn"><span class="type">GstFlowReturn</span></a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gst-base-parse-finish-frame"></a><h3>gst_base_parse_finish_frame ()</h3>
+<pre class="programlisting"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstFlowReturn"><span class="returnvalue">GstFlowReturn</span></a>       gst_base_parse_finish_frame         (<em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParse" title="struct GstBaseParse"><span class="type">GstBaseParse</span></a> *parse</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParseFrame" title="GstBaseParseFrame"><span class="type">GstBaseParseFrame</span></a> *frame</code></em>,
+                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> size</code></em>);</pre>
+<p>
+Collects parsed data and pushes this downstream.
+Source pad caps must be set when this is called.
+</p>
+<p>
+If <em class="parameter"><code>frame</code></em>'s out_buffer is set, that will be used as subsequent frame data.
+Otherwise, <em class="parameter"><code>size</code></em> samples will be taken from the input and used for output,
+and the output's metadata (timestamps etc) will be taken as (optionally)
+set by the subclass on <em class="parameter"><code>frame</code></em>'s (input) buffer (which is otherwise
+ignored for any but the above purpose/information).
+</p>
+<p>
+Note that the latter buffer is invalidated by this call, whereas the
+caller retains ownership of <em class="parameter"><code>frame</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>parse</code></em> :</span></p></td>
+<td>a <a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParse" title="struct GstBaseParse"><span class="type">GstBaseParse</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>frame</code></em> :</span></p></td>
+<td>a <a class="link" href="gstreamer-libs-GstBaseParse.html#GstBaseParseFrame" title="GstBaseParseFrame"><span class="type">GstBaseParseFrame</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>size</code></em> :</span></p></td>
+<td>consumed input data represented by frame</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPad.html#GstFlowReturn"><span class="type">GstFlowReturn</span></a> that should be escalated to caller (of caller)</td>
 </tr>
 </tbody>
 </table></div>

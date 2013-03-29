@@ -23,7 +23,10 @@
  * SECTION:gstcontrolbinding
  * @short_description: attachment for control source sources
  *
- * A value mapping object that attaches control sources to gobject properties.
+ * A base class for value mapping objects that attaches control sources to gobject
+ * properties. Such an object is taking one or more #GstControlSource instances,
+ * combines them and maps the resulting value to the type and value range of the
+ * bound property.
  */
 /* FIXME(ensonic): should we make gst_object_add_control_binding() internal
  * - we create the control_binding for a certain object anyway
@@ -291,7 +294,7 @@ gst_control_binding_get_value (GstControlBinding * binding,
  *
  * The values are unboxed and ready to be used. The similar function 
  * gst_control_binding_get_g_value_array() returns the array as #GValues and is
- * better suites for bindings.
+ * more suitable for bindings.
  *
  * Returns: %TRUE if the given array could be filled, %FALSE otherwise
  */

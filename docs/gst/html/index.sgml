@@ -487,7 +487,6 @@
 <ANCHOR id="GstControlBinding.details" href="gstreamer-1.0/GstControlBinding.html#GstControlBinding.details">
 <ANCHOR id="GstControlBinding-struct" href="gstreamer-1.0/GstControlBinding.html#GstControlBinding-struct">
 <ANCHOR id="GstControlBindingClass" href="gstreamer-1.0/GstControlBinding.html#GstControlBindingClass">
-<ANCHOR id="GstControlBindingConvert" href="gstreamer-1.0/GstControlBinding.html#GstControlBindingConvert">
 <ANCHOR id="gst-control-binding-sync-values" href="gstreamer-1.0/GstControlBinding.html#gst-control-binding-sync-values">
 <ANCHOR id="gst-control-binding-get-value" href="gstreamer-1.0/GstControlBinding.html#gst-control-binding-get-value">
 <ANCHOR id="gst-control-binding-get-value-array" href="gstreamer-1.0/GstControlBinding.html#gst-control-binding-get-value-array">

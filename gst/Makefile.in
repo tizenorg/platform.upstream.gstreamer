@@ -785,8 +785,14 @@ noinst_HEADERS = \
 	gst_private.h
 
 @HAVE_INTROSPECTION_TRUE@BUILT_GIRSOURCES = Gst-@GST_API_VERSION@.gir
-@HAVE_INTROSPECTION_TRUE@gir_headers = $(patsubst %,$(srcdir)/%, $(libgstreamer_@GST_API_VERSION@include_HEADERS))
-@HAVE_INTROSPECTION_TRUE@gir_sources = $(patsubst %,$(srcdir)/%, $(libgstreamer_@GST_API_VERSION@_la_SOURCES))
+@HAVE_INTROSPECTION_TRUE@gir_headers = $(patsubst %,$(srcdir)/%, \
+@HAVE_INTROSPECTION_TRUE@	$(libgstreamer_@GST_API_VERSION@include_HEADERS)) \
+@HAVE_INTROSPECTION_TRUE@	$(patsubst %,$(builddir)/%, \
+@HAVE_INTROSPECTION_TRUE@	$(built_header_make))
+@HAVE_INTROSPECTION_TRUE@gir_sources = $(patsubst %,$(srcdir)/%, \
+@HAVE_INTROSPECTION_TRUE@	$(libgstreamer_@GST_API_VERSION@_la_SOURCES)) \
+@HAVE_INTROSPECTION_TRUE@	$(patsubst %,$(builddir)/%, \
+@HAVE_INTROSPECTION_TRUE@	$(built_source_make))
 
 # INTROSPECTION_GIRDIR/INTROSPECTION_TYPELIBDIR aren't the right place to
 # install anything - we need to install inside our prefix.

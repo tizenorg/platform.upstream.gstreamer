@@ -1,15 +1,14 @@
 %bcond_with introspection
 
 Name:           gstreamer
-%define _name   gstreamer
-Version:        1.0.5
+Version:        1.0.6
 Release:        0
 %define gst_branch 1.0
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Multimedia Framework 
 Url:            http://gstreamer.freedesktop.org/
-Source0:        http://download.gnome.org/sources/gstreamer/1.0/%{_name}-%{version}.tar.xz
+Source0:        http://download.gnome.org/sources/gstreamer/1.0/%{name}-%{version}.tar.xz
 Source1:        gstreamer.macros
 Source2:        gstreamer.prov
 Source99:       baselibs.conf
@@ -124,8 +123,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %__install -m755 -D %{S:2} %{buildroot}%{_libexecdir}/rpm/gstreamer-provides
 %fdupes %{buildroot}
 
-%clean
-rm -rf %{buildroot}
 
 %post -n libgstreamer -p /sbin/ldconfig
 

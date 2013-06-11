@@ -185,6 +185,7 @@ GST_DEBUG_CATEGORY_STATIC (_GST_CAT_DEBUG);
  * get the running time: GST_DEBUG_RUNNING_TIME
  */
 GstClockTime _priv_gst_info_start_time;
+gchar* _pri_gst_debug_file_path = NULL;
 
 #if 0
 #if defined __sgi__
@@ -315,21 +316,7 @@ _gst_debug_init (void)
 {
   const gchar *env;
 
-  env = g_getenv ("GST_DEBUG_FILE");
-  if (env != NULL && *env != '\0') {
-    if (strcmp (env, "-") == 0) {
-      log_file = stdout;
-    } else {
-      log_file = g_fopen (env, "w");
-      if (log_file == NULL) {
-        g_printerr ("Could not open log file '%s' for writing: %s\n", env,
-            g_strerror (errno));
-        log_file = stderr;
-      }
-    }
-  } else {
-    log_file = stderr;
-  }
+  _gst_debug_redirect();
 
   /* get time we started for debugging messages */
   _priv_gst_info_start_time = gst_util_get_timestamp ();
@@ -431,6 +418,34 @@ _gst_debug_init (void)
       pretty_tags = TRUE;
   }
 }
+
+void _gst_debug_redirect (void)
+{
+  const gchar *env;
+
+  /* use local path first */
+  if (_pri_gst_debug_file_path){
+    env = _pri_gst_debug_file_path;
+  } else {
+    env = g_getenv ("GST_DEBUG_FILE");
+  }
+
+  if (env != NULL && *env != '\0') {
+    if (strcmp (env, "-") == 0) {
+      log_file = stdout;
+	} else {
+	  log_file = g_fopen (env, "w");
+	  if (log_file == NULL) {
+		g_printerr ("Could not open log file '%s' for writing: %s\n", env,
+		  g_strerror (errno));
+		log_file = stderr;
+	  }
+	}
+  } else {
+    log_file = stderr;
+  }
+}
+
 
 /* we can't do this further above, because we initialize the GST_CAT_DEFAULT struct */
 #define GST_CAT_DEFAULT _GST_CAT_DEBUG

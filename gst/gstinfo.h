@@ -259,6 +259,7 @@ typedef void (*GstLogFunction)  (GstDebugCategory * category,
 
 /* FIXME 0.11: move this into private headers */
 void            _gst_debug_init (void);
+void 			_gst_debug_redirect (void);
 
 
 #ifdef GST_USING_PRINTF_EXTENSION

@@ -92,7 +92,7 @@
  * gst_version_string() returns a printable string.
  *
  * The gst_deinit() call is used to clean up all internal resources used
- * by <application>GStreamer</application>. It is mostly used in unit tests 
+ * by <application>GStreamer</application>. It is mostly used in unit tests
  * to check for leaks.
  *
  * Last reviewed on 2006-08-11 (0.10.10)
@@ -119,7 +119,8 @@
 
 #include "gst.h"
 #include <mm_ta/mm_ta.h>
-
+#include <time.h>
+#include <sys/time.h>
 
 #define GST_CAT_DEFAULT GST_CAT_GST_INIT
 
@@ -142,6 +143,8 @@ extern gboolean _priv_gst_disable_registry_update;
 #ifndef GST_DISABLE_GST_DEBUG
 extern const gchar *priv_gst_dump_dot_dir;
 #endif
+
+extern gchar* _pri_gst_debug_file_path;
 
 /* defaults */
 
@@ -178,6 +181,7 @@ enum
 #ifndef GST_DISABLE_GST_DEBUG
   ARG_DEBUG_LEVEL,
   ARG_DEBUG,
+  ARG_DEBUG_FILE,
   ARG_DEBUG_DISABLE,
   ARG_DEBUG_NO_COLOR,
   ARG_DEBUG_HELP,
@@ -327,6 +331,9 @@ gst_init_get_option_group (void)
               "specific levels for the individual categories. Example: "
               "GST_AUTOPLUG:5,GST_ELEMENT_*:3"),
         N_("LIST")},
+    {"gst-debug-file", 0, 0, G_OPTION_ARG_CALLBACK, (gpointer) parse_goption_arg,
+          N_("Dump all logs into a given file."),
+        N_("FILE")},
     {"gst-debug-no-color", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
           (gpointer) parse_goption_arg, N_("Disable colored debugging output"),
         NULL},
@@ -928,6 +935,27 @@ parse_one_option (gint opt, const gchar * arg, GError ** err)
     case ARG_DEBUG:
       parse_debug_list (arg);
       break;
+    case ARG_DEBUG_FILE:{
+	  char* debug_file = NULL;
+	  debug_file = arg;
+	  if(debug_file) {
+		struct tm* tm;
+		time_t ctime;
+		time(&ctime);
+		tm = localtime(&ctime);
+
+		_pri_gst_debug_file_path = g_strdup_printf("%s-%d-%d:%d:%d:%d:%d:%d",
+		debug_file, getpid(),
+		tm->tm_year+1900,
+		tm->tm_mon+1,
+		tm->tm_mday,
+		tm->tm_hour,
+		tm->tm_min,
+		tm->tm_sec );
+	  }
+	  _gst_debug_redirect();
+      break;
+	}
     case ARG_DEBUG_NO_COLOR:
       gst_debug_set_colored (FALSE);
       break;
@@ -984,6 +1012,7 @@ parse_goption_arg (const gchar * opt,
     {
     "--gst-debug-level", ARG_DEBUG_LEVEL}, {
     "--gst-debug", ARG_DEBUG}, {
+    "--gst-debug-file", ARG_DEBUG_FILE}, {
     "--gst-debug-disable", ARG_DEBUG_DISABLE}, {
     "--gst-debug-no-color", ARG_DEBUG_NO_COLOR}, {
     "--gst-debug-help", ARG_DEBUG_HELP},
@@ -1020,7 +1049,7 @@ parse_goption_arg (const gchar * opt,
  * This function is therefore mostly used by testsuites and other memory
  * profiling tools.
  *
- * After this call GStreamer (including this method) should not be used anymore. 
+ * After this call GStreamer (including this method) should not be used anymore.
  */
 void
 gst_deinit (void)
@@ -1043,6 +1072,10 @@ gst_deinit (void)
   g_list_free (_priv_gst_plugin_paths);
   _priv_gst_plugin_paths = NULL;
 #endif
+
+  if(_pri_gst_debug_file_path)
+	g_free(_pri_gst_debug_file_path);
+  _pri_gst_debug_file_path = NULL;
 
   clock = gst_system_clock_obtain ();
   gst_object_unref (clock);

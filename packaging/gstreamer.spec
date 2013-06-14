@@ -1,4 +1,4 @@
-Name:       gstreamer
+Name:       gstreamer0.10
 Summary:    GStreamer streaming media framework runtime
 Version:    0.10.36
 Release:    6

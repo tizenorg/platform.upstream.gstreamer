@@ -1,4 +1,4 @@
-Name:       gstreamer
+Name:       gstreamer0.10
 Summary:    GStreamer streaming media framework runtime
 Version:    0.10.36
 Release:    6
@@ -87,6 +87,7 @@ rm -rf %{buildroot}
 %make_install
 
 rm -rf %{buildroot}/tmp/dump
+rm -rf %{buildroot}/%{_libdir}/libgstnet*
 
 
 %post -p /sbin/ldconfig
@@ -111,7 +112,7 @@ rm -rf %{buildroot}/tmp/dump
 %{_libdir}/libgstbase-0.10.so.*
 %{_libdir}/libgstcontroller-0.10.so.*
 %{_libdir}/libgstdataprotocol-0.10.so.*
-%exclude %{_libdir}/libgstnet-0.10.so.*
+#%exclude %{_libdir}/libgstnet-0.10.so.*
 %{_libdir}/libgstcheck-0.10.so.*
 %dir %{_libdir}/gstreamer-0.10
 %{_libdir}/gstreamer-0.10/libgstcoreelements.so
@@ -145,7 +146,7 @@ rm -rf %{buildroot}/tmp/dump
 %{_libdir}/libgstbase-0.10.so
 %{_libdir}/libgstcontroller-0.10.so
 %{_libdir}/libgstdataprotocol-0.10.so
-%exclude %{_libdir}/libgstnet-0.10.so
+#%exclude %{_libdir}/libgstnet-0.10.so
 %{_libdir}/libgstcheck-0.10.so
 %{_libdir}/pkgconfig/gstreamer-0.10.pc
 %{_libdir}/pkgconfig/gstreamer-base-0.10.pc

@@ -19,6 +19,7 @@ BuildRequires:  fdupes
 BuildRequires:  flex
 BuildRequires:  glib2-devel >= 2.32.0
 BuildRequires:  libtool
+BuildRequires:  gst-common
 BuildRequires:  libxml2-devel
 %if %{with introspection}
 BuildRequires:  gobject-introspection-devel >= 1.31.1
@@ -95,6 +96,9 @@ to develop applications that require these.
 
 %prep
 %setup -q -n gstreamer-%{version}
+rm -rf common
+cp -a %{_datadir}/gst-common common
+find common -exec touch {} \;
 
 %build
 # FIXME: GTKDOC_CFLAGS, GST_OBJ_CFLAGS:

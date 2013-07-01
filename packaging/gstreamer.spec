@@ -12,6 +12,7 @@ Source0:        http://download.gnome.org/sources/gstreamer/1.0/%{name}-%{versio
 Source1:        gstreamer.macros
 Source2:        gstreamer.prov
 Source99:       baselibs.conf
+Source1001: 	gstreamer.manifest
 BuildRequires:  bison
 BuildRequires:	gettext-tools
 BuildRequires:  check-devel
@@ -96,6 +97,7 @@ to develop applications that require these.
 
 %prep
 %setup -q -n gstreamer-%{version}
+cp %{SOURCE1001} .
 rm -rf common
 cp -a %{_datadir}/gst-common common
 find common -exec touch {} \;
@@ -133,6 +135,7 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %postun -n libgstreamer -p /sbin/ldconfig
 
 %files
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %license COPYING
 %dir %{_datadir}/gstreamer-%{gst_branch}
@@ -143,12 +146,14 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %{_libexecdir}/gstreamer-%{gst_branch}/gst-plugin-scanner
 
 %files -n libgstreamer
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %{_libdir}/*.so.*
 
 
 %if %{with introspection} 
 %files -n typelib-Gst
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %{_libdir}/girepository-1.0/Gst-1.0.typelib
 %{_libdir}/girepository-1.0/GstBase-1.0.typelib
@@ -158,11 +163,13 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %endif
 
 %files utils
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %{_bindir}/*-%{gst_branch}
 %doc %{_mandir}/man?/*-%{gst_branch}.*
 
 %files devel
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %{_datadir}/aclocal/*.m4
 %{_includedir}/*

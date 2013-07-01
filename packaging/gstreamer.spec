@@ -1,12 +1,14 @@
 Name:       gstreamer
 Summary:    GStreamer streaming media framework runtime
 Version:    0.10.36
-Release:    6
+Release:    7
 Group:      Applications/Multimedia
 License:    LGPLv2+
 Source0:    %{name}-%{version}.tar.gz
+Source1:    gstreamer.service
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+Requires:   systemd
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(mm-ta)
@@ -88,6 +90,11 @@ rm -rf %{buildroot}
 
 rm -rf %{buildroot}/tmp/dump
 
+# systemd related
+mkdir -p %{buildroot}%{_libdir}/systemd/system/
+install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
+mkdir -p  %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
+ln -s ../gstreamer.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/gstreamer.service
 
 %post -p /sbin/ldconfig
 
@@ -128,6 +135,8 @@ rm -rf %{buildroot}/tmp/dump
 %doc %{_mandir}/man1/gst-launch-0.10.*
 %doc %{_mandir}/man1/gst-typefind-0.10.*
 %doc %{_mandir}/man1/gst-xmlinspect-0.10.*
+%{_libdir}/systemd/system/gstreamer.service
+%{_libdir}/systemd/system/multi-user.target.wants/gstreamer.service
 
 
 %files devel

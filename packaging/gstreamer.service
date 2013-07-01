@@ -1,0 +1,11 @@
+[Unit]
+Description=gstreamer service
+
+[Service]
+Environment=GST_REGISTRY=/tmp/.gstreamer
+ExecStartPre=/bin/mkdir -p /tmp/.gstreamer ; /usr/bin/chsmack -a gstreamer -t /tmp/.gstreamer
+ExecStart=/usr/bin/gst-inspect
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target

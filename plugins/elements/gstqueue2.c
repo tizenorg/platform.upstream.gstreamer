@@ -127,7 +127,7 @@ enum
 #endif
 #define DEFAULT_RING_BUFFER_MAX_SIZE 0
 #ifdef GST_EXT_QUEUE_ENHANCEMENT
-#define DEFAULT_FILE_BUFFER_MAX_SIZE 0 
+#define DEFAULT_FILE_BUFFER_MAX_SIZE (2 * 1024 * 1024)    /* 2 MB */
 #endif
 
 enum

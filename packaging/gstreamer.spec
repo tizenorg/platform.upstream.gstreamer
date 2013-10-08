@@ -86,6 +86,8 @@ make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/license
+cp COPYING %{buildroot}/usr/share/license/%{name}
 %make_install
 
 rm -rf %{buildroot}/tmp/dump
@@ -137,7 +139,7 @@ ln -s ../gstreamer.service %{buildroot}%{_libdir}/systemd/system/multi-user.targ
 %doc %{_mandir}/man1/gst-xmlinspect-0.10.*
 %{_libdir}/systemd/system/gstreamer.service
 %{_libdir}/systemd/system/multi-user.target.wants/gstreamer.service
-
+/usr/share/license/%{name}
 
 %files devel
 %defattr(-,root,root,-)

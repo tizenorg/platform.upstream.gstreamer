@@ -1,0 +1,12 @@
+[Unit]
+Description=GStreamer Registry
+ConditionPathExists=!/home/app/.gstreamer-0.10/registry.bin
+
+[Service]
+Type=oneshot
+Environment=GST_REGISTRY=/home/app/.gstreamer-0.10/registry.bin
+ExecStart=/usr/bin/gst-inspect-0.10
+ExecStartPost=/bin/chown app:app /home/app/.gstreamer-0.10 /home/app/.gstreamer-0.10/registry.bin
+
+[Install]
+WantedBy=multi-user.target

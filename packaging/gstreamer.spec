@@ -26,7 +26,7 @@ BuildRequires:  libxml2-devel
 %if %{with introspection}
 BuildRequires:  gobject-introspection-devel >= 1.31.1
 %endif
-Requires:       libgstreamer >= %{version}
+Requires:       libgstreamer >= %{version}-%{release}
 
 %description
 GStreamer is a streaming-media framework, based on graphs of filters
@@ -82,12 +82,12 @@ installing new plug-ins.
 %package devel
 Summary:        Include Files and Libraries mandatory for Development
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 # gstreamer-utils is required for the gstreamer-provides rpm magic.
-Requires:       gstreamer-utils = %{version}
-Requires:       libgstreamer = %{version}
+Requires:       gstreamer-utils = %{version}-%{release}
+Requires:       libgstreamer = %{version}-%{release}
 %if %{with introspection}
-Requires:       typelib-Gst = %{version}
+Requires:       typelib-Gst = %{version}-%{release}
 %endif
 
 %description devel

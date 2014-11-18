@@ -1,7 +1,7 @@
 %bcond_with introspection
 
 Name:           gstreamer
-Version:        1.2.4
+Version:        1.4.1
 Release:        0
 %define gst_branch 1.0
 Summary:        Streaming-Media Framework Runtime

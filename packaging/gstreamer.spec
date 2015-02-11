@@ -2,7 +2,7 @@
 
 Name:           gstreamer
 Version:        1.4.1
-Release:        0
+Release:        1
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Framework

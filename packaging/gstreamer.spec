@@ -2,7 +2,7 @@
 
 Name:           gstreamer
 Version:        1.4.1
-Release:        1
+Release:        2
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Framework
@@ -18,6 +18,7 @@ BuildRequires:  glib2-devel >= 2.32.0
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
 BuildRequires:  gobject-introspection-devel >= 1.31.1
+BuildRequires:  pkgconfig(dlog)
 
 %description
 GStreamer is a streaming-media framework, based on graphs of filters
@@ -74,7 +75,8 @@ export CFLAGS="%{optflags} -fno-strict-aliasing"
 %if %{with introspection}
         --enable-introspection\
 %endif
-	--disable-static
+	--disable-static\
+	--enable-dlog
 make %{?_smp_mflags}
 
 

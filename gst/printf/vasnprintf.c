@@ -121,6 +121,11 @@ print_long_long (char *buf,
       digits = upper;
       negative = FALSE;
       break;
+    case 'u':
+      base = 10;
+      digits = lower;
+      negative = FALSE;
+      break;
     default:
       base = 10;
       digits = lower;
@@ -234,6 +239,11 @@ printf_postprocess_args (char_directives * directives, arguments * arguments)
     argument *a;
 
     dp = &directives->dir[i];
+
+    /* %% has no arguments, for example */
+    if (dp->arg_index < 0)
+      continue;
+
     a = &arguments->arg[dp->arg_index];
 
     if (a->type == TYPE_POINTER_EXT) {

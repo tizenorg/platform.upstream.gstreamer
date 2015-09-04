@@ -115,7 +115,8 @@ enum
   PAD_PROP_CAPS,
   PAD_PROP_DIRECTION,
   PAD_PROP_TEMPLATE,
-  /* FILL ME */
+  PAD_PROP_OFFSET
+      /* FILL ME */
 };
 
 #define GST_PAD_GET_PRIVATE(obj)  \
@@ -139,6 +140,11 @@ struct _GstPadPrivate
   gint using;
   guint probe_list_cookie;
   guint probe_cookie;
+
+  /* counter of how many idle probes are running directly from the add_probe
+   * call. Used to block any data flowing in the pad while the idle callback
+   * Doesn't finish its work */
+  gint idle_running;
 };
 
 typedef struct
@@ -148,6 +154,8 @@ typedef struct
 } GstProbe;
 
 #define PROBE_COOKIE(h) (((GstProbe *)(h))->cookie)
+#define GST_PAD_IS_RUNNING_IDLE_PROBE(p) \
+    (((GstPad *)(p))->priv->idle_running > 0)
 
 typedef struct
 {
@@ -155,6 +163,7 @@ typedef struct
   GstPadProbeInfo *info;
   gboolean dropped;
   gboolean pass;
+  gboolean handled;
   gboolean marshalled;
   guint cookie;
 } ProbeMarshall;
@@ -355,6 +364,18 @@ gst_pad_class_init (GstPadClass * klass)
           "The GstPadTemplate of this pad", GST_TYPE_PAD_TEMPLATE,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+  /**
+   * GstPad:offset:
+   *
+   * The offset that will be applied to the running time of the pad.
+   *
+   * Since: 1.6
+   */
+  g_object_class_install_property (gobject_class, PAD_PROP_OFFSET,
+      g_param_spec_int64 ("offset", "Offset",
+          "The running time offset of the pad", 0, G_MAXINT64, 0,
+          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
   gstobject_class->path_string_separator = ".";
 
   /* Register common function pointer descriptions */
@@ -450,6 +471,8 @@ find_event_by_type (GstPad * pad, GstEventType type, guint idx)
       if (idx == 0)
         goto found;
       idx--;
+    } else if (GST_EVENT_TYPE (ev->event) > type) {
+      break;
     }
   }
   ev = NULL;
@@ -472,6 +495,8 @@ find_event (GstPad * pad, GstEvent * event)
     ev = &g_array_index (events, PadEvent, i);
     if (event == ev->event)
       goto found;
+    else if (GST_EVENT_TYPE (ev->event) > GST_EVENT_TYPE (event))
+      break;
   }
   ev = NULL;
 found:
@@ -495,7 +520,9 @@ remove_event_by_type (GstPad * pad, GstEventType type)
     if (ev->event == NULL)
       goto next;
 
-    if (GST_EVENT_TYPE (ev->event) != type)
+    if (GST_EVENT_TYPE (ev->event) > type)
+      break;
+    else if (GST_EVENT_TYPE (ev->event) != type)
       goto next;
 
     gst_event_unref (ev->event);
@@ -606,38 +633,45 @@ restart:
 
 /* should be called with LOCK */
 static GstEvent *
-apply_pad_offset (GstPad * pad, GstEvent * event, gboolean upstream)
+_apply_pad_offset (GstPad * pad, GstEvent * event, gboolean upstream)
 {
-  /* check if we need to adjust the segment */
-  if (pad->offset != 0) {
-    gint64 offset;
+  gint64 offset;
 
-    GST_DEBUG_OBJECT (pad, "apply pad offset %" GST_TIME_FORMAT,
-        GST_TIME_ARGS (pad->offset));
+  GST_DEBUG_OBJECT (pad, "apply pad offset %" GST_TIME_FORMAT,
+      GST_TIME_ARGS (pad->offset));
 
-    if (GST_EVENT_TYPE (event) == GST_EVENT_SEGMENT) {
-      GstSegment segment;
+  if (GST_EVENT_TYPE (event) == GST_EVENT_SEGMENT) {
+    GstSegment segment;
 
-      g_assert (!upstream);
+    g_assert (!upstream);
 
-      /* copy segment values */
-      gst_event_copy_segment (event, &segment);
-      gst_event_unref (event);
+    /* copy segment values */
+    gst_event_copy_segment (event, &segment);
+    gst_event_unref (event);
 
-      gst_segment_offset_running_time (&segment, segment.format, pad->offset);
-      event = gst_event_new_segment (&segment);
-    }
-
-    event = gst_event_make_writable (event);
-    offset = gst_event_get_running_time_offset (event);
-    if (upstream)
-      offset -= pad->offset;
-    else
-      offset += pad->offset;
-    gst_event_set_running_time_offset (event, offset);
+    gst_segment_offset_running_time (&segment, segment.format, pad->offset);
+    event = gst_event_new_segment (&segment);
   }
+
+  event = gst_event_make_writable (event);
+  offset = gst_event_get_running_time_offset (event);
+  if (upstream)
+    offset -= pad->offset;
+  else
+    offset += pad->offset;
+  gst_event_set_running_time_offset (event, offset);
+
   return event;
 }
+
+static inline GstEvent *
+apply_pad_offset (GstPad * pad, GstEvent * event, gboolean upstream)
+{
+  if (G_UNLIKELY (pad->offset != 0))
+    return _apply_pad_offset (pad, event, upstream);
+  return event;
+}
+
 
 /* should be called with the OBJECT_LOCK */
 static GstCaps *
@@ -740,6 +774,9 @@ gst_pad_set_property (GObject * object, guint prop_id,
       gst_pad_set_pad_template (GST_PAD_CAST (object),
           (GstPadTemplate *) g_value_get_object (value));
       break;
+    case PAD_PROP_OFFSET:
+      gst_pad_set_offset (GST_PAD_CAST (object), g_value_get_int64 (value));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -763,6 +800,9 @@ gst_pad_get_property (GObject * object, guint prop_id,
       break;
     case PAD_PROP_TEMPLATE:
       g_value_set_object (value, GST_PAD_PAD_TEMPLATE (object));
+      break;
+    case PAD_PROP_OFFSET:
+      g_value_set_int64 (value, gst_pad_get_offset (GST_PAD_CAST (object)));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -795,7 +835,7 @@ gst_pad_new (const gchar * name, GstPadDirection direction)
 /**
  * gst_pad_new_from_template:
  * @templ: the pad template to use
- * @name: (allow-none): the name of the element
+ * @name: (allow-none): the name of the pad
  *
  * Creates a new pad with the given name from the given template.
  * If name is %NULL, a guaranteed unique name (across all pads)
@@ -817,7 +857,7 @@ gst_pad_new_from_template (GstPadTemplate * templ, const gchar * name)
 /**
  * gst_pad_new_from_static_template:
  * @templ: the #GstStaticPadTemplate to use
- * @name: the name of the element
+ * @name: the name of the pad
  *
  * Creates a new pad with the given name from the given static template.
  * If name is %NULL, a guaranteed unique name (across all pads)
@@ -1285,7 +1325,7 @@ cleanup_hook (GstPad * pad, GHook * hook)
  *
  * Returns: an id or 0 if no probe is pending. The id can be used to remove the
  * probe with gst_pad_remove_probe(). When using GST_PAD_PROBE_TYPE_IDLE it can
- * happend that the probe can be run immediately and if the probe returns
+ * happen that the probe can be run immediately and if the probe returns
  * GST_PAD_PROBE_REMOVE this functions returns 0.
  *
  * MT safe.
@@ -1361,6 +1401,7 @@ gst_pad_add_probe (GstPad * pad, GstPadProbeType mask,
 
       /* Keep another ref, the callback could destroy the pad */
       gst_object_ref (pad);
+      pad->priv->idle_running++;
 
       /* the pad is idle now, we can signal the idle callback now */
       GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
@@ -1386,9 +1427,16 @@ gst_pad_add_probe (GstPad * pad, GstPadProbeType mask,
         case GST_PAD_PROBE_OK:
           GST_DEBUG_OBJECT (pad, "probe returned OK");
           break;
+        case GST_PAD_PROBE_HANDLED:
+          GST_DEBUG_OBJECT (pad, "probe handled the data");
+          break;
         default:
           GST_DEBUG_OBJECT (pad, "probe returned %d", ret);
           break;
+      }
+      pad->priv->idle_running--;
+      if (pad->priv->idle_running == 0) {
+        GST_PAD_BLOCK_BROADCAST (pad);
       }
       GST_OBJECT_UNLOCK (pad);
 
@@ -2329,8 +2377,12 @@ gst_pad_link_full (GstPad * srcpad, GstPad * sinkpad, GstPadLinkCheck flags)
   /* prepare will also lock the two pads */
   result = gst_pad_link_prepare (srcpad, sinkpad, flags);
 
-  if (G_UNLIKELY (result != GST_PAD_LINK_OK))
+  if (G_UNLIKELY (result != GST_PAD_LINK_OK)) {
+    GST_CAT_INFO (GST_CAT_PADS, "link between %s:%s and %s:%s failed: %s",
+        GST_DEBUG_PAD_NAME (srcpad), GST_DEBUG_PAD_NAME (sinkpad),
+        gst_pad_link_get_name (result));
     goto done;
+  }
 
   /* must set peers before calling the link function */
   GST_PAD_PEER (srcpad) = sinkpad;
@@ -2603,24 +2655,26 @@ GstCaps *
 gst_pad_get_allowed_caps (GstPad * pad)
 {
   GstCaps *mycaps;
-  GstCaps *caps;
-  GstPad *peer;
+  GstCaps *caps = NULL;
+  GstQuery *query;
 
   g_return_val_if_fail (GST_IS_PAD (pad), NULL);
 
   GST_OBJECT_LOCK (pad);
-  peer = GST_PAD_PEER (pad);
-  if (G_UNLIKELY (peer == NULL))
+  if (G_UNLIKELY (GST_PAD_PEER (pad) == NULL))
     goto no_peer;
+  GST_OBJECT_UNLOCK (pad);
 
   GST_CAT_DEBUG_OBJECT (GST_CAT_PROPERTIES, pad, "getting allowed caps");
 
-  gst_object_ref (peer);
-  GST_OBJECT_UNLOCK (pad);
   mycaps = gst_pad_query_caps (pad, NULL);
 
-  caps = gst_pad_query_caps (peer, mycaps);
-  gst_object_unref (peer);
+  /* Query peer caps */
+  query = gst_query_new_caps (mycaps);
+  gst_pad_peer_query (pad, query);
+  gst_query_parse_caps_result (query, &caps);
+  gst_caps_ref (caps);
+  gst_query_unref (query);
 
   gst_caps_unref (mycaps);
 
@@ -2744,7 +2798,7 @@ no_parent:
   {
     GST_DEBUG_OBJECT (pad, "no parent");
     GST_OBJECT_UNLOCK (pad);
-    return FALSE;
+    return NULL;
   }
 }
 
@@ -2858,7 +2912,7 @@ event_forward_func (GstPad * pad, EventData * data)
  * The EOS event will pause the task associated with @pad before it is forwarded
  * to all internally linked pads,
  *
- * The the event is sent to all pads internally linked to @pad. This function
+ * The event is sent to all pads internally linked to @pad. This function
  * takes ownership of @event.
  *
  * Returns: %TRUE if the event was sent successfully.
@@ -2928,7 +2982,10 @@ gst_pad_query_accept_caps_default (GstPad * pad, GstQuery * query)
       "fallback ACCEPT_CAPS query, consider implementing a specialized version");
 
   gst_query_parse_accept_caps (query, &caps);
-  allowed = gst_pad_query_caps (pad, caps);
+  if (GST_PAD_IS_ACCEPT_TEMPLATE (pad))
+    allowed = gst_pad_get_pad_template_caps (pad);
+  else
+    allowed = gst_pad_query_caps (pad, caps);
 
   if (allowed) {
     if (GST_PAD_IS_ACCEPT_INTERSECT (pad)) {
@@ -3024,6 +3081,123 @@ done:
   return TRUE;
 }
 
+/* Default latency implementation */
+typedef struct
+{
+  gboolean live;
+  GstClockTime min, max;
+} LatencyFoldData;
+
+static gboolean
+query_latency_default_fold (const GValue * item, GValue * ret,
+    gpointer user_data)
+{
+  GstPad *pad = g_value_get_object (item), *peer;
+  LatencyFoldData *fold_data = user_data;
+  GstQuery *query;
+  gboolean res = FALSE;
+
+  query = gst_query_new_latency ();
+
+  peer = gst_pad_get_peer (pad);
+  if (peer) {
+    res = gst_pad_peer_query (pad, query);
+  } else {
+    GST_LOG_OBJECT (pad, "No peer pad found, ignoring this pad");
+  }
+
+  if (res) {
+    gboolean live;
+    GstClockTime min, max;
+
+    gst_query_parse_latency (query, &live, &min, &max);
+
+    GST_LOG_OBJECT (pad, "got latency live:%s min:%" G_GINT64_FORMAT
+        " max:%" G_GINT64_FORMAT, live ? "true" : "false", min, max);
+
+    if (live) {
+      if (min > fold_data->min)
+        fold_data->min = min;
+
+      if (fold_data->max == GST_CLOCK_TIME_NONE)
+        fold_data->max = max;
+      else if (max < fold_data->max)
+        fold_data->max = max;
+
+      fold_data->live = TRUE;
+    }
+  } else if (peer) {
+    GST_DEBUG_OBJECT (pad, "latency query failed");
+    g_value_set_boolean (ret, FALSE);
+  }
+
+  gst_query_unref (query);
+  if (peer)
+    gst_object_unref (peer);
+
+  return TRUE;
+}
+
+static gboolean
+gst_pad_query_latency_default (GstPad * pad, GstQuery * query)
+{
+  GstIterator *it;
+  GstIteratorResult res;
+  GValue ret = G_VALUE_INIT;
+  gboolean query_ret;
+  LatencyFoldData fold_data;
+
+  it = gst_pad_iterate_internal_links (pad);
+  if (!it) {
+    GST_DEBUG_OBJECT (pad, "Can't iterate internal links");
+    return FALSE;
+  }
+
+  g_value_init (&ret, G_TYPE_BOOLEAN);
+
+retry:
+  fold_data.live = FALSE;
+  fold_data.min = 0;
+  fold_data.max = GST_CLOCK_TIME_NONE;
+
+  g_value_set_boolean (&ret, TRUE);
+  res = gst_iterator_fold (it, query_latency_default_fold, &ret, &fold_data);
+  switch (res) {
+    case GST_ITERATOR_OK:
+      g_assert_not_reached ();
+      break;
+    case GST_ITERATOR_DONE:
+      break;
+    case GST_ITERATOR_ERROR:
+      g_value_set_boolean (&ret, FALSE);
+      break;
+    case GST_ITERATOR_RESYNC:
+      gst_iterator_resync (it);
+      goto retry;
+    default:
+      g_assert_not_reached ();
+      break;
+  }
+  gst_iterator_free (it);
+
+  query_ret = g_value_get_boolean (&ret);
+  if (query_ret) {
+    GST_LOG_OBJECT (pad, "got latency live:%s min:%" G_GINT64_FORMAT
+        " max:%" G_GINT64_FORMAT, fold_data.live ? "true" : "false",
+        fold_data.min, fold_data.max);
+
+    if (fold_data.min > fold_data.max) {
+      GST_ERROR_OBJECT (pad, "minimum latency bigger than maximum latency");
+    }
+
+    gst_query_set_latency (query, fold_data.live, fold_data.min, fold_data.max);
+  } else {
+    GST_LOG_OBJECT (pad, "latency query failed");
+  }
+
+  return query_ret;
+}
+
 typedef struct
 {
   GstQuery *query;
@@ -3079,10 +3253,13 @@ gst_pad_query_default (GstPad * pad, GstObject * parent, GstQuery * query)
       ret = gst_pad_query_caps_default (pad, query);
       forward = FALSE;
       break;
+    case GST_QUERY_LATENCY:
+      ret = gst_pad_query_latency_default (pad, query);
+      forward = FALSE;
+      break;
     case GST_QUERY_POSITION:
     case GST_QUERY_SEEKING:
     case GST_QUERY_FORMATS:
-    case GST_QUERY_LATENCY:
     case GST_QUERY_JITTER:
     case GST_QUERY_RATE:
     case GST_QUERY_CONVERT:
@@ -3124,6 +3301,7 @@ probe_hook_marshal (GHook * hook, ProbeMarshall * data)
   GstPadProbeType type, flags;
   GstPadProbeCallback callback;
   GstPadProbeReturn ret;
+  gpointer original_data;
 
   /* if we have called this callback, do nothing */
   if (PROBE_COOKIE (hook) == data->cookie) {
@@ -3137,6 +3315,7 @@ probe_hook_marshal (GHook * hook, ProbeMarshall * data)
 
   flags = hook->flags >> G_HOOK_FLAG_USER_SHIFT;
   type = info->type;
+  original_data = info->data;
 
   /* one of the data types for non-idle probes */
   if ((type & GST_PAD_PROBE_TYPE_IDLE) == 0
@@ -3175,6 +3354,12 @@ probe_hook_marshal (GHook * hook, ProbeMarshall * data)
 
   GST_OBJECT_LOCK (pad);
 
+  if (original_data != NULL && info->data == NULL) {
+    GST_DEBUG_OBJECT (pad, "data item in pad probe info was dropped");
+    info->type = GST_PAD_PROBE_TYPE_INVALID;
+    data->dropped = TRUE;
+  }
+
   switch (ret) {
     case GST_PAD_PROBE_REMOVE:
       /* remove the probe */
@@ -3187,6 +3372,10 @@ probe_hook_marshal (GHook * hook, ProbeMarshall * data)
       GST_DEBUG_OBJECT (pad, "asked to drop item");
       info->type = GST_PAD_PROBE_TYPE_INVALID;
       data->dropped = TRUE;
+      break;
+    case GST_PAD_PROBE_HANDLED:
+      GST_DEBUG_OBJECT (pad, "probe handled data");
+      data->handled = TRUE;
       break;
     case GST_PAD_PROBE_PASS:
       /* inform the pad block to let things pass */
@@ -3215,32 +3404,74 @@ no_match:
 #define PROBE_NO_DATA(pad,mask,label,defaultval)                \
   G_STMT_START {						\
     if (G_UNLIKELY (pad->num_probes)) {				\
+      GstFlowReturn pval = defaultval;				\
       /* pass NULL as the data item */                          \
-      GstPadProbeInfo info = { mask, 0, NULL, 0, 0 };           \
+      GstPadProbeInfo info = { mask, 0, NULL, 0, 0 };		\
+      info.ABI.abi.flow_ret = defaultval;			\
       ret = do_probe_callbacks (pad, &info, defaultval);	\
-      if (G_UNLIKELY (ret != defaultval && ret != GST_FLOW_OK))	\
+      if (G_UNLIKELY (ret != pval && ret != GST_FLOW_OK))	\
         goto label;						\
     }								\
   } G_STMT_END
 
-#define PROBE_FULL(pad,mask,data,offs,size,label)               \
-  G_STMT_START {						\
-    if (G_UNLIKELY (pad->num_probes)) {				\
-      /* pass the data item */                                  \
-      GstPadProbeInfo info = { mask, 0, data, offs, size };     \
-      ret = do_probe_callbacks (pad, &info, GST_FLOW_OK);	\
-      /* store the possibly updated data item */                \
-      data = GST_PAD_PROBE_INFO_DATA (&info);                   \
-      /* if something went wrong, exit */                       \
-      if (G_UNLIKELY (ret != GST_FLOW_OK))	                \
-        goto label;						\
-    }								\
+#define PROBE_FULL(pad,mask,data,offs,size,label,handleable,handle_label) \
+  G_STMT_START {							\
+    if (G_UNLIKELY (pad->num_probes)) {					\
+      /* pass the data item */						\
+      GstPadProbeInfo info = { mask, 0, data, offs, size };		\
+      info.ABI.abi.flow_ret = GST_FLOW_OK;				\
+      ret = do_probe_callbacks (pad, &info, GST_FLOW_OK);		\
+      /* store the possibly updated data item */			\
+      data = GST_PAD_PROBE_INFO_DATA (&info);				\
+      /* if something went wrong, exit */				\
+      if (G_UNLIKELY (ret != GST_FLOW_OK)) {				\
+	if (handleable && ret == GST_FLOW_CUSTOM_SUCCESS_1) {		\
+	  ret = info.ABI.abi.flow_ret;						\
+	  goto handle_label;						\
+	}								\
+	goto label;							\
+      }									\
+    }									\
   } G_STMT_END
 
-#define PROBE_PUSH(pad,mask,data,label)		                 \
-  PROBE_FULL(pad, mask, data, -1, -1, label);
-#define PROBE_PULL(pad,mask,data,offs,size,label)		 \
-  PROBE_FULL(pad, mask, data, offs, size, label);
+#define PROBE_PUSH(pad,mask,data,label)		\
+  PROBE_FULL(pad, mask, data, -1, -1, label, FALSE, label);
+#define PROBE_HANDLE(pad,mask,data,label,handle_label)	\
+  PROBE_FULL(pad, mask, data, -1, -1, label, TRUE, handle_label);
+#define PROBE_PULL(pad,mask,data,offs,size,label)		\
+  PROBE_FULL(pad, mask, data, offs, size, label, FALSE, label);
+
+static GstFlowReturn
+do_pad_idle_probe_wait (GstPad * pad)
+{
+  while (GST_PAD_IS_RUNNING_IDLE_PROBE (pad)) {
+    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
+        "waiting idle probe to be removed");
+    GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_BLOCKING);
+    GST_PAD_BLOCK_WAIT (pad);
+    GST_OBJECT_FLAG_UNSET (pad, GST_PAD_FLAG_BLOCKING);
+    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad, "We got unblocked");
+
+    if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
+      return GST_FLOW_FLUSHING;
+  }
+  return GST_FLOW_OK;
+}
+
+#define PROBE_TYPE_IS_SERIALIZED(i) \
+    ( \
+      ( \
+        (((i)->type & (GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM | \
+        GST_PAD_PROBE_TYPE_EVENT_FLUSH)) && \
+        GST_EVENT_IS_SERIALIZED ((i)->data)) \
+      ) || ( \
+        (((i)->type & GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM) && \
+        GST_QUERY_IS_SERIALIZED ((i)->data)) \
+      ) || ( \
+        ((i)->type & (GST_PAD_PROBE_TYPE_BUFFER | \
+        GST_PAD_PROBE_TYPE_BUFFER_LIST))  \
+      ) \
+    )
 
 static GstFlowReturn
 do_probe_callbacks (GstPad * pad, GstPadProbeInfo * info,
@@ -3253,12 +3484,18 @@ do_probe_callbacks (GstPad * pad, GstPadProbeInfo * info,
   data.pad = pad;
   data.info = info;
   data.pass = FALSE;
+  data.handled = FALSE;
   data.marshalled = FALSE;
   data.dropped = FALSE;
   data.cookie = ++pad->priv->probe_cookie;
 
   is_block =
       (info->type & GST_PAD_PROBE_TYPE_BLOCK) == GST_PAD_PROBE_TYPE_BLOCK;
+
+  if (is_block && PROBE_TYPE_IS_SERIALIZED (info)) {
+    if (do_pad_idle_probe_wait (pad) == GST_FLOW_FLUSHING)
+      goto flushing;
+  }
 
 again:
   GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
@@ -3279,6 +3516,11 @@ again:
   /* the first item that dropped will stop the hooks and then we drop here */
   if (data.dropped)
     goto dropped;
+
+  /* If one handler took care of it, let the the item pass */
+  if (data.handled) {
+    goto handled;
+  }
 
   /* if no handler matched and we are blocking, let the item pass */
   if (!data.marshalled && is_block)
@@ -3340,6 +3582,11 @@ passed:
     /* FIXME : Should we return FLOW_OK or the defaultval ?? */
     GST_DEBUG_OBJECT (pad, "data is passed");
     return GST_FLOW_OK;
+  }
+handled:
+  {
+    GST_DEBUG_OBJECT (pad, "data was handled");
+    return GST_FLOW_CUSTOM_SUCCESS_1;
   }
 }
 
@@ -3642,12 +3889,12 @@ probe_stopped:
     if (G_UNLIKELY (serialized))
       GST_PAD_STREAM_UNLOCK (pad);
 
-    /* if a probe dropped, we don't sent it further but assume that the probe
-     * answered the query and return TRUE */
-    if (ret == GST_FLOW_CUSTOM_SUCCESS)
-      res = TRUE;
-    else
+    /* if a probe dropped without handling, we don't sent it further but assume
+     * that the probe did not answer the query and return FALSE */
+    if (ret != GST_FLOW_CUSTOM_SUCCESS_1)
       res = FALSE;
+    else
+      res = TRUE;
 
     return res;
   }
@@ -3759,12 +4006,12 @@ probe_stopped:
     GST_DEBUG_OBJECT (pad, "probe stopped: %s", gst_flow_get_name (ret));
     GST_OBJECT_UNLOCK (pad);
 
-    /* if a probe dropped, we don't sent it further but assume that the probe
-     * answered the query and return TRUE */
-    if (ret == GST_FLOW_CUSTOM_SUCCESS)
-      res = TRUE;
-    else
+    /* if a probe dropped without handling, we don't sent it further but
+     * assume that the probe did not answer the query and return FALSE */
+    if (ret != GST_FLOW_CUSTOM_SUCCESS_1)
       res = FALSE;
+    else
+      res = TRUE;
 
     return res;
   }
@@ -3782,6 +4029,7 @@ gst_pad_chain_data_unchecked (GstPad * pad, GstPadProbeType type, void *data)
 {
   GstFlowReturn ret;
   GstObject *parent;
+  gboolean handled = FALSE;
 
   GST_PAD_STREAM_LOCK (pad);
 
@@ -3811,11 +4059,12 @@ gst_pad_chain_data_unchecked (GstPad * pad, GstPadProbeType type, void *data)
   }
 #endif
 
-  PROBE_PUSH (pad, type | GST_PAD_PROBE_TYPE_BLOCK, data, probe_stopped);
+  PROBE_HANDLE (pad, type | GST_PAD_PROBE_TYPE_BLOCK, data, probe_stopped,
+      probe_handled);
 
-  PROBE_PUSH (pad, type, data, probe_stopped);
+  PROBE_HANDLE (pad, type, data, probe_stopped, probe_handled);
 
-  parent = GST_OBJECT_PARENT (pad);
+  ACQUIRE_PARENT (pad, parent, no_parent);
   GST_OBJECT_UNLOCK (pad);
 
   /* NOTE: we read the chainfunc unlocked.
@@ -3829,13 +4078,13 @@ gst_pad_chain_data_unchecked (GstPad * pad, GstPadProbeType type, void *data)
     if (G_UNLIKELY ((chainfunc = GST_PAD_CHAINFUNC (pad)) == NULL))
       goto no_function;
 
-    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
+    GST_CAT_DEBUG_OBJECT (GST_CAT_SCHEDULING, pad,
         "calling chainfunction &%s with buffer %" GST_PTR_FORMAT,
         GST_DEBUG_FUNCPTR_NAME (chainfunc), GST_BUFFER (data));
 
     ret = chainfunc (pad, parent, GST_BUFFER_CAST (data));
 
-    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
+    GST_CAT_DEBUG_OBJECT (GST_CAT_SCHEDULING, pad,
         "called chainfunction &%s with buffer %p, returned %s",
         GST_DEBUG_FUNCPTR_NAME (chainfunc), data, gst_flow_get_name (ret));
   } else {
@@ -3844,16 +4093,18 @@ gst_pad_chain_data_unchecked (GstPad * pad, GstPadProbeType type, void *data)
     if (G_UNLIKELY ((chainlistfunc = GST_PAD_CHAINLISTFUNC (pad)) == NULL))
       goto no_function;
 
-    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
+    GST_CAT_DEBUG_OBJECT (GST_CAT_SCHEDULING, pad,
         "calling chainlistfunction &%s",
         GST_DEBUG_FUNCPTR_NAME (chainlistfunc));
 
     ret = chainlistfunc (pad, parent, GST_BUFFER_LIST_CAST (data));
 
-    GST_CAT_LOG_OBJECT (GST_CAT_SCHEDULING, pad,
+    GST_CAT_DEBUG_OBJECT (GST_CAT_SCHEDULING, pad,
         "called chainlistfunction &%s, returned %s",
         GST_DEBUG_FUNCPTR_NAME (chainlistfunc), gst_flow_get_name (ret));
   }
+
+  RELEASE_PARENT (parent);
 
   GST_PAD_STREAM_UNLOCK (pad);
 
@@ -3886,15 +4137,21 @@ wrong_mode:
     gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
     return GST_FLOW_ERROR;
   }
+probe_handled:
+  handled = TRUE;
+  /* PASSTHROUGH */
 probe_stopped:
   {
     GST_OBJECT_UNLOCK (pad);
     GST_PAD_STREAM_UNLOCK (pad);
-    gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
+    /* We unref the buffer, except if the probe handled it (CUSTOM_SUCCESS_1) */
+    if (!handled)
+      gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
 
     switch (ret) {
       case GST_FLOW_CUSTOM_SUCCESS:
-        GST_DEBUG_OBJECT (pad, "dropped buffer");
+      case GST_FLOW_CUSTOM_SUCCESS_1:
+        GST_DEBUG_OBJECT (pad, "dropped or handled buffer");
         ret = GST_FLOW_OK;
         break;
       default:
@@ -3903,8 +4160,17 @@ probe_stopped:
     }
     return ret;
   }
+no_parent:
+  {
+    GST_DEBUG_OBJECT (pad, "No parent when chaining %" GST_PTR_FORMAT, data);
+    gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
+    GST_OBJECT_UNLOCK (pad);
+    GST_PAD_STREAM_UNLOCK (pad);
+    return GST_FLOW_FLUSHING;
+  }
 no_function:
   {
+    RELEASE_PARENT (parent);
     gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
     g_critical ("chain on pad %s:%s but it has no chainfunction",
         GST_DEBUG_PAD_NAME (pad));
@@ -3958,7 +4224,7 @@ gst_pad_chain_list_default (GstPad * pad, GstObject * parent,
   GstBuffer *buffer;
   GstFlowReturn ret;
 
-  GST_INFO_OBJECT (pad, "chaining each group in list as a merged buffer");
+  GST_INFO_OBJECT (pad, "chaining each buffer in list individually");
 
   len = gst_buffer_list_length (list);
 
@@ -4018,6 +4284,7 @@ gst_pad_push_data (GstPad * pad, GstPadProbeType type, void *data)
 {
   GstPad *peer;
   GstFlowReturn ret;
+  gboolean handled = FALSE;
 
   GST_OBJECT_LOCK (pad);
   if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
@@ -4049,14 +4316,15 @@ gst_pad_push_data (GstPad * pad, GstPadProbeType type, void *data)
     goto events_error;
 
   /* do block probes */
-  PROBE_PUSH (pad, type | GST_PAD_PROBE_TYPE_BLOCK, data, probe_stopped);
+  PROBE_HANDLE (pad, type | GST_PAD_PROBE_TYPE_BLOCK, data, probe_stopped,
+      probe_handled);
 
   /* recheck sticky events because the probe might have cause a relink */
   if (G_UNLIKELY ((ret = check_sticky (pad, NULL))) != GST_FLOW_OK)
     goto events_error;
 
   /* do post-blocking probes */
-  PROBE_PUSH (pad, type, data, probe_stopped);
+  PROBE_HANDLE (pad, type, data, probe_stopped, probe_handled);
 
   if (G_UNLIKELY ((peer = GST_PAD_PEER (pad)) == NULL))
     goto not_linked;
@@ -4067,6 +4335,7 @@ gst_pad_push_data (GstPad * pad, GstPadProbeType type, void *data)
   GST_OBJECT_UNLOCK (pad);
 
   ret = gst_pad_chain_data_unchecked (peer, type, data);
+  data = NULL;
 
   gst_object_unref (peer);
 
@@ -4119,22 +4388,26 @@ events_error:
     gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
     return ret;
   }
+probe_handled:
+  handled = TRUE;
+  /* PASSTHROUGH */
 probe_stopped:
   {
     GST_OBJECT_UNLOCK (pad);
-    pad->ABI.abi.last_flowret =
-        ret == GST_FLOW_CUSTOM_SUCCESS ? GST_FLOW_OK : ret;
-    gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
+    if (data != NULL && !handled)
+      gst_mini_object_unref (GST_MINI_OBJECT_CAST (data));
 
     switch (ret) {
       case GST_FLOW_CUSTOM_SUCCESS:
-        GST_DEBUG_OBJECT (pad, "dropped buffer");
+      case GST_FLOW_CUSTOM_SUCCESS_1:
+        GST_DEBUG_OBJECT (pad, "dropped or handled buffer");
         ret = GST_FLOW_OK;
         break;
       default:
         GST_DEBUG_OBJECT (pad, "an error occurred %s", gst_flow_get_name (ret));
         break;
     }
+    pad->ABI.abi.last_flowret = ret;
     return ret;
   }
 not_linked:
@@ -4419,8 +4692,8 @@ gst_pad_get_range (GstPad * pad, guint64 offset, guint size,
   g_return_val_if_fail (GST_IS_PAD (pad), GST_FLOW_ERROR);
   g_return_val_if_fail (GST_PAD_IS_SRC (pad), GST_FLOW_ERROR);
   g_return_val_if_fail (buffer != NULL, GST_FLOW_ERROR);
-  g_return_val_if_fail (*buffer == NULL
-      || GST_IS_BUFFER (*buffer), GST_FLOW_ERROR);
+  g_return_val_if_fail (*buffer == NULL || (GST_IS_BUFFER (*buffer)
+          && gst_buffer_get_size (*buffer) >= size), GST_FLOW_ERROR);
 
   return gst_pad_get_range_unchecked (pad, offset, size, buffer);
 }
@@ -4474,8 +4747,8 @@ gst_pad_pull_range (GstPad * pad, guint64 offset, guint size,
   g_return_val_if_fail (GST_IS_PAD (pad), GST_FLOW_ERROR);
   g_return_val_if_fail (GST_PAD_IS_SINK (pad), GST_FLOW_ERROR);
   g_return_val_if_fail (buffer != NULL, GST_FLOW_ERROR);
-  g_return_val_if_fail (*buffer == NULL
-      || GST_IS_BUFFER (*buffer), GST_FLOW_ERROR);
+  g_return_val_if_fail (*buffer == NULL || (GST_IS_BUFFER (*buffer)
+          && gst_buffer_get_size (*buffer) >= size), GST_FLOW_ERROR);
 
   GST_OBJECT_LOCK (pad);
   if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
@@ -4619,6 +4892,14 @@ store_sticky_event (GstPad * pad, GstEvent * event)
           || (GST_PAD_IS_FLUSHING (pad) && (type == GST_EVENT_SEGMENT
                   || type == GST_EVENT_EOS))))
     goto flushed;
+
+  /* Unset the EOS flag when received STREAM_START event, so pad can
+   * store sticky event and then push it later */
+  if (type == GST_EVENT_STREAM_START) {
+    GST_LOG_OBJECT (pad, "Removing pending EOS events");
+    remove_event_by_type (pad, GST_EVENT_EOS);
+    GST_OBJECT_FLAG_UNSET (pad, GST_PAD_FLAG_EOS);
+  }
 
   if (G_UNLIKELY (GST_PAD_IS_EOS (pad)))
     goto eos;
@@ -4774,6 +5055,9 @@ gst_pad_push_event_unchecked (GstPad * pad, GstEvent * event,
       type |= GST_PAD_PROBE_TYPE_EVENT_FLUSH;
       break;
     case GST_EVENT_FLUSH_STOP:
+      if (G_UNLIKELY (!GST_PAD_IS_ACTIVE (pad)))
+        goto inactive;
+
       GST_PAD_UNSET_FLUSHING (pad);
 
       /* Remove sticky EOS events */
@@ -4841,7 +5125,7 @@ gst_pad_push_event_unchecked (GstPad * pad, GstEvent * event,
   /* Note: we gave away ownership of the event at this point but we can still
    * print the old pointer */
   GST_LOG_OBJECT (pad,
-      "sent event %p to (%s) peerpad %" GST_PTR_FORMAT ", ret %s", event,
+      "sent event %p (%s) to peerpad %" GST_PTR_FORMAT ", ret %s", event,
       gst_event_type_get_name (event_type), peerpad, gst_flow_get_name (ret));
 
   gst_object_unref (peerpad);
@@ -4862,12 +5146,22 @@ flushed:
     gst_event_unref (event);
     return GST_FLOW_FLUSHING;
   }
+inactive:
+  {
+    GST_DEBUG_OBJECT (pad, "flush-stop on inactive pad");
+    gst_event_unref (event);
+    return GST_FLOW_FLUSHING;
+  }
 probe_stopped:
   {
     GST_OBJECT_FLAG_SET (pad, GST_PAD_FLAG_PENDING_EVENTS);
-    gst_event_unref (event);
+    if (ret != GST_FLOW_CUSTOM_SUCCESS_1)
+      gst_event_unref (event);
 
     switch (ret) {
+      case GST_FLOW_CUSTOM_SUCCESS_1:
+        GST_DEBUG_OBJECT (pad, "handled event");
+        break;
       case GST_FLOW_CUSTOM_SUCCESS:
         GST_DEBUG_OBJECT (pad, "dropped event");
         break;
@@ -4963,7 +5257,8 @@ gst_pad_push_event (GstPad * pad, GstEvent * event)
     /* other events are pushed right away */
     ret = gst_pad_push_event_unchecked (pad, event, type);
     /* dropped events by a probe are not an error */
-    res = (ret == GST_FLOW_OK || ret == GST_FLOW_CUSTOM_SUCCESS);
+    res = (ret == GST_FLOW_OK || ret == GST_FLOW_CUSTOM_SUCCESS
+        || ret == GST_FLOW_CUSTOM_SUCCESS_1);
   } else {
     /* Errors in sticky event pushing are no problem and ignored here
      * as they will cause more meaningful errors during data flow.
@@ -5064,17 +5359,22 @@ gst_pad_send_event_unchecked (GstPad * pad, GstEvent * event,
           "have event type %d (FLUSH_START)", GST_EVENT_TYPE (event));
 
       /* can't even accept a flush begin event when flushing */
-      if (GST_PAD_IS_FLUSHING (pad))
+      if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
         goto flushing;
 
       GST_PAD_SET_FLUSHING (pad);
       GST_CAT_DEBUG_OBJECT (GST_CAT_EVENT, pad, "set flush flag");
       break;
     case GST_EVENT_FLUSH_STOP:
-      if (G_LIKELY (GST_PAD_MODE (pad) != GST_PAD_MODE_NONE)) {
-        GST_PAD_UNSET_FLUSHING (pad);
-        GST_CAT_DEBUG_OBJECT (GST_CAT_EVENT, pad, "cleared flush flag");
-      }
+      /* we can't accept flush-stop on inactive pads else the flushing flag
+       * would be cleared and it would look like the pad can accept data.
+       * Also, some elements restart a streaming thread in flush-stop which we
+       * can't allow on inactive pads */
+      if (G_UNLIKELY (!GST_PAD_IS_ACTIVE (pad)))
+        goto inactive;
+
+      GST_PAD_UNSET_FLUSHING (pad);
+      GST_CAT_DEBUG_OBJECT (GST_CAT_EVENT, pad, "cleared flush flag");
       /* Remove pending EOS events */
       GST_LOG_OBJECT (pad, "Removing pending EOS and SEGMENT events");
       remove_event_by_type (pad, GST_EVENT_EOS);
@@ -5099,6 +5399,17 @@ gst_pad_send_event_unchecked (GstPad * pad, GstEvent * event,
 
       if (G_UNLIKELY (GST_PAD_IS_FLUSHING (pad)))
         goto flushing;
+
+      switch (event_type) {
+        case GST_EVENT_STREAM_START:
+          /* Remove sticky EOS events */
+          GST_LOG_OBJECT (pad, "Removing pending EOS events");
+          remove_event_by_type (pad, GST_EVENT_EOS);
+          GST_OBJECT_FLAG_UNSET (pad, GST_PAD_FLAG_EOS);
+          break;
+        default:
+          break;
+      }
 
       if (serialized) {
         if (G_UNLIKELY (GST_PAD_IS_EOS (pad)))
@@ -5189,6 +5500,16 @@ flushing:
     gst_event_unref (event);
     return GST_FLOW_FLUSHING;
   }
+inactive:
+  {
+    GST_OBJECT_UNLOCK (pad);
+    if (need_unlock)
+      GST_PAD_STREAM_UNLOCK (pad);
+    GST_CAT_INFO_OBJECT (GST_CAT_EVENT, pad,
+        "Received flush-stop on inactive pad. Discarding");
+    gst_event_unref (event);
+    return GST_FLOW_FLUSHING;
+  }
 eos:
   {
     GST_OBJECT_UNLOCK (pad);
@@ -5204,11 +5525,14 @@ probe_stopped:
     GST_OBJECT_UNLOCK (pad);
     if (need_unlock)
       GST_PAD_STREAM_UNLOCK (pad);
-    gst_event_unref (event);
+    /* Only unref if unhandled */
+    if (ret != GST_FLOW_CUSTOM_SUCCESS_1)
+      gst_event_unref (event);
 
     switch (ret) {
+      case GST_FLOW_CUSTOM_SUCCESS_1:
       case GST_FLOW_CUSTOM_SUCCESS:
-        GST_DEBUG_OBJECT (pad, "dropped event");
+        GST_DEBUG_OBJECT (pad, "dropped or handled event");
         ret = GST_FLOW_OK;
         break;
       default:

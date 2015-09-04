@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 0.10.30.3\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-08-19 12:27+0300\n"
 "PO-Revision-Date: 2010-11-17 23:10+0200\n"
 "Last-Translator: Tommi Vainikainen <Tommi.Vainikainen@iki.fi>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -939,6 +939,12 @@ msgstr ""
 "Rajoita mahdollisia sallittuja kykyjä (NULL tarkoittaa mitä tahansa). Tämän "
 "ominaisuuden asettaminen ottaa kahvan annettuun GstCaps-olioon."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Tilapäishakemistoa ei ole määritetty."
 
@@ -1005,6 +1011,10 @@ msgstr "pakota kyvyt"
 msgid "force caps without doing a typefind"
 msgstr "pakota kyvyt ilman tyyppihakua"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "Virta on tyhjä."
+
 msgid "Stream contains no data."
 msgstr "Virta on tyhjä."
 
@@ -1016,6 +1026,9 @@ msgstr "luettavissa"
 
 msgid "writable"
 msgstr "kirjoitettavissa"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "ohjattavissa"

@@ -36,7 +36,17 @@ hierarchy, and a set of media-agnostic core elements.
      <location rdf:resource="git://anongit.freedesktop.org/gstreamer/gstreamer"/>
      <browse rdf:resource="http://cgit.freedesktop.org/gstreamer/gstreamer"/>
    </GitRepository>
- </repository> 
+ </repository>
+
+ <release>
+  <Version>
+   <revision>1.5.90</revision>
+   <branch>1.5</branch>
+   <name></name>
+   <created>2015-08-19</created>
+   <file-release rdf:resource="http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.5.90.tar.xz" />
+  </Version>
+ </release>
 
  <release>
   <Version>

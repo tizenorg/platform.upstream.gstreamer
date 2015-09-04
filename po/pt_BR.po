@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer-1.2.1\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-08-19 12:27+0300\n"
 "PO-Revision-Date: 2013-12-29 18:20-0200\n"
 "Last-Translator: Fabrício Godoy <skarllot@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge."
@@ -949,6 +949,12 @@ msgstr ""
 "Restrinja as possíveis capacidades permitidas (NULL = ANY). Definindo essa "
 "propriedade é levada uma referência ao objeto GstCaps fornecido."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Nenhum diretório temporário especificado."
 
@@ -1015,6 +1021,10 @@ msgstr "forçar Caps"
 msgid "force caps without doing a typefind"
 msgstr "forçar Caps sem usar o typefind"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "O fluxo não contém dados."
+
 msgid "Stream contains no data."
 msgstr "O fluxo não contém dados."
 
@@ -1026,6 +1036,9 @@ msgstr "legível"
 
 msgid "writable"
 msgstr "gravável"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "controlável"

@@ -24,6 +24,9 @@
 #ifndef __GST_CLOCK_H__
 #define __GST_CLOCK_H__
 
+#include <gst/gstconfig.h>
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 /* --- standard type macros --- */
@@ -63,12 +66,9 @@ typedef gint64 GstClockTimeDiff;
 typedef gpointer GstClockID;
 
 /**
- * GST_CLOCK_TIME_NONE:
+ * GST_CLOCK_TIME_NONE: (value 18446744073709551615) (type GstClockTime)
  *
  * Constant to define an undefined clock time.
- *
- * Value: 18446744073709551615
- * Type: GstClockTime
  */
 #define GST_CLOCK_TIME_NONE             ((GstClockTime) -1)
 /**
@@ -79,41 +79,45 @@ typedef gpointer GstClockID;
  */
 #define GST_CLOCK_TIME_IS_VALID(time)   (((GstClockTime)(time)) != GST_CLOCK_TIME_NONE)
 
+/**
+ * GST_CLOCK_STIME_NONE: (value -9223372036854775808) (type GstClockTimeDiff)
+ *
+ * Constant to define an undefined clock time.
+ */
+#define GST_CLOCK_STIME_NONE             G_MININT64
+/**
+ * GST_CLOCK_STIME_IS_VALID:
+ * @time: signed clock time to validate
+ *
+ * Tests if a given #GstClockTimeDiff of #gint64 represents a valid defined time.
+ *
+ * Since: 1.6
+ */
+#define GST_CLOCK_STIME_IS_VALID(time)   (((GstClockTimeDiff)(time)) != GST_CLOCK_STIME_NONE)
+
 /* FIXME: still need to explicitly force types on the defines below */
 /**
- * GST_SECOND:
+ * GST_SECOND: (value 1000000000) (type GstClockTime)
  *
  * Constant that defines one GStreamer second.
- *
- * Value: 1000000000
- * Type: GstClockTime
  */
 #define GST_SECOND  (G_USEC_PER_SEC * G_GINT64_CONSTANT (1000))
 /**
- * GST_MSECOND:
+ * GST_MSECOND: (value 1000000) (type GstClockTime)
  *
  * Constant that defines one GStreamer millisecond.
- *
- * Value: 1000000
- * Type: GstClockTime
  */
 #define GST_MSECOND (GST_SECOND / G_GINT64_CONSTANT (1000))
 /**
- * GST_USECOND:
+ * GST_USECOND: (value 1000) (type GstClockTime)
  *
  * Constant that defines one GStreamer microsecond.
- *
- * Value: 1000
- * Type: GstClockTime
  */
 #define GST_USECOND (GST_SECOND / G_GINT64_CONSTANT (1000000))
 /**
- * GST_NSECOND:
+ * GST_NSECOND: (value 1) (type GstClockTime)
  *
  * Constant that defines one GStreamer nanosecond
- *
- * Value: 1
- * Type: GstClockTime
  */
 #define GST_NSECOND (GST_SECOND / G_GINT64_CONSTANT (1000000000))
 
@@ -238,6 +242,32 @@ G_STMT_START {                                                    \
         (guint) ((((GstClockTime)(t)) / GST_SECOND) % 60) : 99, \
         GST_CLOCK_TIME_IS_VALID (t) ? \
         (guint) (((GstClockTime)(t)) % GST_SECOND) : 999999999
+/**
+ * GST_STIME_FORMAT:
+ *
+ * A string that can be used in printf-like format strings to display a signed
+ * #GstClockTimeDiff or #gint64 value in h:m:s format.  Use GST_TIME_ARGS() to
+ * construct the matching arguments.
+ *
+ * Example:
+ * |[
+ * printf("%" GST_STIME_FORMAT "\n", GST_STIME_ARGS(ts));
+ * ]|
+ *
+ * Since: 1.6
+ */
+#define GST_STIME_FORMAT "c%" GST_TIME_FORMAT
+/**
+ * GST_STIME_ARGS:
+ * @t: a #GstClockTimeDiff or #gint64
+ *
+ * Format @t for the #GST_STIME_FORMAT format string. Note: @t will be
+ * evaluated more than once.
+ *
+ * Since: 1.6
+ */
+#define GST_STIME_ARGS(t) \
+          ((t) >= 0) ? ' ' : '-', GST_TIME_ARGS (ABS (t))
 
 typedef struct _GstClockEntry   GstClockEntry;
 typedef struct _GstClock        GstClock;
@@ -375,6 +405,8 @@ struct _GstClockEntry {
  * @GST_CLOCK_FLAG_CAN_DO_PERIODIC_ASYNC: clock can do async periodic timeout callbacks
  * @GST_CLOCK_FLAG_CAN_SET_RESOLUTION: clock's resolution can be changed
  * @GST_CLOCK_FLAG_CAN_SET_MASTER: clock can be slaved to a master clock
+ * @GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC: clock needs to be synced before it can be used
+ *     (Since 1.6)
  * @GST_CLOCK_FLAG_LAST: subclasses can add additional flags starting from this flag
  *
  * The capabilities of this clock
@@ -386,6 +418,7 @@ typedef enum {
   GST_CLOCK_FLAG_CAN_DO_PERIODIC_ASYNC  = (GST_OBJECT_FLAG_LAST << 3),
   GST_CLOCK_FLAG_CAN_SET_RESOLUTION     = (GST_OBJECT_FLAG_LAST << 4),
   GST_CLOCK_FLAG_CAN_SET_MASTER         = (GST_OBJECT_FLAG_LAST << 5),
+  GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC     = (GST_OBJECT_FLAG_LAST << 6),
   /* padding */
   GST_CLOCK_FLAG_LAST                   = (GST_OBJECT_FLAG_LAST << 8)
 } GstClockFlags;
@@ -478,12 +511,30 @@ GstClockTime            gst_clock_get_timeout           (GstClock *clock);
 gboolean                gst_clock_add_observation       (GstClock *clock, GstClockTime slave,
                                                          GstClockTime master, gdouble *r_squared);
 
+gboolean                gst_clock_add_observation_unapplied (GstClock *clock, GstClockTime slave,
+                                                         GstClockTime master, gdouble *r_squared,
+                                                         GstClockTime *internal,
+                                                         GstClockTime *external,
+                                                         GstClockTime *rate_num,
+                                                         GstClockTime *rate_denom);
 
 /* getting and adjusting internal/external time */
 GstClockTime            gst_clock_get_internal_time     (GstClock *clock);
 GstClockTime            gst_clock_adjust_unlocked       (GstClock *clock, GstClockTime internal);
+GstClockTime            gst_clock_adjust_with_calibration (GstClock *clock,
+                                                         GstClockTime internal_target,
+                                                         GstClockTime cinternal,
+                                                         GstClockTime cexternal,
+                                                         GstClockTime cnum,
+                                                         GstClockTime cdenom);
 GstClockTime            gst_clock_unadjust_unlocked     (GstClock * clock, GstClockTime external);
 
+/* waiting for, signalling and checking for synchronization */
+gboolean                gst_clock_wait_for_sync         (GstClock * clock, GstClockTime timeout);
+gboolean                gst_clock_is_synced             (GstClock * clock);
+
+/* to be used by subclasses only */
+void                    gst_clock_set_synced            (GstClock * clock, gboolean synced);
 
 /* creating IDs that can be used to get notifications */
 GstClockID              gst_clock_new_single_shot_id    (GstClock *clock,

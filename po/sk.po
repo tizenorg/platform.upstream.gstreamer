@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 1.2.1\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-08-19 12:27+0300\n"
 "PO-Revision-Date: 2014-01-30 10:24+0100\n"
 "Last-Translator: Peter Tuhársky <tuharsky@misbb.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -932,6 +932,12 @@ msgstr ""
 "Obmedziť možné povolené schopnosti (NULOVÉ znamená ĽUBOVOĽNÉ). Nastavenie "
 "tejto vlastnosti berie referenciu na zadaný objekt GstCaps."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Nebol určený dočasný priečinok (Temp)."
 
@@ -998,6 +1004,10 @@ msgstr "vynútiť veľké písmená"
 msgid "force caps without doing a typefind"
 msgstr "vynútiť veľké písmená bez kontroly"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "Prúd neobsahuje údaje."
+
 msgid "Stream contains no data."
 msgstr "Prúd neobsahuje údaje."
 
@@ -1009,6 +1019,9 @@ msgstr "čitateľné"
 
 msgid "writable"
 msgstr "zapisovateľné"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "ovládateľné"

@@ -99,6 +99,8 @@ typedef enum {
  * @GST_EVENT_GAP: Marks a gap in the datastream.
  * @GST_EVENT_TOC: An event which indicates that a new table of contents (TOC)
  *                 was found or updated.
+ * @GST_EVENT_PROTECTION: An event which indicates that new or updated
+ *                 encryption information has been found in the stream.
  * @GST_EVENT_QOS: A quality message. Used to indicate to upstream elements
  *                 that the downstream elements should adjust their processing
  *                 rate.
@@ -147,6 +149,7 @@ typedef enum {
   GST_EVENT_SINK_MESSAGE          = GST_EVENT_MAKE_TYPE (100, FLAG(DOWNSTREAM) | FLAG(SERIALIZED) | FLAG(STICKY) | FLAG(STICKY_MULTI)),
   GST_EVENT_EOS                   = GST_EVENT_MAKE_TYPE (110, FLAG(DOWNSTREAM) | FLAG(SERIALIZED) | FLAG(STICKY)),
   GST_EVENT_TOC                   = GST_EVENT_MAKE_TYPE (120, FLAG(DOWNSTREAM) | FLAG(SERIALIZED) | FLAG(STICKY) | FLAG(STICKY_MULTI)),
+  GST_EVENT_PROTECTION            = GST_EVENT_MAKE_TYPE (130, FLAG (DOWNSTREAM) | FLAG (SERIALIZED) | FLAG (STICKY) | FLAG (STICKY_MULTI)),
 
   /* non-sticky downstream serialized */
   GST_EVENT_SEGMENT_DONE          = GST_EVENT_MAKE_TYPE (150, FLAG(DOWNSTREAM) | FLAG(SERIALIZED)),
@@ -177,7 +180,6 @@ typedef enum {
 #include <gst/gstclock.h>
 #include <gst/gststructure.h>
 #include <gst/gsttaglist.h>
-#include <gst/gstsegment.h>
 #include <gst/gstsegment.h>
 #include <gst/gstmessage.h>
 #include <gst/gstcontext.h>
@@ -346,15 +348,15 @@ gst_event_take (GstEvent **old_event, GstEvent *new_event)
 
 /**
  * GstQOSType:
- * @GST_QOS_TYPE_OVERFLOW: The QoS event type that is produced when downstream
+ * @GST_QOS_TYPE_OVERFLOW: The QoS event type that is produced when upstream
  *    elements are producing data too quickly and the element can't keep up
- *    processing the data. Upstream should reduce their processing rate. This
+ *    processing the data. Upstream should reduce their production rate. This
  *    type is also used when buffers arrive early or in time.
- * @GST_QOS_TYPE_UNDERFLOW: The QoS event type that is produced when downstream
- *    elements are producing data too slowly and need to speed up their processing
- *    rate.
+ * @GST_QOS_TYPE_UNDERFLOW: The QoS event type that is produced when upstream
+ *    elements are producing data too slowly and need to speed up their
+ *    production rate.
  * @GST_QOS_TYPE_THROTTLE: The QoS event type that is produced when the
- *    application enabled throttling to limit the datarate.
+ *    application enabled throttling to limit the data rate.
  *
  * The different types of QoS events that can be given to the
  * gst_event_new_qos() method.
@@ -530,6 +532,11 @@ void            gst_event_parse_tag             (GstEvent *event, GstTagList **t
 GstEvent*      gst_event_new_toc                (GstToc *toc, gboolean updated);
 void           gst_event_parse_toc              (GstEvent *event, GstToc **toc, gboolean *updated);
 
+/* Protection event */
+GstEvent *     gst_event_new_protection         (const gchar * system_id, GstBuffer * data, const gchar * origin);
+
+void           gst_event_parse_protection       (GstEvent * event, const gchar ** system_id,
+                                                 GstBuffer ** data, const gchar ** origin);
 
 /* buffer */
 GstEvent *      gst_event_new_buffer_size       (GstFormat format, gint64 minsize, gint64 maxsize,

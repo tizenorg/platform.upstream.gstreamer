@@ -156,6 +156,7 @@ typedef struct _GstBaseParsePrivate GstBaseParsePrivate;
  * The opaque #GstBaseParse data structure.
  */
 struct _GstBaseParse {
+  /*< public >*/
   GstElement     element;
 
   /*< protected >*/
@@ -182,8 +183,10 @@ struct _GstBaseParse {
  * @stop:           Optional.
  *                  Called when the element stops processing.
  *                  Allows closing external resources.
- * @set_sink_caps:  allows the subclass to be notified of the actual caps set.
- * @get_sink_caps:  allows the subclass to do its own sink get caps if needed.
+ * @set_sink_caps:  Optional.
+ *                  Allows the subclass to be notified of the actual caps set.
+ * @get_sink_caps:  Optional.
+ *                  Allows the subclass to do its own sink get caps if needed.
  * @handle_frame:   Parses the input data into valid frames as defined by subclass
  *                  which should be passed to gst_base_parse_finish_frame().
  *                  The frame's input buffer is guaranteed writable,
@@ -222,8 +225,7 @@ struct _GstBaseParse {
  *                   parent to let the default handler run (Since 1.2)
  *
  * Subclasses can override any of the available virtual methods or not, as
- * needed. At minimum @check_valid_frame and @parse_frame needs to be
- * overridden.
+ * needed. At minimum @handle_frame needs to be overridden.
  */
 struct _GstBaseParseClass {
   GstElementClass parent_class;
@@ -342,6 +344,10 @@ gboolean        gst_base_parse_add_index_entry (GstBaseParse * parse,
 
 void            gst_base_parse_set_ts_at_offset (GstBaseParse *parse,
                                                  gsize offset);
+
+void            gst_base_parse_merge_tags       (GstBaseParse  * parse,
+                                                 GstTagList    * tags,
+                                                 GstTagMergeMode mode);
 
 G_END_DECLS
 

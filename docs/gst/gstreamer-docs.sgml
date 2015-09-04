@@ -95,6 +95,7 @@ Windows.  It is released under the GNU Library General Public License
     <xi:include href="xml/gstpluginfeature.xml" />
     <xi:include href="xml/gstpoll.xml" />
     <xi:include href="xml/gstpreset.xml" />
+    <xi:include href="xml/gstprotection.xml" />
     <xi:include href="xml/gstquery.xml" />
     <xi:include href="xml/gstregistry.xml" />
     <xi:include href="xml/gstsegment.xml" />
@@ -108,6 +109,7 @@ Windows.  It is released under the GNU Library General Public License
     <xi:include href="xml/gsttocsetter.xml" />
     <xi:include href="xml/gsttypefind.xml" />
     <xi:include href="xml/gsttypefindfactory.xml" />
+    <xi:include href="xml/gsturi.xml" />
     <xi:include href="xml/gsturihandler.xml" />
     <xi:include href="xml/gstutils.xml" />
     <xi:include href="xml/gstvalue.xml" />
@@ -139,15 +141,39 @@ Windows.  It is released under the GNU Library General Public License
     <xi:include href="xml/tree_index.sgml"/>
   </chapter>
 
-  <index id="api-index-full">
+  <index>
     <title>API Index</title>
     <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
   </index>
-  <index id="api-index-deprecated" role="deprecated">
+  <index role="deprecated">
     <title>Index of deprecated API</title>
     <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
   </index>
-
+  <index>
+    <title>Index of new API in 1.6</title>
+    <xi:include href="xml/api-index-1.6.xml"><xi:fallback /></xi:include>
+  </index>
+  <index>
+    <title>Index of new API in 1.4</title>
+    <xi:include href="xml/api-index-1.4.xml"><xi:fallback /></xi:include>
+  </index>
+  <index>
+    <title>Index of new API in 1.2.3</title>
+    <xi:include href="xml/api-index-1.2.3.xml"><xi:fallback /></xi:include>
+  </index>
+  <index>
+    <title>Index of new API in 1.2</title>
+    <xi:include href="xml/api-index-1.2.xml"><xi:fallback /></xi:include>
+  </index>
+  <index>
+    <title>Index of new API in 1.0.10</title>
+    <xi:include href="xml/api-index-1.0.10.xml"><xi:fallback /></xi:include>
+  </index>
+  <index>
+    <title>Index of new API in 1.0.5</title>
+    <xi:include href="xml/api-index-1.0.5.xml"><xi:fallback /></xi:include>
+  </index>
+  
   <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
 
 </book>

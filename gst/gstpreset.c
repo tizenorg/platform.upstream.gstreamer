@@ -34,6 +34,9 @@
  * native preset format of those wrapped plugins.
  * One method that is useful to be overridden is gst_preset_get_property_names().
  * With that one can control which properties are saved and in which order.
+ * When implementing support for read-only presets, one should set the vmethods
+ * for gst_preset_save_preset() and gst_preset_delete_preset() to %NULL.
+ * Applications can use gst_preset_is_editable() to check for that.
  *
  * The default implementation supports presets located in a system directory, 
  * application specific directory and in the users home directory. When getting
@@ -100,8 +103,6 @@ static GQuark preset_user_path_quark = 0;
 static GQuark preset_app_path_quark = 0;
 static GQuark preset_system_path_quark = 0;
 static GQuark preset_quark = 0;
-
-/*static GQuark property_list_quark = 0;*/
 
 /* the application can set a custom path that is checked in addition to standard
  * system and user dirs. This helps to develop new presets first local to the
@@ -394,7 +395,7 @@ preset_get_keyfile (GstPreset * preset)
         if (presets)
           g_key_file_free (presets);
         presets = in_app;
-        version = version_system;
+        version = version_app;
       }
     }
     if (in_user) {
@@ -427,6 +428,12 @@ preset_get_keyfile (GstPreset * preset)
   return presets;
 }
 
+static gint
+compare_strings (gchar ** a, gchar ** b, gpointer user_data)
+{
+  return g_strcmp0 (*a, *b);
+}
+
 /* get a list of all supported preset names for an element */
 static gchar **
 gst_preset_default_get_preset_names (GstPreset * preset)
@@ -455,9 +462,15 @@ gst_preset_default_get_preset_names (GstPreset * preset)
       groups[num_groups] = NULL;
     }
   }
+  if (!num_groups) {
+    GST_INFO_OBJECT (preset, "Empty preset file");
+    g_strfreev (groups);
+    return NULL;
+  }
+
   /* sort the array now */
   g_qsort_with_data (groups, num_groups, sizeof (gchar *),
-      (GCompareDataFunc) strcmp, NULL);
+      (GCompareDataFunc) compare_strings, NULL);
 
   return groups;
 
@@ -1150,6 +1163,24 @@ gst_preset_get_app_dir (void)
   return preset_app_dir;
 }
 
+/**
+ * gst_preset_is_editable:
+ * @preset: a #GObject that implements #GstPreset
+ *
+ * Check if one can add new presets, change existing ones and remove presets.
+ *
+ * Returns: %TRUE if presets are editable or %FALSE if they are static
+ *
+ * Since: 1.6
+ */
+gboolean
+gst_preset_is_editable (GstPreset * preset)
+{
+  GstPresetInterface *iface = GST_PRESET_GET_INTERFACE (preset);
+
+  return iface->save_preset && iface->delete_preset;
+}
+
 /* class internals */
 
 static void
@@ -1186,8 +1217,6 @@ gst_preset_base_init (gpointer g_class)
         g_quark_from_static_string ("GstPreset::system_path");
 
 #if 0
-    property_list_quark = g_quark_from_static_string ("GstPreset::properties");
-
     /* create interface properties, each element would need to override this
      *   g_object_class_override_property(gobject_class, PROP_PRESET_NAME, "preset-name");
      * and in _set_property() do

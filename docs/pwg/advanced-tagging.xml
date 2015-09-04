@@ -54,7 +54,7 @@
     <title>Reading Tags from Streams</title>
     <para>
       The basic object for tags is a <ulink type="http"
-      url="../../gstreamer/html/gstreamer-GstTagList.html"><classname>GstTagList
+      url="../../gstreamer/html/GstTagList.html"><classname>GstTagList
       </classname></ulink>. An element that is reading tags from a stream should
       create an empty taglist and fill this with individual tags. Empty tag
       lists can be created with <function>gst_tag_list_new ()</function>. Then,
@@ -109,7 +109,7 @@ gst_my_filter_class_init (GstMyFilterClass *klass)
       TagSetter interface (which is just a layer). Pipeline tags are tags
       provided to the element from within the pipeline. The element receives
       such tags via the <symbol>GST_EVENT_TAG</symbol> event, which means
-      that tags writers should implment an event handler. The tag writer is
+      that tags writers should implement an event handler. The tag writer is
       responsible for combining all these three into one list and writing them
       to the output stream.
     </para>

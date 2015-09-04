@@ -467,7 +467,17 @@ GST_START_TEST (test_position_tracking)
 GST_END_TEST;
 
 #define do_scan(r,m,p,o,s,x) \
-    fail_unless_equals_int (gst_byte_reader_masked_scan_uint32 (r,m,p,o,s), x);
+G_STMT_START {								\
+    fail_unless_equals_int (gst_byte_reader_masked_scan_uint32 (r,m,p,o,s), x); \
+    if (x != -1) { \
+      guint32 v, res_v; \
+      const guint8 *rdata = NULL; \
+      fail_unless (gst_byte_reader_peek_data (r, x + 4, &rdata)); \
+      res_v = GST_READ_UINT32_BE (rdata + x); \
+      fail_unless_equals_int (gst_byte_reader_masked_scan_uint32_peek (r,m,p,o,s,&v), x); \
+      fail_unless_equals_int (v, res_v); \
+    } \
+} G_STMT_END;
 
 GST_START_TEST (test_scan)
 {
@@ -686,6 +696,88 @@ GST_START_TEST (test_dup_string)
 
 GST_END_TEST;
 
+GST_START_TEST (test_sub_reader)
+{
+  const guint8 memdata[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+  };
+  GstByteReader reader = GST_BYTE_READER_INIT (memdata, sizeof (memdata));
+  GstByteReader sub;
+  const guint8 *data = NULL, *sub_data = NULL;
+  guint16 v = 0;
+
+  /* init sub reader */
+  fail_if (gst_byte_reader_peek_sub_reader (&reader, &sub, 17));
+  fail_unless (gst_byte_reader_peek_sub_reader (&reader, &sub, 16));
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&sub), 16);
+  fail_unless (gst_byte_reader_peek_data (&reader, 16, &data));
+  fail_unless (gst_byte_reader_peek_data (&sub, 16, &sub_data));
+  fail_unless (memcmp (data, sub_data, 16) == 0);
+
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&reader), 16);
+  fail_unless (gst_byte_reader_skip (&reader, 3));
+  fail_if (gst_byte_reader_peek_sub_reader (&reader, &sub, 14));
+  fail_unless (gst_byte_reader_peek_sub_reader (&reader, &sub, 13));
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&sub), 13);
+  fail_unless (gst_byte_reader_peek_data (&reader, 13, &data));
+  fail_unless (gst_byte_reader_peek_data (&sub, 13, &sub_data));
+  fail_unless (memcmp (data, sub_data, 13) == 0);
+  fail_unless (memcmp (memdata + 3, sub_data, 13) == 0);
+
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&reader), 13);
+  fail_unless (gst_byte_reader_peek_sub_reader (&reader, &sub, 3));
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&sub), 3);
+  fail_if (gst_byte_reader_peek_data (&sub, 10, &sub_data));
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0304);
+  fail_if (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&sub), 1);
+
+  fail_unless (gst_byte_reader_get_uint16_be (&reader, &v));
+  fail_unless_equals_int (v, 0x0304);
+  fail_unless (gst_byte_reader_get_uint16_be (&reader, &v));
+  fail_unless_equals_int (v, 0x0506);
+  fail_unless_equals_int (gst_byte_reader_get_remaining (&reader), 9);
+
+  /* get sub reader */
+  gst_byte_reader_init (&reader, memdata, sizeof (memdata));
+  fail_if (gst_byte_reader_get_sub_reader (&reader, &sub, 17));
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 16));
+  fail_if (gst_byte_reader_get_sub_reader (&reader, &sub, 1));
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 0));
+
+  gst_byte_reader_init (&reader, memdata, sizeof (memdata));
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 2));
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0001);
+  fail_if (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 3));
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0203);
+  fail_if (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (gst_byte_reader_get_uint8_unchecked (&sub), 0x04);
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 9));
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0506);
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0708);
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x090a);
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0b0c);
+  fail_if (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (gst_byte_reader_get_uint8_unchecked (&sub), 0x0d);
+  fail_if (gst_byte_reader_get_sub_reader (&reader, &sub, 3));
+  fail_unless (gst_byte_reader_get_sub_reader (&reader, &sub, 2));
+  fail_unless (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_unless_equals_int (v, 0x0e0f);
+  fail_if (gst_byte_reader_get_uint16_be (&sub, &v));
+  fail_if (gst_byte_reader_get_uint16_be (&reader, &v));
+}
+
+GST_END_TEST;
+
 static Suite *
 gst_byte_reader_suite (void)
 {
@@ -705,6 +797,7 @@ gst_byte_reader_suite (void)
   tcase_add_test (tc_chain, test_scan);
   tcase_add_test (tc_chain, test_string_funcs);
   tcase_add_test (tc_chain, test_dup_string);
+  tcase_add_test (tc_chain, test_sub_reader);
 
   return s;
 }

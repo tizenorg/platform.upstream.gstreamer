@@ -78,6 +78,10 @@
 #include <sys/prctl.h>
 #endif
 
+#ifdef HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID
+#include <pthread.h>
+#endif
+
 GST_DEBUG_CATEGORY_STATIC (task_debug);
 #define GST_CAT_DEFAULT (task_debug)
 
@@ -246,8 +250,19 @@ gst_task_configure_name (GstTask * task)
       GST_DEBUG_OBJECT (task, "Failed to set thread name");
   }
   GST_OBJECT_UNLOCK (task);
-#endif
-#ifdef _MSC_VER
+#elif defined(HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID)
+  const gchar *name;
+
+  GST_OBJECT_LOCK (task);
+  name = GST_OBJECT_NAME (task);
+
+  /* set the thread name to something easily identifiable */
+  GST_DEBUG_OBJECT (task, "Setting thread name to '%s'", name);
+  if (pthread_setname_np (name))
+    GST_DEBUG_OBJECT (task, "Failed to set thread name");
+
+  GST_OBJECT_UNLOCK (task);
+#elif defined (_MSC_VER)
   const gchar *name;
   name = GST_OBJECT_NAME (task);
 
@@ -292,31 +307,30 @@ gst_task_func (GstTask * task)
   gst_task_configure_name (task);
 
   while (G_LIKELY (GET_TASK_STATE (task) != GST_TASK_STOPPED)) {
-    if (G_UNLIKELY (GET_TASK_STATE (task) == GST_TASK_PAUSED)) {
+    GST_OBJECT_LOCK (task);
+    while (G_UNLIKELY (GST_TASK_STATE (task) == GST_TASK_PAUSED)) {
+      g_rec_mutex_unlock (lock);
+
+      GST_TASK_SIGNAL (task);
+      GST_INFO_OBJECT (task, "Task going to paused");
+      GST_TASK_WAIT (task);
+      GST_INFO_OBJECT (task, "Task resume from paused");
+      GST_OBJECT_UNLOCK (task);
+      /* locking order.. */
+      g_rec_mutex_lock (lock);
       GST_OBJECT_LOCK (task);
-      while (G_UNLIKELY (GST_TASK_STATE (task) == GST_TASK_PAUSED)) {
-        g_rec_mutex_unlock (lock);
+    }
 
-        GST_TASK_SIGNAL (task);
-        GST_INFO_OBJECT (task, "Task going to paused");
-        GST_TASK_WAIT (task);
-        GST_INFO_OBJECT (task, "Task resume from paused");
-        GST_OBJECT_UNLOCK (task);
-        /* locking order.. */
-        g_rec_mutex_lock (lock);
-
-        GST_OBJECT_LOCK (task);
-        if (G_UNLIKELY (GET_TASK_STATE (task) == GST_TASK_STOPPED)) {
-          GST_OBJECT_UNLOCK (task);
-          goto done;
-        }
-      }
+    if (G_UNLIKELY (GET_TASK_STATE (task) == GST_TASK_STOPPED)) {
+      GST_OBJECT_UNLOCK (task);
+      break;
+    } else {
       GST_OBJECT_UNLOCK (task);
     }
 
     task->func (task->user_data);
   }
-done:
+
   g_rec_mutex_unlock (lock);
 
   GST_OBJECT_LOCK (task);
@@ -400,6 +414,8 @@ gst_task_new (GstTaskFunction func, gpointer user_data, GDestroyNotify notify)
 {
   GstTask *task;
 
+  g_return_val_if_fail (func != NULL, NULL);
+
   task = g_object_newv (GST_TYPE_TASK, 0, NULL);
   task->func = func;
   task->user_data = user_data;
@@ -426,6 +442,8 @@ gst_task_new (GstTaskFunction func, gpointer user_data, GDestroyNotify notify)
 void
 gst_task_set_lock (GstTask * task, GRecMutex * mutex)
 {
+  g_return_if_fail (GST_IS_TASK (task));
+
   GST_OBJECT_LOCK (task);
   if (G_UNLIKELY (task->running))
     goto is_running;
@@ -781,9 +799,9 @@ gst_task_join (GstTask * task)
   gpointer id;
   GstTaskPool *pool = NULL;
 
-  priv = task->priv;
-
   g_return_val_if_fail (GST_IS_TASK (task), FALSE);
+
+  priv = task->priv;
 
   tself = g_thread_self ();
 

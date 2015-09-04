@@ -30,9 +30,9 @@
  * The above mentioned pipeline should dump data packets to the console.
  *
  * If the #GstFdSrc:timeout property is set to a value bigger than 0, fdsrc will
- * generate an element message named
- * <classname>&quot;GstFdSrcTimeout&quot;</classname>
+ * generate an element message named <classname>&quot;GstFdSrcTimeout&quot;</classname>
  * if no data was received in the given timeout.
+ *
  * The message's structure contains one field:
  * <itemizedlist>
  * <listitem>
@@ -47,7 +47,7 @@
  * <refsect2>
  * <title>Example launch line</title>
  * |[
- * echo "Hello GStreamer" | gst-launch -v fdsrc ! fakesink dump=true
+ * echo "Hello GStreamer" | gst-launch-1.0 -v fdsrc ! fakesink dump=true
  * ]| A simple pipeline to read from the standard input and dump the data
  * with a fakesink as hex ascii block.
  * </refsect2>
@@ -645,12 +645,14 @@ gst_fd_src_uri_set_uri (GstURIHandler * handler, const gchar * uri,
   }
 
   if ((q = g_strstr_len (uri, -1, "?"))) {
-    gchar *sp;
+    gchar *sp, *end = NULL;
 
     GST_INFO_OBJECT (src, "found ?");
 
     if ((sp = g_strstr_len (q, -1, "size="))) {
-      if (sscanf (sp, "size=%" G_GUINT64_FORMAT, &size) != 1) {
+      sp += strlen ("size=");
+      size = g_ascii_strtoull (sp, &end, 10);
+      if ((size == 0 && errno == EINVAL) || size == G_MAXUINT64 || end == sp) {
         GST_INFO_OBJECT (src, "parsing size failed");
         size = -1;
       } else {

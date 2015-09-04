@@ -27,9 +27,9 @@
  * These macros and functions are for internal use of the unit tests found
  * inside the 'check' directories of various GStreamer packages.
  *
- * One notable feature is that one can use the environment variables GST_CHECK
- * and GST_CHECK_IGNORE to select which tests to run or skip. Both variables
- * can contain a comman separated list of test name globs (e.g. test_*).
+ * One notable feature is that one can use the environment variables GST_CHECKS
+ * and GST_CHECKS_IGNORE to select which tests to run or skip. Both variables
+ * can contain a comma separated list of test name globs (e.g. test_*).
  */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -55,7 +55,7 @@ GList *buffers = NULL;
 GMutex check_mutex;
 GCond check_cond;
 
-/* FIXME 0.11: shouldn't _gst_check_debug be static? Not used anywhere */
+/* FIXME 2.0: shouldn't _gst_check_debug be static? Not used anywhere */
 gboolean _gst_check_debug = FALSE;
 gboolean _gst_check_raised_critical = FALSE;
 gboolean _gst_check_raised_warning = FALSE;
@@ -66,7 +66,7 @@ static void gst_check_log_message_func
     const gchar * message, gpointer user_data)
 {
   if (_gst_check_debug) {
-    g_print ("%s", message);
+    g_print ("%s\n", message);
   }
 }
 
@@ -243,7 +243,9 @@ gst_check_teardown_element (GstElement * element)
  * @element: element to setup pad on
  * @tmpl: pad template
  *
- * Returns: (transfer full): a new pad
+ * Does the same as #gst_check_setup_src_pad_by_name with the <emphasis> name </emphasis> parameter equal to "sink".
+ *
+ * Returns: (transfer full): A new pad that can be used to inject data on @element
  */
 GstPad *
 gst_check_setup_src_pad (GstElement * element, GstStaticPadTemplate * tmpl)
@@ -253,11 +255,45 @@ gst_check_setup_src_pad (GstElement * element, GstStaticPadTemplate * tmpl)
 
 /**
  * gst_check_setup_src_pad_by_name:
- * @element: element to setup pad on
+ * @element: element to setup src pad on
  * @tmpl: pad template
- * @name: name
+ * @name: Name of the @element sink pad that will be linked to the src pad that will be setup
  *
- * Returns: (transfer full): a new pad
+ * Creates a new src pad (based on the given @tmpl) and links it to the given @element sink pad (the pad that matches the given @name).
+ * Before using the src pad to push data on @element you need to call #gst_check_setup_events on the created src pad.
+ *
+ * Example of how to push a buffer on @element:
+ *
+ * |[<!-- language="C" -->
+ * static GstStaticPadTemplate sinktemplate = GST_STATIC_PAD_TEMPLATE ("sink",
+ * GST_PAD_SINK,
+ * GST_PAD_ALWAYS,
+ * GST_STATIC_CAPS (YOUR_CAPS_TEMPLATE_STRING)
+ * );
+ * static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
+ * GST_PAD_SRC,
+ * GST_PAD_ALWAYS,
+ * GST_STATIC_CAPS (YOUR_CAPS_TEMPLATE_STRING)
+ * );
+ *
+ * GstElement * element = gst_check_setup_element ("element");
+ * GstPad * mysrcpad = gst_check_setup_src_pad (element, &srctemplate);
+ * GstPad * mysinkpad = gst_check_setup_sink_pad (element, &sinktemplate);
+ *
+ * gst_pad_set_active (mysrcpad, TRUE);
+ * gst_pad_set_active (mysinkpad, TRUE);
+ * fail_unless (gst_element_set_state (element, GST_STATE_PLAYING) == GST_STATE_CHANGE_SUCCESS, "could not set to playing");
+ *
+ * GstCaps * caps = gst_caps_from_string (YOUR_DESIRED_SINK_CAPS);
+ * gst_check_setup_events (mysrcpad, element, caps, GST_FORMAT_TIME);
+ * gst_caps_unref (caps);
+ *
+ * fail_unless (gst_pad_push (mysrcpad, gst_buffer_new_and_alloc(2)) == GST_FLOW_OK);
+ * ]|
+ *
+ * For very simple input/output test scenarios checkout #gst_check_element_push_buffer_list and #gst_check_element_push_buffer.
+ *
+ * Returns: (transfer full): A new pad that can be used to inject data on @element
  */
 GstPad *
 gst_check_setup_src_pad_by_name (GstElement * element,
@@ -266,8 +302,7 @@ gst_check_setup_src_pad_by_name (GstElement * element,
   GstPadTemplate *ptmpl = gst_static_pad_template_get (tmpl);
   GstPad *srcpad;
 
-  srcpad =
-      gst_check_setup_src_pad_by_name_from_template (element, ptmpl, "sink");
+  srcpad = gst_check_setup_src_pad_by_name_from_template (element, ptmpl, name);
 
   gst_object_unref (ptmpl);
 
@@ -370,7 +405,9 @@ gst_check_teardown_src_pad (GstElement * element)
  * @element: element to setup pad on
  * @tmpl: pad template
  *
- * Returns: (transfer full): a new pad
+ * Does the same as #gst_check_setup_sink_pad_by_name with the <emphasis> name </emphasis> parameter equal to "src".
+ *
+ * Returns: (transfer full): a new pad that can be used to check the output of @element
  */
 GstPad *
 gst_check_setup_sink_pad (GstElement * element, GstStaticPadTemplate * tmpl)
@@ -382,9 +419,13 @@ gst_check_setup_sink_pad (GstElement * element, GstStaticPadTemplate * tmpl)
  * gst_check_setup_sink_pad_by_name:
  * @element: element to setup pad on
  * @tmpl: pad template
- * @name: name
+ * @name: Name of the @element src pad that will be linked to the sink pad that will be setup
  *
- * Returns: (transfer full): a new pad
+ * Creates a new sink pad (based on the given @tmpl) and links it to the given @element src pad 
+ * (the pad that matches the given @name).
+ * You can set event/chain/query functions on this pad to check the output of the @element.
+ *
+ * Returns: (transfer full): a new pad that can be used to check the output of @element
  */
 GstPad *
 gst_check_setup_sink_pad_by_name (GstElement * element,
@@ -394,7 +435,7 @@ gst_check_setup_sink_pad_by_name (GstElement * element,
   GstPad *sinkpad;
 
   sinkpad =
-      gst_check_setup_sink_pad_by_name_from_template (element, ptmpl, "src");
+      gst_check_setup_sink_pad_by_name_from_template (element, ptmpl, name);
 
   gst_object_unref (ptmpl);
 
@@ -562,7 +603,7 @@ buffer_event_function (GstPad * pad, GstObject * noparent, GstEvent * event)
  * This can be used to set up a test which pushes some buffers and then an
  * invalid buffer, when the final buffer is expected to fail, for example.
  */
-/* FIXME 0.11: rename this function now that there's GstBufferList? */
+/* FIXME 2.0: rename this function now that there's GstBufferList? */
 void
 gst_check_element_push_buffer_list (const gchar * element_name,
     GList * buffer_in, GstCaps * caps_in, GList * buffer_out,
@@ -884,4 +925,114 @@ gst_check_setup_events (GstPad * srcpad, GstElement * element,
   gst_check_setup_events_with_stream_id (srcpad, element, caps, format,
       stream_id);
   g_free (stream_id);
+}
+
+typedef struct _DestroyedObjectStruct
+{
+  GObject *object;
+  gboolean destroyed;
+} DestroyedObjectStruct;
+
+static void
+weak_notify (DestroyedObjectStruct * destroyed, GObject ** object)
+{
+  destroyed->destroyed = TRUE;
+}
+
+/**
+ * gst_check_objects_destroyed_on_unref:
+ * @object_to_unref: The #GObject to unref
+ * @first_object: (allow-none): The first object that should be destroyed as a
+ * concequence of unrefing @object_to_unref.
+ * @... : Additional object that should have been destroyed.
+ *
+ * Unrefs @object_to_unref and checks that is has properly been
+ * destroyed, also checks that the other objects passed in
+ * parametter have been destroyed as a concequence of
+ * unrefing @object_to_unref. Last variable argument should be NULL.
+ *
+ * Since: 1.6
+ */
+void
+gst_check_objects_destroyed_on_unref (gpointer object_to_unref,
+    gpointer first_object, ...)
+{
+  GObject *object;
+  GList *objs = NULL, *tmp;
+  DestroyedObjectStruct *destroyed = g_slice_new0 (DestroyedObjectStruct);
+
+  destroyed->object = object_to_unref;
+  g_object_weak_ref (object_to_unref, (GWeakNotify) weak_notify, destroyed);
+  objs = g_list_prepend (objs, destroyed);
+
+  if (first_object) {
+    va_list varargs;
+
+    object = first_object;
+
+    va_start (varargs, first_object);
+    while (object) {
+      destroyed = g_slice_new0 (DestroyedObjectStruct);
+      destroyed->object = object;
+      g_object_weak_ref (object, (GWeakNotify) weak_notify, destroyed);
+      objs = g_list_prepend (objs, destroyed);
+      object = va_arg (varargs, GObject *);
+    }
+    va_end (varargs);
+  }
+  gst_object_unref (object_to_unref);
+
+  for (tmp = objs; tmp; tmp = tmp->next) {
+    DestroyedObjectStruct *destroyed = tmp->data;
+
+    if (!destroyed->destroyed) {
+      fail_unless (destroyed->destroyed,
+          "%s_%p is not destroyed, %d refcounts left!",
+          GST_IS_OBJECT (destroyed->
+              object) ? GST_OBJECT_NAME (destroyed->object) :
+          G_OBJECT_TYPE_NAME (destroyed), destroyed->object,
+          destroyed->object->ref_count);
+    }
+    g_slice_free (DestroyedObjectStruct, tmp->data);
+  }
+  g_list_free (objs);
+}
+
+/**
+ * gst_check_object_destroyed_on_unref:
+ * @object_to_unref: The #GObject to unref
+ *
+ * Unrefs @object_to_unref and checks that is has properly been
+ * destroyed.
+ *
+ * Since: 1.6
+ */
+void
+gst_check_object_destroyed_on_unref (gpointer object_to_unref)
+{
+  gst_check_objects_destroyed_on_unref (object_to_unref, NULL, NULL);
+}
+
+/* For ABI compatibility with GStreamer < 1.5 */
+void
+_fail_unless (int result, const char *file, int line, const char *expr, ...)
+G_GNUC_PRINTF (4, 5);
+
+void _fail_unless (int result, const char *file, int line,
+    const char *expr, ...)
+{
+  gchar *msg;
+  va_list args;
+
+  if (result) {
+    _mark_point(file, line);
+    return;
+  }
+
+  va_start (args, expr);
+  msg = g_strdup_vprintf (expr, args);
+  va_end (args);
+
+  _ck_assert_failed (file, line, msg, NULL);
+  g_free (msg);
 }

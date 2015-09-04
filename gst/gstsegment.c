@@ -340,10 +340,14 @@ gst_segment_do_seek (GstSegment * segment, gdouble rate,
   segment->flags = GST_SEGMENT_FLAG_NONE;
   if ((flags & GST_SEEK_FLAG_FLUSH) != 0)
     segment->flags |= GST_SEGMENT_FLAG_RESET;
-  if ((flags & GST_SEEK_FLAG_SKIP) != 0)
-    segment->flags |= GST_SEGMENT_FLAG_SKIP;
+  if ((flags & GST_SEEK_FLAG_TRICKMODE) != 0)
+    segment->flags |= GST_SEGMENT_FLAG_TRICKMODE;
   if ((flags & GST_SEEK_FLAG_SEGMENT) != 0)
     segment->flags |= GST_SEGMENT_FLAG_SEGMENT;
+  if ((flags & GST_SEEK_FLAG_TRICKMODE_KEY_UNITS) != 0)
+    segment->flags |= GST_SEGMENT_FLAG_TRICKMODE_KEY_UNITS;
+  if ((flags & GST_SEEK_FLAG_TRICKMODE_NO_AUDIO) != 0)
+    segment->flags |= GST_SEGMENT_FLAG_TRICKMODE_NO_AUDIO;
 
   segment->rate = rate;
   segment->applied_rate = 1.0;
@@ -449,6 +453,116 @@ gst_segment_to_stream_time (const GstSegment * segment, GstFormat format,
 }
 
 /**
+ * gst_segment_to_running_time_full:
+ * @segment: a #GstSegment structure.
+ * @format: the format of the segment.
+ * @position: the position in the segment
+ * @running_time: result running-time
+ *
+ * Translate @position to the total running time using the currently configured
+ * segment. Compared to gst_segment_to_running_time() this function can return
+ * negative running-time.
+ *
+ * This function is typically used by elements that need to synchronize buffers
+ * against the clock or eachother.
+ *
+ * @position can be any value and the result of this function for values outside
+ * of the segment is extrapolated.
+ *
+ * When 1 is returned, @position resulted in a positive running-time returned
+ * in @running_time.
+ *
+ * When this function returns -1, the returned @running_time should be negated
+ * to get the real negative running time.
+ *
+ * Returns: a 1 or -1 on success, 0 on failure.
+ *
+ * Since: 1.6
+ */
+gint
+gst_segment_to_running_time_full (const GstSegment * segment, GstFormat format,
+    guint64 position, guint64 * running_time)
+{
+  gint res = 0;
+  guint64 result;
+  guint64 start, stop, offset;
+  gdouble abs_rate;
+
+  if (G_UNLIKELY (position == -1)) {
+    GST_DEBUG ("invalid position (-1)");
+    goto done;
+  }
+
+  g_return_val_if_fail (segment != NULL, 0);
+  g_return_val_if_fail (segment->format == format, 0);
+
+  offset = segment->offset;
+
+  if (G_LIKELY (segment->rate > 0.0)) {
+    start = segment->start + offset;
+
+    /* bring to uncorrected position in segment */
+    if (position < start) {
+      /* negative value */
+      result = start - position;
+      res = -1;
+    } else {
+      result = position - start;
+      res = 1;
+    }
+  } else {
+    stop = segment->stop;
+
+    /* cannot continue if no stop position set or invalid offset */
+    g_return_val_if_fail (stop != -1, 0);
+    g_return_val_if_fail (stop >= offset, 0);
+
+    stop -= offset;
+
+    /* bring to uncorrected position in segment */
+    if (position > stop) {
+      /* negative value */
+      result = position - stop;
+      res = -1;
+    } else {
+      result = stop - position;
+      res = 1;
+    }
+  }
+
+  if (running_time) {
+    /* scale based on the rate, avoid division by and conversion to
+     * float when not needed */
+    abs_rate = ABS (segment->rate);
+    if (G_UNLIKELY (abs_rate != 1.0))
+      result /= abs_rate;
+
+    /* correct for base of the segment */
+    if (res == 1)
+      /* positive, add base */
+      *running_time = result + segment->base;
+    else if (segment->base >= result) {
+      /* negative and base is bigger, subtract from base and we have a
+       * positive value again */
+      *running_time = segment->base - result;
+      res = 1;
+    } else {
+      /* negative and base is smaller, subtract base and remainder is
+       * negative */
+      *running_time = result - segment->base;
+    }
+  }
+  return res;
+
+done:
+  {
+    if (running_time)
+      *running_time = -1;
+    return 0;
+  }
+}
+
+/**
  * gst_segment_to_running_time:
  * @segment: a #GstSegment structure.
  * @format: the format of the segment.
@@ -472,70 +586,28 @@ gst_segment_to_running_time (const GstSegment * segment, GstFormat format,
     guint64 position)
 {
   guint64 result;
-  guint64 start, stop;
-  gdouble abs_rate;
-
-  if (G_UNLIKELY (position == -1)) {
-    GST_DEBUG ("invalid position (-1)");
-    return -1;
-  }
 
   g_return_val_if_fail (segment != NULL, -1);
   g_return_val_if_fail (segment->format == format, -1);
 
-  start = segment->start;
-
-  if (segment->rate > 0.0)
-    start += segment->offset;
-
   /* before the segment boundary */
-  if (G_UNLIKELY (position < start)) {
+  if (G_UNLIKELY (position < segment->start)) {
     GST_DEBUG ("position(%" G_GUINT64_FORMAT ") < start(%" G_GUINT64_FORMAT
-        ")", position, start);
+        ")", position, segment->start);
+    return -1;
+  }
+  /* after the segment boundary */
+  if (G_UNLIKELY (segment->stop != -1 && position > segment->stop)) {
+    GST_DEBUG ("position(%" G_GUINT64_FORMAT ") > stop(%" G_GUINT64_FORMAT
+        ")", position, segment->stop);
     return -1;
   }
 
-  stop = segment->stop;
+  if (gst_segment_to_running_time_full (segment, format, position,
+          &result) == 1)
+    return result;
 
-  if (G_LIKELY (segment->rate > 0.0)) {
-    /* after of the segment boundary */
-    if (G_UNLIKELY (stop != -1 && position > stop)) {
-      GST_DEBUG ("position(%" G_GUINT64_FORMAT ") > stop(%" G_GUINT64_FORMAT
-          ")", position, stop);
-      return -1;
-    }
-
-    /* bring to uncorrected position in segment */
-    result = position - start;
-  } else {
-    /* cannot continue if no stop position set or outside of
-     * the segment. */
-    if (G_UNLIKELY (stop == -1)) {
-      GST_DEBUG ("invalid stop (-1)");
-      return -1;
-    }
-
-    stop -= segment->offset;
-    if (G_UNLIKELY (position > stop)) {
-      GST_DEBUG ("position(%" G_GUINT64_FORMAT ") > stop(%" G_GUINT64_FORMAT
-          ")", position, stop);
-      return -1;
-    }
-
-    /* bring to uncorrected position in segment */
-    result = stop - position;
-  }
-
-  /* scale based on the rate, avoid division by and conversion to
-   * float when not needed */
-  abs_rate = ABS (segment->rate);
-  if (G_UNLIKELY (abs_rate != 1.0))
-    result /= abs_rate;
-
-  /* correct for base of the segment */
-  result += segment->base;
-
-  return result;
+  return -1;
 }
 
 /**
@@ -753,8 +825,48 @@ gst_segment_offset_running_time (GstSegment * segment, GstFormat format,
       if (position == -1)
         return FALSE;
 
-      segment->offset = position;
+      segment->offset = position - segment->start;
     }
   }
+  return TRUE;
+}
+
+/**
+ * gst_segment_is_equal:
+ * @s0: a #GstSegment structure.
+ * @s1: a #GstSegment structure.
+ *
+ * Checks for two segments being equal. Equality here is defined
+ * as perfect equality, including floating point values.
+ *
+ * Since: 1.6
+ *
+ * Returns: %TRUE if the segments are equal, %FALSE otherwise.
+ */
+gboolean
+gst_segment_is_equal (const GstSegment * s0, const GstSegment * s1)
+{
+  if (s0->flags != s1->flags)
+    return FALSE;
+  if (s0->rate != s1->rate)
+    return FALSE;
+  if (s0->applied_rate != s1->applied_rate)
+    return FALSE;
+  if (s0->format != s1->format)
+    return FALSE;
+  if (s0->base != s1->base)
+    return FALSE;
+  if (s0->offset != s1->offset)
+    return FALSE;
+  if (s0->start != s1->start)
+    return FALSE;
+  if (s0->stop != s1->stop)
+    return FALSE;
+  if (s0->time != s1->time)
+    return FALSE;
+  if (s0->position != s1->position)
+    return FALSE;
+  if (s0->duration != s1->duration)
+    return FALSE;
   return TRUE;
 }

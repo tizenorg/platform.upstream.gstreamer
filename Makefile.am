@@ -85,15 +85,21 @@ endif
 
 if HAVE_CHECK
 check-valgrind:
-	cd tests/check && make check-valgrind
+	$(MAKE) -C tests/check check-valgrind
 
 check-torture:
-	cd tests/check && make torture
+	$(MAKE) -C tests/check torture
+
+build-checks:
+	$(MAKE) -C tests/check build-checks
 else
 check-valgrind:
 	echo "'check' library not installed, skipping"
 
 check-torture:
+	echo "'check' library not installed, skipping"
+
+build-checks:
 	echo "'check' library not installed, skipping"
 endif
 
@@ -197,8 +203,10 @@ CRUFT_FILES = \
 
 CRUFT_DIRS = \
 	$(top_builddir)/tests/examples/xml \
+	$(top_builddir)/tests/examples/queue \
 	$(top_builddir)/gst/tmp-introspect* \
-	$(top_builddir)/libs/gst/*/tmp-introspect*
+	$(top_builddir)/libs/gst/*/tmp-introspect* \
+	$(top_srcdir)/docs/plugins/tmpl
 
 include $(top_srcdir)/common/cruft.mak
 

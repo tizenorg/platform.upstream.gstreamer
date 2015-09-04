@@ -413,6 +413,7 @@ gst_query_set_latency (GstQuery * query, gboolean live,
   GstStructure *structure;
 
   g_return_if_fail (GST_QUERY_TYPE (query) == GST_QUERY_LATENCY);
+  g_return_if_fail (GST_CLOCK_TIME_IS_VALID (min_latency));
 
   structure = GST_QUERY_STRUCTURE (query);
   gst_structure_id_set (structure,
@@ -1584,7 +1585,7 @@ allocation_pool_free (AllocationPool * ap)
 /**
  * gst_query_add_allocation_pool:
  * @query: A valid #GstQuery of type GST_QUERY_ALLOCATION.
- * @pool: the #GstBufferPool
+ * @pool: (transfer none) (allow-none): the #GstBufferPool
  * @size: the size
  * @min_buffers: the min buffers
  * @max_buffers: the max buffers
@@ -1601,7 +1602,6 @@ gst_query_add_allocation_pool (GstQuery * query, GstBufferPool * pool,
 
   g_return_if_fail (GST_QUERY_TYPE (query) == GST_QUERY_ALLOCATION);
   g_return_if_fail (gst_query_is_writable (query));
-  g_return_if_fail (size != 0);
 
   structure = GST_QUERY_STRUCTURE (query);
   array = ensure_array (structure, GST_QUARK (POOL),
@@ -1687,7 +1687,7 @@ gst_query_parse_nth_allocation_pool (GstQuery * query, guint index,
  * gst_query_set_nth_allocation_pool:
  * @index: index to modify
  * @query: A valid #GstQuery of type GST_QUERY_ALLOCATION.
- * @pool: the #GstBufferPool
+ * @pool: (transfer none) (allow-none): the #GstBufferPool
  * @size: the size
  * @min_buffers: the min buffers
  * @max_buffers: the max buffers

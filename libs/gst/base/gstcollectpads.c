@@ -320,7 +320,7 @@ gst_collect_pads_set_buffer_function_locked (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_buffer_function:
  * @pads: the collectpads to use
- * @func: the function to set
+ * @func: (scope call): the function to set
  * @user_data: (closure): user data passed to the function
  *
  * Set the callback function and user data that will be called with
@@ -345,7 +345,7 @@ gst_collect_pads_set_buffer_function (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_compare_function:
  * @pads: the pads to use
- * @func: the function to set
+ * @func: (scope call): the function to set
  * @user_data: (closure): user data passed to the function
  *
  * Set the timestamp comparison function.
@@ -372,7 +372,7 @@ gst_collect_pads_set_compare_function (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_function:
  * @pads: the collectpads to use
- * @func: the function to set
+ * @func: (scope call): the function to set
  * @user_data: user data passed to the function
  *
  * CollectPads provides a default collection algorithm that will determine
@@ -432,7 +432,7 @@ unref_data (GstCollectData * data)
 /**
  * gst_collect_pads_set_event_function:
  * @pads: the collectpads to use
- * @func: the function to set
+ * @func: (scope call): the function to set
  * @user_data: user data passed to the function
  *
  * Set the event callback function and user data that will be called when
@@ -460,7 +460,7 @@ gst_collect_pads_set_event_function (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_query_function:
  * @pads: the collectpads to use
- * @func: the function to set
+ * @func: (scope call): the function to set
  * @user_data: user data passed to the function
  *
  * Set the query callback function and user data that will be called after
@@ -495,6 +495,10 @@ gst_collect_pads_set_query_function (GstCollectPads * pads,
 *
 * Convenience clipping function that converts incoming buffer's timestamp
 * to running time, or clips the buffer if outside configured segment.
+*
+* Since 1.6, this clipping function also sets the DTS parameter of the
+* GstCollectData structure. This version of the running time DTS can be
+* negative. G_MININT64 is used to indicate invalid value.
 */
 GstFlowReturn
 gst_collect_pads_clip_running_time (GstCollectPads * pads,
@@ -515,13 +519,32 @@ gst_collect_pads_clip_running_time (GstCollectPads * pads,
       gst_buffer_unref (buf);
       *outbuf = NULL;
     } else {
-      GST_LOG_OBJECT (cdata->pad, "buffer ts %" GST_TIME_FORMAT " -> %"
+      GstClockTime buf_dts, abs_dts;
+      gint dts_sign;
+
+      GST_LOG_OBJECT (cdata->pad, "buffer pts %" GST_TIME_FORMAT " -> %"
           GST_TIME_FORMAT " running time",
           GST_TIME_ARGS (GST_BUFFER_PTS (buf)), GST_TIME_ARGS (time));
       *outbuf = gst_buffer_make_writable (buf);
       GST_BUFFER_PTS (*outbuf) = time;
-      GST_BUFFER_DTS (*outbuf) = gst_segment_to_running_time (&cdata->segment,
-          GST_FORMAT_TIME, GST_BUFFER_DTS (*outbuf));
+
+      dts_sign = gst_segment_to_running_time_full (&cdata->segment,
+          GST_FORMAT_TIME, GST_BUFFER_DTS (*outbuf), &abs_dts);
+      buf_dts = GST_BUFFER_DTS (*outbuf);
+      if (dts_sign > 0) {
+        GST_BUFFER_DTS (*outbuf) = abs_dts;
+        GST_COLLECT_PADS_DTS (cdata) = abs_dts;
+      } else if (dts_sign < 0) {
+        GST_BUFFER_DTS (*outbuf) = GST_CLOCK_TIME_NONE;
+        GST_COLLECT_PADS_DTS (cdata) = -((gint64) abs_dts);
+      } else {
+        GST_BUFFER_DTS (*outbuf) = GST_CLOCK_TIME_NONE;
+        GST_COLLECT_PADS_DTS (cdata) = GST_CLOCK_STIME_NONE;
+      }
+
+      GST_LOG_OBJECT (cdata->pad, "buffer dts %" GST_TIME_FORMAT " -> %"
+          GST_STIME_FORMAT " running time", GST_TIME_ARGS (buf_dts),
+          GST_STIME_ARGS (GST_COLLECT_PADS_DTS (cdata)));
     }
   }
 
@@ -531,7 +554,7 @@ gst_collect_pads_clip_running_time (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_clip_function:
  * @pads: the collectpads to use
- * @clipfunc: clip function to install
+ * @clipfunc: (scope call): clip function to install
  * @user_data: user data to pass to @clip_func
  *
  * Install a clipping function that is called right after a buffer is received
@@ -551,7 +574,7 @@ gst_collect_pads_set_clip_function (GstCollectPads * pads,
 /**
  * gst_collect_pads_set_flush_function:
  * @pads: the collectpads to use
- * @func: flush function to install
+ * @func: (scope call): flush function to install
  * @user_data: user data to pass to @func
  *
  * Install a flush function that is called when the internal
@@ -634,6 +657,7 @@ gst_collect_pads_add_pad (GstCollectPads * pads, GstPad * pad, guint size,
   data->state |= lock ? GST_COLLECT_PADS_STATE_LOCKED : 0;
   data->priv->refcount = 1;
   data->priv->destroy_notify = destroy_notify;
+  data->ABI.abi.dts = G_MININT64;
 
   GST_OBJECT_LOCK (pads);
   GST_OBJECT_LOCK (pad);
@@ -939,7 +963,7 @@ gst_collect_pads_peek (GstCollectPads * pads, GstCollectData * data)
   if ((result = data->buffer))
     gst_buffer_ref (result);
 
-  GST_DEBUG_OBJECT (pads, "Peeking at pad %s:%s: buffer=%p",
+  GST_DEBUG_OBJECT (pads, "Peeking at pad %s:%s: buffer=%" GST_PTR_FORMAT,
       GST_DEBUG_PAD_NAME (data->pad), result);
 
   return result;
@@ -978,7 +1002,7 @@ gst_collect_pads_pop (GstCollectPads * pads, GstCollectData * data)
 
   GST_COLLECT_PADS_EVT_BROADCAST (pads);
 
-  GST_DEBUG_OBJECT (pads, "Pop buffer on pad %s:%s: buffer=%p",
+  GST_DEBUG_OBJECT (pads, "Pop buffer on pad %s:%s: buffer=%" GST_PTR_FORMAT,
       GST_DEBUG_PAD_NAME (data->pad), result);
 
   return result;
@@ -1131,7 +1155,7 @@ GstBuffer *
 gst_collect_pads_read_buffer (GstCollectPads * pads, GstCollectData * data,
     guint size)
 {
-  guint readsize;
+  guint readsize, buf_size;
   GstBuffer *buffer;
 
   g_return_val_if_fail (pads != NULL, NULL);
@@ -1142,7 +1166,8 @@ gst_collect_pads_read_buffer (GstCollectPads * pads, GstCollectData * data,
   if ((buffer = data->buffer) == NULL)
     return NULL;
 
-  readsize = MIN (size, gst_buffer_get_size (buffer) - data->pos);
+  buf_size = gst_buffer_get_size (buffer);
+  readsize = MIN (size, buf_size - data->pos);
 
   return gst_buffer_copy_region (buffer, GST_BUFFER_COPY_ALL, data->pos,
       readsize);
@@ -1315,7 +1340,7 @@ gst_collect_pads_check_collected (GstCollectPads * pads)
         pads->priv->numpads, GST_DEBUG_FUNCPTR_NAME (func));
 
     if (G_UNLIKELY (g_atomic_int_compare_and_exchange (&pads->priv->seeking,
-                TRUE, FALSE) == TRUE)) {
+                TRUE, FALSE))) {
       GST_INFO_OBJECT (pads, "finished seeking");
     }
     do {
@@ -1333,7 +1358,7 @@ gst_collect_pads_check_collected (GstCollectPads * pads)
           GST_DEBUG_FUNCPTR_NAME (func));
 
       if (G_UNLIKELY (g_atomic_int_compare_and_exchange (&pads->priv->seeking,
-                  TRUE, FALSE) == TRUE)) {
+                  TRUE, FALSE))) {
         GST_INFO_OBJECT (pads, "finished seeking");
       }
       flow_ret = func (pads, user_data);
@@ -1617,7 +1642,7 @@ gst_collect_pads_clip_time (GstCollectPads * pads, GstCollectData * data,
   if (pads->priv->clip_func) {
     in = gst_buffer_new ();
     GST_BUFFER_PTS (in) = time;
-    GST_BUFFER_DTS (in) = time;
+    GST_BUFFER_DTS (in) = GST_CLOCK_TIME_NONE;
     pads->priv->clip_func (pads, data, in, &out, pads->priv->clip_user_data);
     if (out) {
       otime = GST_BUFFER_PTS (out);
@@ -1664,8 +1689,8 @@ gst_collect_pads_event_default (GstCollectPads * pads, GstCollectData * data,
     {
       if (g_atomic_int_get (&pads->priv->seeking)) {
         /* drop all but the first FLUSH_STARTs when seeking */
-        if (g_atomic_int_compare_and_exchange (&pads->priv->pending_flush_start,
-                TRUE, FALSE) == FALSE)
+        if (!g_atomic_int_compare_and_exchange (&pads->
+                priv->pending_flush_start, TRUE, FALSE))
           goto eat;
 
         /* unblock collect pads */

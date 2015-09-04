@@ -206,6 +206,16 @@ enum
   }                                                                     \
 } G_STMT_END
 
+#define SET_PERCENT(q, perc) G_STMT_START {                              \
+  if (perc != q->buffering_percent) {                                    \
+    q->buffering_percent = perc;                                         \
+    q->percent_changed = TRUE;                                           \
+    GST_DEBUG_OBJECT (q, "buffering %d percent", perc);                  \
+    get_buffering_stats (q, perc, &q->mode, &q->avg_in, &q->avg_out,     \
+        &q->buffering_left);                                             \
+  }                                                                      \
+} G_STMT_END
+
 #define _do_init \
     GST_DEBUG_CATEGORY_INIT (queue_debug, "queue2", 0, "queue element"); \
     GST_DEBUG_CATEGORY_INIT (queue_dataflow, "queue2_dataflow", 0, \
@@ -254,6 +264,7 @@ static gboolean gst_queue2_is_filled (GstQueue2 * queue);
 
 static void update_cur_level (GstQueue2 * queue, GstQueue2Range * range);
 static void update_in_rates (GstQueue2 * queue);
+static void gst_queue2_post_buffering (GstQueue2 * queue);
 
 typedef enum
 {
@@ -299,21 +310,25 @@ gst_queue2_class_init (GstQueue2Class * klass)
       g_param_spec_uint ("max-size-bytes", "Max. size (kB)",
           "Max. amount of data in the queue (bytes, 0=disable)",
           0, G_MAXUINT, DEFAULT_MAX_SIZE_BYTES,
-          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+          G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
+          G_PARAM_STATIC_STRINGS));
   g_object_class_install_property (gobject_class, PROP_MAX_SIZE_BUFFERS,
       g_param_spec_uint ("max-size-buffers", "Max. size (buffers)",
           "Max. number of buffers in the queue (0=disable)", 0, G_MAXUINT,
           DEFAULT_MAX_SIZE_BUFFERS,
-          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+          G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
+          G_PARAM_STATIC_STRINGS));
   g_object_class_install_property (gobject_class, PROP_MAX_SIZE_TIME,
       g_param_spec_uint64 ("max-size-time", "Max. size (ns)",
           "Max. amount of data in the queue (in ns, 0=disable)", 0, G_MAXUINT64,
-          DEFAULT_MAX_SIZE_TIME, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+          DEFAULT_MAX_SIZE_TIME, G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
+          G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (gobject_class, PROP_USE_BUFFERING,
       g_param_spec_boolean ("use-buffering", "Use buffering",
           "Emit GST_MESSAGE_BUFFERING based on low-/high-percent thresholds",
-          DEFAULT_USE_BUFFERING, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+          DEFAULT_USE_BUFFERING, G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
+          G_PARAM_STATIC_STRINGS));
   g_object_class_install_property (gobject_class, PROP_USE_RATE_ESTIMATE,
       g_param_spec_boolean ("use-rate-estimate", "Use Rate Estimate",
           "Estimate the bitrate of the stream to calculate time level",
@@ -449,6 +464,7 @@ gst_queue2_init (GstQueue2 * queue)
   g_cond_init (&queue->query_handled);
   queue->last_query = FALSE;
 
+  g_mutex_init (&queue->buffering_post_lock);
   queue->buffering_percent = 100;
 
   /* tempfile related */
@@ -482,6 +498,7 @@ gst_queue2_finalize (GObject * object)
   queue->last_query = FALSE;
   g_queue_clear (&queue->queue);
   g_mutex_clear (&queue->qlock);
+  g_mutex_clear (&queue->buffering_post_lock);
   g_cond_clear (&queue->item_add);
   g_cond_clear (&queue->item_del);
   g_cond_clear (&queue->query_handled);
@@ -699,6 +716,33 @@ apply_segment (GstQueue2 * queue, GstEvent * event, GstSegment * segment,
   update_time_level (queue);
 }
 
+static void
+apply_gap (GstQueue2 * queue, GstEvent * event,
+    GstSegment * segment, gboolean is_sink)
+{
+  GstClockTime timestamp;
+  GstClockTime duration;
+
+  gst_event_parse_gap (event, &timestamp, &duration);
+
+  if (GST_CLOCK_TIME_IS_VALID (timestamp)) {
+
+    if (GST_CLOCK_TIME_IS_VALID (duration)) {
+      timestamp += duration;
+    }
+
+    segment->position = timestamp;
+
+    if (is_sink)
+      queue->sink_tainted = TRUE;
+    else
+      queue->src_tainted = TRUE;
+
+    /* calc diff with other end */
+    update_time_level (queue);
+  }
+}
+
 /* take a buffer and update segment, updating the time level of the queue. */
 static void
 apply_buffer (GstQueue2 * queue, GstBuffer * buffer, GstSegment * segment,
@@ -869,10 +913,35 @@ get_buffering_stats (GstQueue2 * queue, gint percent, GstBufferingMode * mode,
 }
 
 static void
+gst_queue2_post_buffering (GstQueue2 * queue)
+{
+  GstMessage *msg = NULL;
+
+  g_mutex_lock (&queue->buffering_post_lock);
+  GST_QUEUE2_MUTEX_LOCK (queue);
+  if (queue->percent_changed) {
+    gint percent = queue->buffering_percent;
+
+    queue->percent_changed = FALSE;
+
+    GST_DEBUG_OBJECT (queue, "Going to post buffering: %d%%", percent);
+    msg = gst_message_new_buffering (GST_OBJECT_CAST (queue), percent);
+
+    gst_message_set_buffering_stats (msg, queue->mode, queue->avg_in,
+        queue->avg_out, queue->buffering_left);
+  }
+  GST_QUEUE2_MUTEX_UNLOCK (queue);
+
+  if (msg != NULL)
+    gst_element_post_message (GST_ELEMENT_CAST (queue), msg);
+
+  g_mutex_unlock (&queue->buffering_post_lock);
+}
+
+static void
 update_buffering (GstQueue2 * queue)
 {
   gint percent;
-  gboolean post = FALSE;
 
   /* Ensure the variables used to calculate buffering state are up-to-date. */
   if (queue->current)
@@ -883,41 +952,18 @@ update_buffering (GstQueue2 * queue)
     return;
 
   if (queue->is_buffering) {
-    post = TRUE;
     /* if we were buffering see if we reached the high watermark */
-    if (percent >= queue->high_percent)
+    if (percent >= 100)
       queue->is_buffering = FALSE;
+
+    SET_PERCENT (queue, percent);
   } else {
     /* we were not buffering, check if we need to start buffering if we drop
      * below the low threshold */
     if (percent < queue->low_percent) {
       queue->is_buffering = TRUE;
-      post = TRUE;
+      SET_PERCENT (queue, percent);
     }
-  }
-
-  if (post) {
-    if (percent == queue->buffering_percent)
-      post = FALSE;
-    else
-      queue->buffering_percent = percent;
-  }
-
-  if (post) {
-    GstMessage *message;
-    GstBufferingMode mode;
-    gint avg_in, avg_out;
-    gint64 buffering_left;
-
-    get_buffering_stats (queue, percent, &mode, &avg_in, &avg_out,
-        &buffering_left);
-
-    message = gst_message_new_buffering (GST_OBJECT_CAST (queue),
-        (gint) percent);
-    gst_message_set_buffering_stats (message, mode,
-        avg_in, avg_out, buffering_left);
-
-    gst_element_post_message (GST_ELEMENT_CAST (queue), message);
   }
 }
 
@@ -1983,7 +2029,7 @@ gst_queue2_locked_enqueue (GstQueue2 * queue, gpointer item,
 
     /* add buffer to the statistics */
     if (QUEUE_IS_USING_QUEUE (queue)) {
-      queue->cur_level.buffers++;
+      queue->cur_level.buffers += gst_buffer_list_length (buffer_list);
       queue->cur_level.bytes += size;
     }
     queue->bytes_in += size;
@@ -2026,6 +2072,9 @@ gst_queue2_locked_enqueue (GstQueue2 * queue, gpointer item,
         /* a new segment allows us to accept more buffers if we got EOS
          * from downstream */
         queue->unexpected = FALSE;
+        break;
+      case GST_EVENT_GAP:
+        apply_gap (queue, event, &queue->sink_segment, TRUE);
         break;
       case GST_EVENT_STREAM_START:
         if (!QUEUE_IS_USING_QUEUE (queue)) {
@@ -2155,6 +2204,9 @@ gst_queue2_locked_dequeue (GstQueue2 * queue, GstQueue2ItemType * item_type)
       case GST_EVENT_SEGMENT:
         apply_segment (queue, event, &queue->src_segment, FALSE);
         break;
+      case GST_EVENT_GAP:
+        apply_gap (queue, event, &queue->src_segment, FALSE);
+        break;
       default:
         break;
     }
@@ -2170,7 +2222,7 @@ gst_queue2_locked_dequeue (GstQueue2 * queue, GstQueue2ItemType * item_type)
         "retrieved buffer list %p from queue", buffer_list);
 
     if (QUEUE_IS_USING_QUEUE (queue)) {
-      queue->cur_level.buffers--;
+      queue->cur_level.buffers -= gst_buffer_list_length (buffer_list);
       queue->cur_level.bytes -= size;
     }
     queue->bytes_out += size;
@@ -2310,6 +2362,7 @@ gst_queue2_handle_sink_event (GstPad * pad, GstObject * parent,
           goto out_eos;
         gst_queue2_locked_enqueue (queue, event, GST_QUEUE2_ITEM_TYPE_EVENT);
         GST_QUEUE2_MUTEX_UNLOCK (queue);
+        gst_queue2_post_buffering (queue);
       } else {
         /* non-serialized events are passed upstream. */
         ret = gst_pad_push_event (queue->srcpad, event);
@@ -2386,6 +2439,7 @@ gst_queue2_handle_sink_query (GstPad * pad, GstObject * parent,
           res = FALSE;
         }
         GST_QUEUE2_MUTEX_UNLOCK (queue);
+        gst_queue2_post_buffering (queue);
       } else {
         res = gst_pad_query_default (pad, parent, query);
       }
@@ -2486,6 +2540,7 @@ gst_queue2_chain_buffer_or_buffer_list (GstQueue2 * queue,
   /* put buffer in queue now */
   gst_queue2_locked_enqueue (queue, item, item_type);
   GST_QUEUE2_MUTEX_UNLOCK (queue);
+  gst_queue2_post_buffering (queue);
 
   return GST_FLOW_OK;
 
@@ -2626,6 +2681,7 @@ next:
       item_type == GST_QUEUE2_ITEM_TYPE_BUFFER ||
       item_type == GST_QUEUE2_ITEM_TYPE_BUFFER_LIST);
   GST_QUEUE2_MUTEX_UNLOCK (queue);
+  gst_queue2_post_buffering (queue);
 
   if (item_type == GST_QUEUE2_ITEM_TYPE_BUFFER) {
     GstBuffer *buffer;
@@ -2745,6 +2801,7 @@ gst_queue2_loop (GstPad * pad)
     goto out_flushing;
 
   GST_QUEUE2_MUTEX_UNLOCK (queue);
+  gst_queue2_post_buffering (queue);
 
   return;
 
@@ -2755,6 +2812,13 @@ out_flushing:
     GstFlowReturn ret = queue->srcresult;
 
     gst_pad_pause_task (queue->srcpad);
+    if (ret == GST_FLOW_FLUSHING) {
+      gst_queue2_locked_flush (queue, FALSE, FALSE);
+    } else {
+      GST_QUEUE2_SIGNAL_DEL (queue);
+      queue->last_query = FALSE;
+      g_cond_signal (&queue->query_handled);
+    }
     GST_QUEUE2_MUTEX_UNLOCK (queue);
     GST_CAT_LOG_OBJECT (queue_dataflow, queue,
         "pause task, reason:  %s", gst_flow_get_name (queue->srcresult));
@@ -3028,6 +3092,55 @@ gst_queue2_handle_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
       gst_query_add_scheduling_mode (query, GST_PAD_MODE_PUSH);
       break;
     }
+    case GST_QUERY_SEEKING:
+    {
+      gint64 segment_start, segment_end;
+      GstFormat format;
+      gboolean seekable, peer_success;
+
+      peer_success = gst_pad_peer_query (queue->sinkpad, query);
+
+      gst_query_parse_seeking (query, &format, &seekable, &segment_start,
+          &segment_end);
+
+      if (peer_success && seekable) {
+        GST_DEBUG_OBJECT (queue, "peer seekable (%s) from %" G_GINT64_FORMAT
+            " to %" G_GINT64_FORMAT, gst_format_get_name (format),
+            segment_start, segment_end);
+        break;
+      }
+
+      if (format != GST_FORMAT_BYTES) {
+        GST_DEBUG_OBJECT (queue, "query in %s (not BYTES) format, cannot seek",
+            gst_format_get_name (format));
+        return FALSE;
+      }
+
+      GST_QUEUE2_MUTEX_LOCK (queue);
+      if (queue->current) {
+        if (QUEUE_IS_USING_RING_BUFFER (queue)) {
+          segment_start = queue->current->rb_offset;
+          segment_end = queue->current->rb_writing_pos;
+        } else if (QUEUE_IS_USING_TEMP_FILE (queue)) {
+          segment_start = queue->current->offset;
+          segment_end = queue->current->writing_pos;
+        } else {
+          segment_start = -1;
+          segment_end = -1;
+        }
+      }
+      GST_QUEUE2_MUTEX_UNLOCK (queue);
+
+      seekable = ! !(segment_start < segment_end);
+
+      GST_DEBUG_OBJECT (queue, "segment from %" G_GINT64_FORMAT " to %"
+          G_GINT64_FORMAT " %sseekable", segment_start, segment_end,
+          seekable ? "" : "not ");
+
+      gst_query_set_seeking (query, format, seekable, segment_start,
+          segment_end);
+      break;
+    }
     default:
       /* peer handled other queries */
       if (!gst_pad_query_default (pad, parent, query))
@@ -3063,7 +3176,13 @@ gst_queue2_update_upstream_size (GstQueue2 * queue)
   if (gst_pad_peer_query_duration (queue->sinkpad, GST_FORMAT_BYTES,
           &upstream_size)) {
     GST_INFO_OBJECT (queue, "upstream size: %" G_GINT64_FORMAT, upstream_size);
-    queue->upstream_size = upstream_size;
+
+    /* upstream_size can be negative but queue->upstream_size is unsigned.
+     * Prevent setting negative values to it (the query can return -1) */
+    if (upstream_size >= 0)
+      queue->upstream_size = upstream_size;
+    else
+      queue->upstream_size = 0;
   }
 }
 
@@ -3105,6 +3224,7 @@ gst_queue2_get_range (GstPad * pad, GstObject * parent, guint64 offset,
   /* FIXME - function will block when the range is not yet available */
   ret = gst_queue2_create_read (queue, offset, length, buffer);
   GST_QUEUE2_MUTEX_UNLOCK (queue);
+  gst_queue2_post_buffering (queue);
 
   return ret;
 
@@ -3430,13 +3550,10 @@ gst_queue2_set_property (GObject * object,
     case PROP_USE_BUFFERING:
       queue->use_buffering = g_value_get_boolean (value);
       if (!queue->use_buffering && queue->is_buffering) {
-        GstMessage *msg = gst_message_new_buffering (GST_OBJECT_CAST (queue),
-            100);
-
         GST_DEBUG_OBJECT (queue, "Disabled buffering while buffering, "
             "posting 100%% message");
+        SET_PERCENT (queue, 100);
         queue->is_buffering = FALSE;
-        gst_element_post_message (GST_ELEMENT_CAST (queue), msg);
       }
 
       if (queue->use_buffering) {
@@ -3468,6 +3585,7 @@ gst_queue2_set_property (GObject * object,
   }
 
   GST_QUEUE2_MUTEX_UNLOCK (queue);
+  gst_queue2_post_buffering (queue);
 }
 
 static void

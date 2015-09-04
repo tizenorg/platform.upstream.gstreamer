@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer-0.8.0\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-08-19 12:27+0300\n"
 "PO-Revision-Date: 2004-03-19 18:40+0200\n"
 "Last-Translator: Metin Amiroff <metin@karegen.com>\n"
 "Language-Team: Azerbaijani <translation-team-az@lists.sourceforge.net>\n"
@@ -888,6 +888,12 @@ msgid ""
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr ""
 
@@ -954,6 +960,9 @@ msgstr ""
 msgid "force caps without doing a typefind"
 msgstr ""
 
+msgid "Stream contains not enough data."
+msgstr ""
+
 msgid "Stream contains no data."
 msgstr ""
 
@@ -964,6 +973,9 @@ msgid "readable"
 msgstr ""
 
 msgid "writable"
+msgstr ""
+
+msgid "deprecated"
 msgstr ""
 
 msgid "controllable"

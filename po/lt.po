@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 0.10.29.2\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-08-19 12:27+0300\n"
 "PO-Revision-Date: 2010-07-16 00:50+0300\n"
 "Last-Translator: Žygimantas Beručka <uid0@akl.lt>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
@@ -936,6 +936,12 @@ msgstr ""
 "Riboti galimas leidžiamas galimybes (NULL – BET KOKIAS). Nustatant šią "
 "savybę nurodoma į pateiktą GstCaps objektą."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Nenurodytas laikinas katalogas."
 
@@ -1002,6 +1008,10 @@ msgstr "reikalauti galimybių"
 msgid "force caps without doing a typefind"
 msgstr "priverstinai naudoti galimybes neatliekant tipo paieškos"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "Sraute nėra duomenų."
+
 msgid "Stream contains no data."
 msgstr "Sraute nėra duomenų."
 
@@ -1013,6 +1023,9 @@ msgstr "skaitomas"
 
 msgid "writable"
 msgstr "rašomas"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "valdomas"

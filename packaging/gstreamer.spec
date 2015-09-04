@@ -1,8 +1,8 @@
 %define gst_branch 1.0
 
 Name:           gstreamer
-Version:        1.4.1
-Release:        2
+Version:        1.5.90
+Release:        1
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Framework
@@ -105,9 +105,9 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %license COPYING
 %dir %{_datadir}/gstreamer-%{gst_branch}
 %dir %{_datadir}/gstreamer-%{gst_branch}/presets
-%dir %{_libdir}/gstreamer-%{gst_branch}
+#%dir %{_libdir}/gstreamer-%{gst_branch}
 %{_libdir}/gstreamer-%{gst_branch}/*.so
-%dir %{_libexecdir}/gstreamer-%{gst_branch}
+#%dir %{_libexecdir}/gstreamer-%{gst_branch}
 %{_libexecdir}/gstreamer-%{gst_branch}/gst-plugin-scanner
 %{_libdir}/*.so.*
 %{_libdir}/girepository-1.0/Gst-1.0.typelib
@@ -115,6 +115,15 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %{_libdir}/girepository-1.0/GstCheck-1.0.typelib
 %{_libdir}/girepository-1.0/GstController-1.0.typelib
 %{_libdir}/girepository-1.0/GstNet-1.0.typelib
+/usr/lib/debug/usr/libexec/gstreamer-1.0/gst-plugin-scanner.debug
+/usr/lib/debug/usr/libexec/gstreamer-1.0/gst-ptp-helper.debug
+/usr/lib/debug/usr/share/bash-completion/helpers/gst-completion-helper-1.0.debug
+/usr/lib/gstreamer-1.0/include/gst/gstconfig.h
+/usr/lib/gstreamer-1.0/libgstcoreelements.so
+/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+/usr/libexec/gstreamer-1.0/gst-ptp-helper
+/usr/share/bash-completion/helpers/gst
+/usr/share/bash-completion/helpers/gst-completion-helper-1.0
 
 
 %files utils

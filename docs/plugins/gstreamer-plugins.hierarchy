@@ -22,6 +22,7 @@ GObject
           GstIdentity
         GstBin
           GstPipeline
+        GstConcat
         GstDownloadBuffer
         GstFunnel
         GstInputSelector
@@ -29,6 +30,7 @@ GObject
         GstOutputSelector
         GstQueue
         GstQueue2
+        GstStreamidDemux
         GstTee
         GstTypeFindElement
         GstValve

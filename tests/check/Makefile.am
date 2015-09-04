@@ -7,7 +7,7 @@ GST_TOOLS_DIR = $(top_builddir)/tools
 REGISTRY_ENVIRONMENT = \
 	GST_REGISTRY=$(CHECK_REGISTRY)
 
-TESTS_ENVIRONMENT = \
+AM_TESTS_ENVIRONMENT = \
         GST_STATE_IGNORE_ELEMENTS="$(STATE_IGNORE_ELEMENTS)"	\
         $(REGISTRY_ENVIRONMENT)					\
         GST_PLUGIN_SCANNER_1_0=$(top_builddir)/libs/gst/helpers/gst-plugin-scanner \
@@ -44,6 +44,12 @@ ABI_CHECKS = gst/gstabi
 endif
 endif
 
+if !GST_DISABLE_GST_DEBUG
+PRINTF_CHECKS = gst/gstprintf
+else
+PRINTF_CHECKS =
+endif
+
 LIBSABI_CHECKS = libs/libsabi
 
 if HAVE_CXX
@@ -69,12 +75,14 @@ REGISTRY_CHECKS =				\
 	gst/gstghostpad				\
 	gst/gstplugin				\
 	gst/gstpreset				\
+	gst/gstprotection			\
 	gst/gstquery				\
 	gst/gstregistry				\
 	gst/gsturi  				\
 	gst/gstutils				\
 	generic/sinks				\
 	elements/capsfilter			\
+	elements/concat				\
 	elements/fakesink			\
 	elements/fakesrc			\
 	elements/fdsrc			  	\
@@ -88,6 +96,7 @@ REGISTRY_CHECKS =				\
 	elements/queue                          \
 	elements/queue2                         \
 	elements/valve                          \
+	elements/streamiddemux			\
 	libs/baseparse				\
 	libs/basesrc				\
 	libs/basesink				\
@@ -123,6 +132,8 @@ check_PROGRAMS =				\
 	gst/gstparamspecs			\
 	gst/gstpipeline				\
 	gst/gstpoll     			\
+	gst/gstprotection     			\
+	$(PRINTF_CHECKS)			\
 	gst/gstsegment				\
 	gst/gstsystemclock			\
 	gst/gstclock				\
@@ -147,10 +158,12 @@ check_PROGRAMS =				\
 	libs/flowcombiner			\
 	libs/sparsefile				\
 	libs/collectpads			\
+	libs/gstharness				\
 	libs/gstnetclientclock			\
 	libs/gstnettimeprovider			\
 	libs/gsttestclock			\
 	libs/transform1				\
+	libs/transform2				\
 	tools/gstinspect
 
 # failing tests
@@ -181,8 +194,10 @@ noinst_HEADERS = \
 EXTRA_DIST = \
 	libs/test_transform.c
 
-AM_CFLAGS = $(GST_OBJ_CFLAGS) -UG_DISABLE_ASSERT -UG_DISABLE_CAST_CHECKS
-AM_CXXFLAGS = $(GST_OBJ_CXXFLAGS) -UG_DISABLE_ASSERT -UG_DISABLE_CAST_CHECKS
+AM_CFLAGS = $(GST_OBJ_CFLAGS) -UG_DISABLE_ASSERT -UG_DISABLE_CAST_CHECKS \
+	-DGST_CHECK_TEST_ENVIRONMENT_BEACON="\"GST_STATE_IGNORE_ELEMENTS\""
+AM_CXXFLAGS = $(GST_OBJ_CXXFLAGS) -UG_DISABLE_ASSERT -UG_DISABLE_CAST_CHECKS \
+	-DGST_CHECK_TEST_ENVIRONMENT_BEACON="\"GST_STATE_IGNORE_ELEMENTS\""
 LDADD = $(top_builddir)/libs/gst/check/libgstcheck-@GST_API_VERSION@.la \
 	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la \
 	$(GST_OBJ_LIBS)
@@ -192,6 +207,10 @@ gst_gstcpp_SOURCES = gst/gstcpp.cc
 libs_gstlibscpp_SOURCES = libs/gstlibscpp.cc
 
 gst_gstutils_LDADD = $(LDADD) $(GSL_LIBS) $(GMP_LIBS)
+
+gst_gstprintf_LDADD = \
+	$(top_builddir)/gst/printf/libgstprintf.la \
+	$(LDADD)
 
 elements_fdsrc_CFLAGS=$(GST_OBJ_CFLAGS) $(AM_CFLAGS) \
 	-DTESTFILE=\"$(top_srcdir)/configure.ac\"

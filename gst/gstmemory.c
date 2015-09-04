@@ -123,6 +123,7 @@ gst_memory_init (GstMemory * mem, GstMemoryFlags flags,
 
   mem->allocator = gst_object_ref (allocator);
   if (parent) {
+    /* FIXME 2.0: this can fail if the memory is already write locked */
     gst_memory_lock (parent, GST_LOCK_FLAG_EXCLUSIVE);
     gst_memory_ref (parent);
   }
@@ -197,6 +198,7 @@ void
 gst_memory_resize (GstMemory * mem, gssize offset, gsize size)
 {
   g_return_if_fail (mem != NULL);
+  g_return_if_fail (gst_memory_is_writable (mem));
   g_return_if_fail (offset >= 0 || mem->offset >= -offset);
   g_return_if_fail (size + mem->offset + offset <= mem->maxsize);
 
@@ -292,15 +294,19 @@ gst_memory_map (GstMemory * mem, GstMapInfo * info, GstMapFlags flags)
   if (!gst_memory_lock (mem, (GstLockFlags) flags))
     goto lock_failed;
 
-  info->data = mem->allocator->mem_map (mem, mem->maxsize, flags);
+  info->flags = flags;
+  info->memory = mem;
+  info->size = mem->size;
+  info->maxsize = mem->maxsize - mem->offset;
+
+  if (mem->allocator->mem_map_full)
+    info->data = mem->allocator->mem_map_full (mem, info, mem->maxsize);
+  else
+    info->data = mem->allocator->mem_map (mem, mem->maxsize, flags);
 
   if (G_UNLIKELY (info->data == NULL))
     goto error;
 
-  info->memory = mem;
-  info->flags = flags;
-  info->size = mem->size;
-  info->maxsize = mem->maxsize - mem->offset;
   info->data = info->data + mem->offset;
 
   return TRUE;
@@ -336,19 +342,22 @@ gst_memory_unmap (GstMemory * mem, GstMapInfo * info)
   g_return_if_fail (info != NULL);
   g_return_if_fail (info->memory == mem);
 
-  mem->allocator->mem_unmap (mem);
+  if (mem->allocator->mem_unmap_full)
+    mem->allocator->mem_unmap_full (mem, info);
+  else
+    mem->allocator->mem_unmap (mem);
   gst_memory_unlock (mem, (GstLockFlags) info->flags);
 }
 
 /**
  * gst_memory_copy:
  * @mem: a #GstMemory
- * @offset: an offset to copy
- * @size: size to copy or -1 to copy all bytes from offset
+ * @offset: offset to copy from
+ * @size: size to copy, or -1 to copy to the end of the memory region
  *
  * Return a copy of @size bytes from @mem starting from @offset. This copy is
- * guaranteed to be writable. @size can be set to -1 to return a copy all bytes
- * from @offset.
+ * guaranteed to be writable. @size can be set to -1 to return a copy
+ * from @offset to the end of the memory region.
  *
  * Returns: a new #GstMemory.
  */
@@ -367,13 +376,13 @@ gst_memory_copy (GstMemory * mem, gssize offset, gssize size)
 /**
  * gst_memory_share:
  * @mem: a #GstMemory
- * @offset: an offset to share
- * @size: size to share or -1 to share bytes from offset
+ * @offset: offset to share from
+ * @size: size to share, or -1 to share to the end of the memory region
  *
  * Return a shared copy of @size bytes from @mem starting from @offset. No
  * memory copy is performed and the memory region is simply shared. The result
- * is guaranteed to be not-writable. @size can be set to -1 to return a share
- * all bytes from @offset.
+ * is guaranteed to be non-writable. @size can be set to -1 to return a shared
+ * copy from @offset to the end of the memory region.
  *
  * Returns: a new #GstMemory.
  */
@@ -386,7 +395,27 @@ gst_memory_share (GstMemory * mem, gssize offset, gssize size)
   g_return_val_if_fail (!GST_MEMORY_FLAG_IS_SET (mem, GST_MEMORY_FLAG_NO_SHARE),
       NULL);
 
+  /* whether we can lock the memory exclusively */
+  /* in order to maintain backwards compatibility by not requiring subclasses
+   * to lock the memory themselves and propagate the possible failure in their
+   * mem_share implementation */
+  /* FIXME 2.0: remove and fix gst_memory_init() and/or all memory subclasses
+   * to propagate this failure case */
+  if (!gst_memory_lock (mem, GST_LOCK_FLAG_EXCLUSIVE))
+    return NULL;
+
+  /* double lock to ensure we are not mapped writable without an
+   * exclusive lock. */
+  if (!gst_memory_lock (mem, GST_LOCK_FLAG_EXCLUSIVE)) {
+    gst_memory_unlock (mem, GST_LOCK_FLAG_EXCLUSIVE);
+    return NULL;
+  }
+
   shared = mem->allocator->mem_share (mem, offset, size);
+
+  /* unlocking before calling the subclass would be racy */
+  gst_memory_unlock (mem, GST_LOCK_FLAG_EXCLUSIVE);
+  gst_memory_unlock (mem, GST_LOCK_FLAG_EXCLUSIVE);
 
   return shared;
 }

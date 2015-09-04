@@ -90,11 +90,14 @@ struct _GstBaseTransform {
   /* MT-protected (with STREAM_LOCK) */
   gboolean       have_segment;
   GstSegment     segment;
+  /* Default submit_input_buffer places the buffer here,
+   * for consumption by the generate_output method: */
+  GstBuffer      *queued_buf;
 
   /*< private >*/
   GstBaseTransformPrivate *priv;
 
-  gpointer       _gst_reserved[GST_PADDING_LARGE];
+  gpointer       _gst_reserved[GST_PADDING_LARGE-1];
 };
 
 /**
@@ -176,9 +179,9 @@ struct _GstBaseTransform {
  *                 The default implementation will copy the flags, timestamps and
  *                 offsets of the buffer.
  * @transform_meta: Optional. Transform the metadata on the input buffer to the
- *                  output buffer. By default this method is %NULL and no
- *                  metadata is copied. subclasses can implement this method and
- *                  return %TRUE if the metadata is to be copied.
+ *                  output buffer. By default this method copies all meta without
+ *                  tags. subclasses can implement this method and return %TRUE if
+ *                  the metadata is to be copied.
  * @before_transform: Optional.
  *                    This method is called right before the base class will
  *                    start processing. Dynamic properties or other delayed
@@ -189,7 +192,23 @@ struct _GstBaseTransform {
  *                  of the outgoing buffer.
  * @transform_ip:   Required if the element operates in-place.
  *                  Transform the incoming buffer in-place.
- *
+ * @submit_input_buffer: Function which accepts a new input buffer and pre-processes it.
+ *                  The default implementation performs caps (re)negotiation, then
+ *                  QoS if needed, and places the input buffer into the @queued_buf
+ *                  member variable. If the buffer is dropped due to QoS, it returns
+ *                  GST_BASE_TRANSFORM_FLOW_DROPPED. If this input buffer is not
+ *                  contiguous with any previous input buffer, then @is_discont
+ *                  is set to #TRUE. (Since 1.6)
+ * @generate_output: Called after each new input buffer is submitted repeatedly
+ *                   until it either generates an error or fails to generate an output
+ *                   buffer. The default implementation takes the contents of the
+ *                   @queued_buf variable, generates an output buffer if needed
+ *                   by calling the class @prepare_output_buffer, and then
+ *                   calls either @transform or @transform_ip. Elements that don't
+ *                   do 1-to-1 transformations on input to output buffers can either
+ *                   return GST_BASE_TRANSFORM_FLOW_DROPPED or simply not generate
+ *                   an output buffer until they are ready to do so. (Since 1.6)
+ *                   
  * Subclasses can override any of the available virtual methods or not, as
  * needed. At minimum either @transform or @transform_ip need to be overridden.
  * If the element can overwrite the input data with the results (data is of the
@@ -258,8 +277,11 @@ struct _GstBaseTransformClass {
                                  GstBuffer *outbuf);
   GstFlowReturn (*transform_ip) (GstBaseTransform *trans, GstBuffer *buf);
 
+  GstFlowReturn (*submit_input_buffer) (GstBaseTransform *trans, gboolean is_discont, GstBuffer *input);
+  GstFlowReturn (*generate_output) (GstBaseTransform *trans, GstBuffer **outbuf);
+
   /*< private >*/
-  gpointer       _gst_reserved[GST_PADDING_LARGE];
+  gpointer       _gst_reserved[GST_PADDING_LARGE - 2];
 };
 
 GType           gst_base_transform_get_type         (void);
@@ -293,6 +315,8 @@ void            gst_base_transform_get_allocator    (GstBaseTransform *trans,
 
 void		gst_base_transform_reconfigure_sink (GstBaseTransform *trans);
 void		gst_base_transform_reconfigure_src  (GstBaseTransform *trans);
+gboolean gst_base_transform_update_src_caps (GstBaseTransform *trans,
+                                             GstCaps *updated_caps);
 G_END_DECLS
 
 #endif /* __GST_BASE_TRANSFORM_H__ */

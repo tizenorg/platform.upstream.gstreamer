@@ -86,6 +86,8 @@ gst_buffer_flags_get_type (void)
         "delta-unit"},
     {C_FLAGS (GST_BUFFER_FLAG_TAG_MEMORY), "GST_BUFFER_FLAG_TAG_MEMORY",
         "tag-memory"},
+    {C_FLAGS (GST_BUFFER_FLAG_SYNC_AFTER), "GST_BUFFER_FLAG_SYNC_AFTER",
+        "sync-after"},
     {C_FLAGS (GST_BUFFER_FLAG_LAST), "GST_BUFFER_FLAG_LAST", "last"},
     {0, NULL, NULL}
   };
@@ -284,6 +286,8 @@ gst_clock_flags_get_type (void)
         "GST_CLOCK_FLAG_CAN_SET_RESOLUTION", "can-set-resolution"},
     {C_FLAGS (GST_CLOCK_FLAG_CAN_SET_MASTER), "GST_CLOCK_FLAG_CAN_SET_MASTER",
         "can-set-master"},
+    {C_FLAGS (GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC),
+        "GST_CLOCK_FLAG_NEEDS_STARTUP_SYNC", "needs-startup-sync"},
     {C_FLAGS (GST_CLOCK_FLAG_LAST), "GST_CLOCK_FLAG_LAST", "last"},
     {0, NULL, NULL}
   };
@@ -310,7 +314,11 @@ gst_debug_graph_details_get_type (void)
         "GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS", "non-default-params"},
     {C_FLAGS (GST_DEBUG_GRAPH_SHOW_STATES), "GST_DEBUG_GRAPH_SHOW_STATES",
         "states"},
+    {C_FLAGS (GST_DEBUG_GRAPH_SHOW_FULL_PARAMS),
+        "GST_DEBUG_GRAPH_SHOW_FULL_PARAMS", "full-params"},
     {C_FLAGS (GST_DEBUG_GRAPH_SHOW_ALL), "GST_DEBUG_GRAPH_SHOW_ALL", "all"},
+    {C_FLAGS (GST_DEBUG_GRAPH_SHOW_VERBOSE), "GST_DEBUG_GRAPH_SHOW_VERBOSE",
+        "verbose"},
     {0, NULL, NULL}
   };
 
@@ -603,6 +611,7 @@ gst_event_type_get_type (void)
     {C_ENUM (GST_EVENT_SINK_MESSAGE), "GST_EVENT_SINK_MESSAGE", "sink-message"},
     {C_ENUM (GST_EVENT_EOS), "GST_EVENT_EOS", "eos"},
     {C_ENUM (GST_EVENT_TOC), "GST_EVENT_TOC", "toc"},
+    {C_ENUM (GST_EVENT_PROTECTION), "GST_EVENT_PROTECTION", "protection"},
     {C_ENUM (GST_EVENT_SEGMENT_DONE), "GST_EVENT_SEGMENT_DONE", "segment-done"},
     {C_ENUM (GST_EVENT_GAP), "GST_EVENT_GAP", "gap"},
     {C_ENUM (GST_EVENT_QOS), "GST_EVENT_QOS", "qos"},
@@ -1263,6 +1272,7 @@ gst_pad_probe_return_get_type (void)
     {C_ENUM (GST_PAD_PROBE_OK), "GST_PAD_PROBE_OK", "ok"},
     {C_ENUM (GST_PAD_PROBE_REMOVE), "GST_PAD_PROBE_REMOVE", "remove"},
     {C_ENUM (GST_PAD_PROBE_PASS), "GST_PAD_PROBE_PASS", "pass"},
+    {C_ENUM (GST_PAD_PROBE_HANDLED), "GST_PAD_PROBE_HANDLED", "handled"},
     {0, NULL, NULL}
   };
 
@@ -1299,6 +1309,8 @@ gst_pad_flags_get_type (void)
         "proxy-scheduling"},
     {C_FLAGS (GST_PAD_FLAG_ACCEPT_INTERSECT), "GST_PAD_FLAG_ACCEPT_INTERSECT",
         "accept-intersect"},
+    {C_FLAGS (GST_PAD_FLAG_ACCEPT_TEMPLATE), "GST_PAD_FLAG_ACCEPT_TEMPLATE",
+        "accept-template"},
     {C_FLAGS (GST_PAD_FLAG_LAST), "GST_PAD_FLAG_LAST", "last"},
     {0, NULL, NULL}
   };
@@ -1586,6 +1598,7 @@ gst_seek_flags_get_type (void)
     {C_FLAGS (GST_SEEK_FLAG_ACCURATE), "GST_SEEK_FLAG_ACCURATE", "accurate"},
     {C_FLAGS (GST_SEEK_FLAG_KEY_UNIT), "GST_SEEK_FLAG_KEY_UNIT", "key-unit"},
     {C_FLAGS (GST_SEEK_FLAG_SEGMENT), "GST_SEEK_FLAG_SEGMENT", "segment"},
+    {C_FLAGS (GST_SEEK_FLAG_TRICKMODE), "GST_SEEK_FLAG_TRICKMODE", "trickmode"},
     {C_FLAGS (GST_SEEK_FLAG_SKIP), "GST_SEEK_FLAG_SKIP", "skip"},
     {C_FLAGS (GST_SEEK_FLAG_SNAP_BEFORE), "GST_SEEK_FLAG_SNAP_BEFORE",
         "snap-before"},
@@ -1593,6 +1606,10 @@ gst_seek_flags_get_type (void)
         "snap-after"},
     {C_FLAGS (GST_SEEK_FLAG_SNAP_NEAREST), "GST_SEEK_FLAG_SNAP_NEAREST",
         "snap-nearest"},
+    {C_FLAGS (GST_SEEK_FLAG_TRICKMODE_KEY_UNITS),
+        "GST_SEEK_FLAG_TRICKMODE_KEY_UNITS", "trickmode-key-units"},
+    {C_FLAGS (GST_SEEK_FLAG_TRICKMODE_NO_AUDIO),
+        "GST_SEEK_FLAG_TRICKMODE_NO_AUDIO", "trickmode-no-audio"},
     {0, NULL, NULL}
   };
 
@@ -1611,8 +1628,14 @@ gst_segment_flags_get_type (void)
   static const GFlagsValue values[] = {
     {C_FLAGS (GST_SEGMENT_FLAG_NONE), "GST_SEGMENT_FLAG_NONE", "none"},
     {C_FLAGS (GST_SEGMENT_FLAG_RESET), "GST_SEGMENT_FLAG_RESET", "reset"},
+    {C_FLAGS (GST_SEGMENT_FLAG_TRICKMODE), "GST_SEGMENT_FLAG_TRICKMODE",
+        "trickmode"},
     {C_FLAGS (GST_SEGMENT_FLAG_SKIP), "GST_SEGMENT_FLAG_SKIP", "skip"},
     {C_FLAGS (GST_SEGMENT_FLAG_SEGMENT), "GST_SEGMENT_FLAG_SEGMENT", "segment"},
+    {C_FLAGS (GST_SEGMENT_FLAG_TRICKMODE_KEY_UNITS),
+        "GST_SEGMENT_FLAG_TRICKMODE_KEY_UNITS", "trickmode-key-units"},
+    {C_FLAGS (GST_SEGMENT_FLAG_TRICKMODE_NO_AUDIO),
+        "GST_SEGMENT_FLAG_TRICKMODE_NO_AUDIO", "trickmode-no-audio"},
     {0, NULL, NULL}
   };
 

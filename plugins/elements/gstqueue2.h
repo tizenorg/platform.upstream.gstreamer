@@ -141,6 +141,9 @@ struct _GstQueue2
   /* list of downloaded areas and the current area */
   GstQueue2Range *ranges;
   GstQueue2Range *current;
+#ifdef GST_QUEUE2_MODIFICATION
+  GstQueue2Range *read;
+#endif
   /* we need this to send the first new segment event of the stream
    * because we can't save it on the file */
   gboolean segment_event_received;
@@ -153,6 +156,13 @@ struct _GstQueue2
   guint8 * ring_buffer;
 
   volatile gint downstream_may_block;
+
+  GstBufferingMode mode;
+  gint64 buffering_left;
+  gint avg_in;
+  gint avg_out;
+  gboolean percent_changed;
+  GMutex buffering_post_lock; /* assures only one posted at a time */
 };
 
 struct _GstQueue2Class

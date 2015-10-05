@@ -475,7 +475,7 @@ gst_bin_class_init (GstBinClass * klass)
   klass->pool =
       g_thread_pool_new ((GFunc) gst_bin_continue_func, NULL, -1, FALSE, &err);
   if (err != NULL) {
-    g_critical ("could alloc threadpool %s", err->message);
+    g_critical ("could not alloc threadpool %s", err->message);
   }
 }
 
@@ -1290,6 +1290,7 @@ gst_bin_add (GstBin * bin, GstElement * element)
 
   g_return_val_if_fail (GST_IS_BIN (bin), FALSE);
   g_return_val_if_fail (GST_IS_ELEMENT (element), FALSE);
+  g_return_val_if_fail (GST_ELEMENT_CAST (bin) != element, FALSE);
 
   bclass = GST_BIN_GET_CLASS (bin);
 
@@ -1332,6 +1333,10 @@ gst_bin_remove_func (GstBin * bin, GstElement * element)
   GstStateChangeReturn ret;
 
   GST_DEBUG_OBJECT (bin, "element :%s", GST_ELEMENT_NAME (element));
+
+  /* we obviously can't remove ourself from ourself */
+  if (G_UNLIKELY (element == GST_ELEMENT_CAST (bin)))
+    goto removing_itself;
 
   GST_OBJECT_LOCK (bin);
 
@@ -1564,6 +1569,13 @@ no_state_recalc:
   return TRUE;
 
   /* ERROR handling */
+removing_itself:
+  {
+    GST_OBJECT_LOCK (bin);
+    g_warning ("Cannot remove bin '%s' from itself", GST_ELEMENT_NAME (bin));
+    GST_OBJECT_UNLOCK (bin);
+    return FALSE;
+  }
 not_in_bin:
   {
     g_warning ("Element '%s' is not in bin '%s'", elem_name,
@@ -1603,6 +1615,7 @@ gst_bin_remove (GstBin * bin, GstElement * element)
 
   g_return_val_if_fail (GST_IS_BIN (bin), FALSE);
   g_return_val_if_fail (GST_IS_ELEMENT (element), FALSE);
+  g_return_val_if_fail (GST_ELEMENT_CAST (bin) != element, FALSE);
 
   bclass = GST_BIN_GET_CLASS (bin);
 
@@ -2358,15 +2371,20 @@ was_busy:
 }
 
 /* gst_iterator_fold functions for pads_activate
- * Stop the iterator if activating one pad failed. */
+ * Stop the iterator if activating one pad failed, but only if that pad
+ * has not been removed from the element. */
 static gboolean
 activate_pads (const GValue * vpad, GValue * ret, gboolean * active)
 {
   GstPad *pad = g_value_get_object (vpad);
   gboolean cont = TRUE;
 
-  if (!(cont = gst_pad_set_active (pad, *active)))
-    g_value_set_boolean (ret, FALSE);
+  if (!gst_pad_set_active (pad, *active)) {
+    if (GST_PAD_PARENT (pad) != NULL) {
+      cont = FALSE;
+      g_value_set_boolean (ret, FALSE);
+    }
+  }
 
   return cont;
 }

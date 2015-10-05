@@ -344,9 +344,11 @@ gst_harness_sink_query (GstPad * pad, GstObject * parent, GstQuery * query)
     {
       GstCaps *caps, *filter = NULL;
 
-      caps =
-          priv->
-          sink_caps ? gst_caps_ref (priv->sink_caps) : gst_caps_new_any ();
+      if (priv->sink_caps) {
+        caps = gst_caps_ref (priv->sink_caps);
+      } else {
+        caps = gst_pad_get_pad_template_caps (pad);
+      }
 
       gst_query_parse_caps (query, &filter);
       if (filter != NULL) {
@@ -406,8 +408,11 @@ gst_harness_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
     {
       GstCaps *caps, *filter = NULL;
 
-      caps =
-          priv->src_caps ? gst_caps_ref (priv->src_caps) : gst_caps_new_any ();
+      if (priv->src_caps) {
+        caps = gst_caps_ref (priv->src_caps);
+      } else {
+        caps = gst_pad_get_pad_template_caps (pad);
+      }
 
       gst_query_parse_caps (query, &filter);
       if (filter != NULL) {
@@ -428,7 +433,10 @@ gst_harness_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
 static void
 gst_harness_element_ref (GstHarness * h)
 {
-  guint *data = g_object_get_data (G_OBJECT (h->element), HARNESS_REF);
+  guint *data;
+
+  GST_OBJECT_LOCK (h->element);
+  data = g_object_get_data (G_OBJECT (h->element), HARNESS_REF);
   if (data == NULL) {
     data = g_new0 (guint, 1);
     *data = 1;
@@ -436,15 +444,23 @@ gst_harness_element_ref (GstHarness * h)
   } else {
     (*data)++;
   }
+  GST_OBJECT_UNLOCK (h->element);
 }
 
 static guint
 gst_harness_element_unref (GstHarness * h)
 {
-  guint *data = g_object_get_data (G_OBJECT (h->element), HARNESS_REF);
+  guint *data;
+  guint ret;
+
+  GST_OBJECT_LOCK (h->element);
+  data = g_object_get_data (G_OBJECT (h->element), HARNESS_REF);
   g_assert (data != NULL);
   (*data)--;
-  return *data;
+  ret = *data;
+  GST_OBJECT_UNLOCK (h->element);
+
+  return ret;
 }
 
 static void
@@ -542,21 +558,20 @@ static void
 check_element_type (GstElement * element, gboolean * has_sinkpad,
     gboolean * has_srcpad)
 {
-  GstElementFactory *factory;
+  GstElementClass *element_class = GST_ELEMENT_GET_CLASS (element);
   const GList *tmpl_list;
 
   *has_srcpad = element->numsrcpads > 0;
   *has_sinkpad = element->numsinkpads > 0;
 
-  factory = gst_element_get_factory (element);
-  tmpl_list = gst_element_factory_get_static_pad_templates (factory);
+  tmpl_list = gst_element_class_get_pad_template_list (element_class);
 
   while (tmpl_list) {
-    GstStaticPadTemplate *pad_tmpl = (GstStaticPadTemplate *) tmpl_list->data;
+    GstPadTemplate *pad_tmpl = (GstPadTemplate *) tmpl_list->data;
     tmpl_list = g_list_next (tmpl_list);
-    if (pad_tmpl->direction == GST_PAD_SRC)
+    if (GST_PAD_TEMPLATE_DIRECTION (pad_tmpl) == GST_PAD_SRC)
       *has_srcpad |= TRUE;
-    if (pad_tmpl->direction == GST_PAD_SINK)
+    if (GST_PAD_TEMPLATE_DIRECTION (pad_tmpl) == GST_PAD_SINK)
       *has_sinkpad |= TRUE;
   }
 }
@@ -2226,7 +2241,7 @@ gst_harness_add_sink_harness (GstHarness * h, GstHarness * sink_harness)
   h->sink_harness = sink_harness;
   priv->sink_forward_pad = gst_object_ref (h->sink_harness->srcpad);
   gst_harness_use_testclock (h->sink_harness);
-  if (priv->forwarding)
+  if (priv->forwarding && h->sinkpad)
     gst_pad_sticky_events_foreach (h->sinkpad, forward_sticky_events, h);
   gst_harness_set_forwarding (h->sink_harness, priv->forwarding);
 }
@@ -2625,7 +2640,8 @@ gst_harness_stress_custom_func (GstHarnessThread * t)
   GstHarnessCustomThread *ct = (GstHarnessCustomThread *) t;
   guint count = 0;
 
-  ct->init (ct, ct->data);
+  if (ct->init != NULL)
+    ct->init (ct, ct->data);
 
   while (t->running) {
     ct->callback (ct, ct->data);
@@ -2825,7 +2841,7 @@ gst_harness_stress_thread_stop (GstHarnessThread * t)
 /**
  * gst_harness_stress_custom_start: (skip)
  * @h: a #GstHarness
- * @init: a #GFunc that is called initially and only once
+ * @init: (allow-none): a #GFunc that is called initially and only once
  * @callback: a #GFunc that is called as often as possible
  * @data: a #gpointer with custom data to pass to the @callback function
  * @sleep: a #gulong specifying how long to sleep in (microseconds) for

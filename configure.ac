@@ -4,7 +4,7 @@ dnl initialize autoconf
 dnl when going to/from release please set the nano (fourth number) right !
 dnl releases only do Wall, git and prerelease does Werror too
 dnl
-AC_INIT([GStreamer],[1.5.90],[http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer],[gstreamer])
+AC_INIT([GStreamer],[1.6.0],[http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer],[gstreamer])
 AG_GST_INIT
 
 dnl initialize automake (we require GNU make)
@@ -62,7 +62,7 @@ dnl      1.2.5 => 205
 dnl      1.10.9 (who knows) => 1009
 dnl
 dnl sets GST_LT_LDFLAGS
-AS_LIBTOOL(GST, 590, 0, 590)
+AS_LIBTOOL(GST, 600, 0, 600)
 
 dnl *** autotools stuff ****
 
@@ -135,9 +135,9 @@ AG_GST_SET_PACKAGE_RELEASE_DATETIME_WITH_NANO([$PACKAGE_VERSION_NANO],
 dnl check for bash completion
 AC_ARG_WITH([bash-completion-dir],
     AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
-        [Install the bash auto-completion script in this directory. @<:@default=yes@:>@]),
+        [Install the bash auto-completion script in this directory. @<:@default=no@:>@]),
     [],
-    [with_bash_completion_dir=yes])
+    [with_bash_completion_dir=no])
 
 if test "x$with_bash_completion_dir" = "xyes"
 then
@@ -619,6 +619,14 @@ AC_CHECK_HEADERS([poll.h], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_FUNCS([poll])
 AC_CHECK_FUNCS([ppoll])
 AC_CHECK_FUNCS([pselect])
+
+dnl check for socketpair()
+AC_CHECK_FUNC(socketpair, [], [
+  AC_CHECK_LIB(socket, socketpair, [
+    SOCKET_LIBS="-lsocket"
+    AC_SUBST(SOCKET_LIBS)
+  ])
+])
 
 dnl ****************************************
 dnl *** GLib POLL* compatibility defines ***

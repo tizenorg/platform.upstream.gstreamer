@@ -1,7 +1,7 @@
 %define gst_branch 1.0
 
 Name:           gstreamer
-Version:        1.6
+Version:        1.6.1
 Release:        1
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
@@ -101,7 +101,7 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %dir %{_libdir}/gstreamer-%{gst_branch}
 %dir %{_libexecdir}/gstreamer-%{gst_branch}
 
-%define so_version so.0.600.0
+%define so_version so.0.601.0
 %define so_version_debug %{so_version}.debug
 %define _lib_gstreamer_dir %{_libdir}/gstreamer-%{gst_branch}
 %define _libdebug_dir %{_libdir}/debug/usr/lib

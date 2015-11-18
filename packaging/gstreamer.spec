@@ -90,8 +90,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 
 %postun -p /sbin/ldconfig
 
-%define _libdebug_dir %{_libdir}/debug/usr/lib
-
 %files
 %manifest %{name}.manifest
 %license COPYING
@@ -104,7 +102,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %define so_version so.0.601.0
 %define so_version_debug %{so_version}.debug
 %define _lib_gstreamer_dir %{_libdir}/gstreamer-%{gst_branch}
-%define _libdebug_dir %{_libdir}/debug/usr/lib
 
 %{_lib_gstreamer_dir}/libgstcoreelements.so
 
@@ -126,13 +123,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %{_libdir}/libgstnet-%{gst_branch}.%{so_version}
 %{_libdir}/libgstreamer-%{gst_branch}.%{so_version}
 
-%{_libdebug_dir}/gstreamer-%{gst_branch}/libgstcoreelements.so.debug
-%{_libdebug_dir}/libgstbase-%{gst_branch}.%{so_version_debug}
-%{_libdebug_dir}/libgstcheck-%{gst_branch}.%{so_version_debug}
-%{_libdebug_dir}/libgstcontroller-%{gst_branch}.%{so_version_debug}
-%{_libdebug_dir}/libgstnet-%{gst_branch}.%{so_version_debug}
-%{_libdebug_dir}/libgstreamer-%{gst_branch}.%{so_version_debug}
-
 %{_libdir}/girepository-1.0/Gst-%{gst_branch}.typelib
 %{_libdir}/girepository-1.0/GstBase-%{gst_branch}.typelib
 %{_libdir}/girepository-1.0/GstCheck-%{gst_branch}.typelib
@@ -142,7 +132,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %{_lib_gstreamer_dir}/include/gst/gstconfig.h
 %{_libexecdir}/gstreamer-%{gst_branch}/gst-plugin-scanner
 %{_libexecdir}/gstreamer-%{gst_branch}/gst-ptp-helper
-%{_libdir}/debug/usr/libexec/gstreamer-%{gst_branch}/gst-ptp-helper.debug
 
 %files utils
 %manifest %{name}.manifest

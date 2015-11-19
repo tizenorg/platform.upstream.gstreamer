@@ -7,7 +7,8 @@ Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Framework
 Url:            http://gstreamer.freedesktop.org/
-Source:         http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-%{version}.tar.xz
+Source0:        http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-%{version}.tar.xz
+Source100:      common.tar.gz
 BuildRequires:  bison
 BuildRequires:  gettext-tools
 BuildRequires:  check-devel
@@ -60,6 +61,7 @@ to develop applications that require these.
 
 %prep
 %setup -q -n gstreamer-%{version}
+%setup -q -T -D -a 100
 
 %build
 # FIXME: GTKDOC_CFLAGS, GST_OBJ_CFLAGS:

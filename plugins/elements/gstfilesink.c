@@ -113,6 +113,9 @@ enum
   PROP_BUFFER_MODE,
   PROP_BUFFER_SIZE,
   PROP_APPEND,
+#ifdef GST_EXT_CURRENT_BYTES
+  PROP_CURRENT_BYTES,
+#endif
   PROP_LAST
 };
 
@@ -217,9 +220,17 @@ gst_file_sink_class_init (GstFileSinkClass * klass)
           G_MAXUINT, DEFAULT_BUFFER_SIZE,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+#ifdef GST_EXT_CURRENT_BYTES
+  g_object_class_install_property (gobject_class, PROP_CURRENT_BYTES,
+      g_param_spec_uint64 ("current-bytes", "Current bytes",
+          "downloaded bytes so far", 0,
+          G_MAXUINT64, 0,
+          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+#endif
+
   /**
    * GstFileSink:append
-   * 
+   *
    * Append to an already existing file.
    */
   g_object_class_install_property (gobject_class, PROP_APPEND,
@@ -357,6 +368,11 @@ gst_file_sink_get_property (GObject * object, guint prop_id, GValue * value,
     case PROP_APPEND:
       g_value_set_boolean (value, sink->append);
       break;
+#ifdef GST_EXT_CURRENT_BYTES
+    case PROP_CURRENT_BYTES:
+      g_value_set_uint64(value, sink->current_pos);
+      break;
+#endif
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;

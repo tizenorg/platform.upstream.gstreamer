@@ -141,6 +141,9 @@ struct _GstQueue2
   /* list of downloaded areas and the current area */
   GstQueue2Range *ranges;
   GstQueue2Range *current;
+#ifdef GST_QUEUE2_MODIFICATION
+  GstQueue2Range *read;
+#endif
   /* we need this to send the first new segment event of the stream
    * because we can't save it on the file */
   gboolean segment_event_received;

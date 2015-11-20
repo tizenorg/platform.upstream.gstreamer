@@ -66,7 +66,11 @@ to develop applications that require these.
 # Silently ignored compilation of uninstalled gtk-doc scanners without RPM_OPT_FLAGS.
 export V=1
 NOCONFIGURE=1 ./autogen.sh
-export CFLAGS="%{optflags} -fno-strict-aliasing"
+export CFLAGS="%{optflags} \
+	-DGST_QUEUE2_MODIFICATION\
+	-DGST_EXT_CURRENT_BYTES\
+	-fno-strict-aliasing"
+
 %configure\
         --enable-introspection\
         --disable-static\

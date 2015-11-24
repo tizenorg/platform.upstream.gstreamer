@@ -828,6 +828,23 @@ AC_ARG_ENABLE(Bsymbolic,
                            enable_Bsymbolic=no])
                LDFLAGS="${SAVED_LDFLAGS}"])
 
+dnl Check for dlog
+AC_ARG_ENABLE(dlog, AC_HELP_STRING([--enable-dlog], [using dlog]),
+[
+ case "${enableval}" in
+         yes) USE_DLOG=yes ;;
+         no)  USE_DLOG=no ;;
+         *)   AC_MSG_ERROR(bad value ${enableval} for --enable-dlog) ;;
+ esac
+],[USE_DLOG=no])
+
+if test "x$USE_DLOG" = "xyes"; then
+        PKG_CHECK_MODULES(DLOG, dlog)
+        AC_SUBST(DLOG_CFLAGS)
+        AC_SUBST(DLOG_LIBS)
+fi
+AM_CONDITIONAL(USE_DLOG, test "x$USE_DLOG" = "xyes")
+dnl end
 
 dnl *** set variables based on configure arguments
 

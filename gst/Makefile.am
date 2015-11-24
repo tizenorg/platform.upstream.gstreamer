@@ -153,6 +153,12 @@ libgstreamer_@GST_API_VERSION@_la_LIBADD =		\
 	$(WIN32_LIBS)					\
 	$(SOCKET_LIBS)					\
 	$(LIBM)
+if USE_DLOG
+libgstreamer_@GST_API_VERSION@_la_CFLAGS += $(DLOG_CFLAGS)
+libgstreamer_@GST_API_VERSION@_la_LIBADD += $(DLOG_LIBS)
+libgstreamer_@GST_API_VERSION@_la_CFLAGS += -DUSE_DLOG
+endif
+
 
 libgstreamer_@GST_API_VERSION@_la_LDFLAGS =		\
 	$(GST_LIB_LDFLAGS) $(GST_ALL_LDFLAGS) $(GST_LT_LDFLAGS)

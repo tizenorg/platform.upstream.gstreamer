@@ -1,17 +1,16 @@
 
-Release notes for GStreamer 1.4.1
+Release notes for GStreamer 1.6.1
 
 
-The GStreamer team is pleased to announce a bugfix release of the stable
-1.4 release series. The 1.4 release series is adding new features on top
-of the 1.2 series and is part of the API and ABI-stable 1.x release
-series of the GStreamer multimedia framework that contains new features.
-The 1.4.x bugfix releases only contain important bugfixes compared to 1.4.0.
+The GStreamer team is proud to announce the first bugfix release in the stable
+1.6 release series of your favourite cross-platform multimedia framework!
 
 
 Binaries for Android, iOS, Mac OS X and Windows are provided by the
 GStreamer project for this release.
 
+This release only contains bugfixes and it is safe to update from 1.6.0. For a
+full list of bugfixes see Bugzilla.
 
 The 1.x series is a stable series targeted at end users. It is not API
 or ABI compatible with the 0.10.x series. It can, however, be installed
@@ -19,10 +18,9 @@ in parallel with the 0.10.x series and will not affect an existing
 0.10.x installation.
 
 
-The stable 1.4.x release series is API and ABI compatible with 1.0.x and
-any other 1.x release series in the future. Compared to 1.0.x it contains
-some new features and more intrusive changes that were considered too
-risky as a bugfix.
+See http://gstreamer.freedesktop.org/releases/1.6/
+for the full release notes.
+
 
 
 This module, gstreamer, only contains core functionality.
@@ -48,11 +46,14 @@ contains a set of codecs plugins based on libav (formerly gst-ffmpeg)
 
 Bugs fixed in this release
      
-      * 732851 : funnel: storing sticky events after event callback
-      * 733805 : poll: WAKE_EVENT() reports false negatives on W32
-      * 733974 : gstbufferpool::default_alloc_buffer does not fail if buffer allocation fails
-      * 734688 : queue: race when receiving flush-stop event during shutdown, task gets re-started
-      * 734773 : Add allow-none annotation for gst_bin_new()
+      * 747612 : Valgrind 3.7.0 chokes on match-leak-kinds in gst.supp
+      * 756069 : Gstreamer: Fix sample memory leaks
+      * 756136 : gstreamer-1.6.0 doesn't compile on OS X 10.6: header file issue in gst-ptp-helper.c
+      * 756645 : multiqueue: Improve incoming SEGMENT handling
+      * 756810 : segment_to_stream_time and position_from_stream_time miscalculate when applied_rate < 0
+      * 756898 : pad: gst_pad_probe_info_get_buffer_list() has wrong ownership transfer
+      * 757065 : uri: incorrect behavior when merging uris ending in ..
+      * 757257 : pad: Unblock blocking pad probes when receiving FLUSH_START in send_event() too
 
 ==== Download ====
 
@@ -89,11 +90,11 @@ subscribe to the gstreamer-devel list.
         
 Contributors to this release
     
-      * Mohammed Sameer
+      * Edward Hervey
+      * Florin Apostol
       * Sebastian Dröge
-      * Sebastian Rasmussen
-      * Srimanta Panda
-      * Thiago Santos
+      * Stefan Sauer
       * Tim-Philipp Müller
-      * Руслан Ижбулатов
+      * Vineeth TM
+      * Vivia Nikolaidou
  

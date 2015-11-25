@@ -25,7 +25,7 @@
 /**
  * SECTION:gstinfo
  * @short_description: Debugging and logging facilities
- * @see_also: #gstreamer-gstconfig, #gstreamer-Gst for command line parameters
+ * @see_also: #gst-running for command line parameters
  * and environment variables that affect the debugging output.
  *
  * GStreamer's debugging subsystem is an easy way to get information about what
@@ -176,6 +176,7 @@ GstDebugCategory *_priv_GST_CAT_POLL = NULL;
 GstDebugCategory *GST_CAT_META = NULL;
 GstDebugCategory *GST_CAT_LOCKING = NULL;
 GstDebugCategory *GST_CAT_CONTEXT = NULL;
+GstDebugCategory *_priv_GST_CAT_PROTECTION = NULL;
 
 
 #endif /* !defined(GST_DISABLE_GST_DEBUG) || !defined(GST_REMOVE_DISABLED) */
@@ -268,8 +269,6 @@ static gboolean pretty_tags = PRETTY_TAGS_DEFAULT;
 static volatile gint G_GNUC_MAY_ALIAS __default_level = GST_LEVEL_DEFAULT;
 static volatile gint G_GNUC_MAY_ALIAS __use_color = GST_DEBUG_COLOR_MODE_ON;
 
-static FILE *log_file;
-
 /* FIXME: export this? */
 gboolean
 _priv_gst_in_valgrind (void)
@@ -286,9 +285,6 @@ _priv_gst_in_valgrind (void)
 #ifdef HAVE_VALGRIND_VALGRIND_H
     if (RUNNING_ON_VALGRIND) {
       GST_CAT_INFO (GST_CAT_GST_INIT, "we're running inside valgrind");
-      printf ("GStreamer has detected that it is running inside valgrind.\n");
-      printf ("It might now take different code paths to ease debugging.\n");
-      printf ("Of course, this may also lead to different bugs.\n");
       in_valgrind = GST_VG_INSIDE;
     } else {
       GST_CAT_LOG (GST_CAT_GST_INIT, "not doing extra valgrind stuff");
@@ -308,6 +304,7 @@ void
 _priv_gst_debug_init (void)
 {
   const gchar *env;
+  FILE *log_file;
 
   env = g_getenv ("GST_DEBUG_FILE");
   if (env != NULL && *env != '\0') {
@@ -337,7 +334,7 @@ _priv_gst_debug_init (void)
   _GST_CAT_DEBUG = _gst_debug_category_new ("GST_DEBUG",
       GST_DEBUG_BOLD | GST_DEBUG_FG_YELLOW, "debugging subsystem");
 
-  gst_debug_add_log_function (gst_debug_log_default, NULL, NULL);
+  gst_debug_add_log_function (gst_debug_log_default, log_file, NULL);
 
   /* FIXME: add descriptions here */
   GST_CAT_GST_INIT = _gst_debug_category_new ("GST_INIT",
@@ -398,6 +395,8 @@ _priv_gst_debug_init (void)
   GST_CAT_META = _gst_debug_category_new ("GST_META", 0, "meta");
   GST_CAT_LOCKING = _gst_debug_category_new ("GST_LOCKING", 0, "locking");
   GST_CAT_CONTEXT = _gst_debug_category_new ("GST_CONTEXT", 0, NULL);
+  _priv_GST_CAT_PROTECTION =
+      _gst_debug_category_new ("GST_PROTECTION", 0, "protection");
 
   /* print out the valgrind message if we're in valgrind */
   _priv_gst_in_valgrind ();
@@ -452,7 +451,6 @@ gst_debug_log (GstDebugCategory * category, GstDebugLevel level,
   va_end (var_args);
 }
 
-#ifdef G_OS_WIN32
 /* based on g_basename(), which we can't use because it was deprecated */
 static inline const gchar *
 gst_path_basename (const gchar * file_name)
@@ -475,7 +473,6 @@ gst_path_basename (const gchar * file_name)
 
   return file_name;
 }
-#endif
 
 /**
  * gst_debug_log_valist:
@@ -501,16 +498,13 @@ gst_debug_log_valist (GstDebugCategory * category, GstDebugLevel level,
   GSList *handler;
 
   g_return_if_fail (category != NULL);
+
+  if (level > gst_debug_category_get_threshold (category))
+    return;
+
   g_return_if_fail (file != NULL);
   g_return_if_fail (function != NULL);
   g_return_if_fail (format != NULL);
-
-  /* The predefined macro __FILE__ is always the exact path given to the
-   * compiler with MSVC, which may or may not be the basename.  We work
-   * around it at runtime to improve the readability. */
-#ifdef G_OS_WIN32
-  file = gst_path_basename (file);
-#endif
 
   message.message = NULL;
   message.format = format;
@@ -589,7 +583,7 @@ static inline gchar *
 gst_info_structure_to_string (const GstStructure * s)
 {
   if (G_LIKELY (s)) {
-    gchar *str = gst_structure_to_string (s);;
+    gchar *str = gst_structure_to_string (s);
     if (G_UNLIKELY (pretty_tags && s->name == GST_QUARK (TAGLIST)))
       return prettify_structure_string (str);
     else
@@ -601,14 +595,29 @@ gst_info_structure_to_string (const GstStructure * s)
 static inline gchar *
 gst_info_describe_buffer (GstBuffer * buffer)
 {
+  const gchar *offset_str = "none";
+  const gchar *offset_end_str = "none";
+  gchar offset_buf[32], offset_end_buf[32];
+
+  if (GST_BUFFER_OFFSET_IS_VALID (buffer)) {
+    g_snprintf (offset_buf, sizeof (offset_buf), "%" G_GUINT64_FORMAT,
+        GST_BUFFER_OFFSET (buffer));
+    offset_str = offset_buf;
+  }
+  if (GST_BUFFER_OFFSET_END_IS_VALID (buffer)) {
+    g_snprintf (offset_end_buf, sizeof (offset_end_buf), "%" G_GUINT64_FORMAT,
+        GST_BUFFER_OFFSET_END (buffer));
+    offset_end_str = offset_end_buf;
+  }
+
   return g_strdup_printf ("buffer: %p, pts %" GST_TIME_FORMAT ", dts %"
       GST_TIME_FORMAT ", dur %" GST_TIME_FORMAT ", size %" G_GSIZE_FORMAT
-      ", offset %" G_GUINT64_FORMAT ", offset_end %" G_GUINT64_FORMAT
-      ", flags 0x%x", buffer, GST_TIME_ARGS (GST_BUFFER_PTS (buffer)),
+      ", offset %s, offset_end %s, flags 0x%x", buffer,
+      GST_TIME_ARGS (GST_BUFFER_PTS (buffer)),
       GST_TIME_ARGS (GST_BUFFER_DTS (buffer)),
       GST_TIME_ARGS (GST_BUFFER_DURATION (buffer)),
-      gst_buffer_get_size (buffer), GST_BUFFER_OFFSET (buffer),
-      GST_BUFFER_OFFSET_END (buffer), GST_BUFFER_FLAGS (buffer));
+      gst_buffer_get_size (buffer), offset_str, offset_end_str,
+      GST_BUFFER_FLAGS (buffer));
 }
 
 static inline gchar *
@@ -966,12 +975,13 @@ static const gchar *levelcolormap[GST_LEVEL_COUNT] = {
  * @message: the actual message
  * @object: (transfer none) (allow-none): the object this message relates to,
  *     or %NULL if none
- * @unused: an unused variable, reserved for some user_data.
+ * @user_data: the FILE* to log to
  *
  * The default logging handler used by GStreamer. Logging functions get called
- * whenever a macro like GST_DEBUG or similar is used. This function outputs the
- * message and additional info to stderr (or the log file specified via the
- * GST_DEBUG_FILE environment variable).
+ * whenever a macro like GST_DEBUG or similar is used. By default this function
+ * is setup to output the message and additional info to stderr (or the log file
+ * specified via the GST_DEBUG_FILE environment variable) as received via
+ * @user_data.
  *
  * You can add other handlers by using gst_debug_add_log_function().
  * And you can remove this handler by calling
@@ -980,15 +990,23 @@ static const gchar *levelcolormap[GST_LEVEL_COUNT] = {
 void
 gst_debug_log_default (GstDebugCategory * category, GstDebugLevel level,
     const gchar * file, const gchar * function, gint line,
-    GObject * object, GstDebugMessage * message, gpointer unused)
+    GObject * object, GstDebugMessage * message, gpointer user_data)
 {
   gint pid;
   GstClockTime elapsed;
   gchar *obj = NULL;
   GstDebugColorMode color_mode;
+  FILE *log_file = user_data ? user_data : stderr;
+  gchar c;
 
-  if (level > gst_debug_category_get_threshold (category))
-    return;
+  /* __FILE__ might be a file name or an absolute path or a
+   * relative path, irrespective of the exact compiler used,
+   * in which case we want to shorten it to the filename for
+   * readability. */
+  c = file[0];
+  if (c == '.' || c == '/' || c == '\\' || (c != '\0' && file[1] == ':')) {
+    file = gst_path_basename (file);
+  }
 
   pid = getpid ();
   color_mode = gst_debug_get_color_mode ();
@@ -996,7 +1014,7 @@ gst_debug_log_default (GstDebugCategory * category, GstDebugLevel level,
   if (object) {
     obj = gst_debug_print_object (object);
   } else {
-    obj = g_strdup ("");
+    obj = (gchar *) "";
   }
 
   elapsed = GST_CLOCK_DIFF (_priv_gst_info_start_time,
@@ -1101,7 +1119,8 @@ gst_debug_log_default (GstDebugCategory * category, GstDebugLevel level,
 #undef PRINT_FMT
   }
 
-  g_free (obj);
+  if (object != NULL)
+    g_free (obj);
 }
 
 /**
@@ -1533,6 +1552,8 @@ gst_debug_unset_threshold_for_name (const gchar * name)
       g_slice_free (LevelNameEntry, entry);
       g_slist_free_1 (walk);
       walk = __level_name;
+    } else {
+      walk = g_slist_next (walk);
     }
   }
   g_mutex_unlock (&__level_name_mutex);
@@ -1827,7 +1848,7 @@ gst_debug_set_threshold_from_string (const gchar * list, gboolean reset)
 
   g_assert (list);
 
-  if (reset == TRUE)
+  if (reset)
     gst_debug_set_default_threshold (0);
 
   split = g_strsplit (list, ",", 0);

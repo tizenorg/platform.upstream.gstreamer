@@ -1,14 +1,14 @@
-AC_PREREQ([2.68])
+AC_PREREQ([2.69])
 
 dnl initialize autoconf
 dnl when going to/from release please set the nano (fourth number) right !
 dnl releases only do Wall, git and prerelease does Werror too
 dnl
-AC_INIT([GStreamer],[1.4.1],[http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer],[gstreamer])
+AC_INIT([GStreamer],[1.6.1],[http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer],[gstreamer])
 AG_GST_INIT
 
 dnl initialize automake (we require GNU make)
-AM_INIT_AUTOMAKE([-Wno-portability 1.11 no-dist-gzip dist-xz tar-ustar subdir-objects])
+AM_INIT_AUTOMAKE([-Wno-portability 1.14 no-dist-gzip dist-xz tar-ustar subdir-objects])
 
 dnl define PACKAGE_VERSION_* variables
 AS_VERSION
@@ -28,10 +28,8 @@ AM_MAINTAINER_MODE([enable])
 dnl sets host_* variables
 AC_CANONICAL_HOST
 
-dnl use pretty build output with automake >= 1.11
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],
-  [AM_DEFAULT_VERBOSITY=1
-   AC_SUBST(AM_DEFAULT_VERBOSITY)])
+dnl use pretty build output by default
+AM_SILENT_RULES([yes])
 
 dnl GStreamer versioning, this is mostly informational
 GST_VERSION_MAJOR=$PACKAGE_VERSION_MAJOR
@@ -64,7 +62,7 @@ dnl      1.2.5 => 205
 dnl      1.10.9 (who knows) => 1009
 dnl
 dnl sets GST_LT_LDFLAGS
-AS_LIBTOOL(GST, 401, 0, 401)
+AS_LIBTOOL(GST, 601, 0, 601)
 
 dnl *** autotools stuff ****
 
@@ -133,6 +131,37 @@ AG_GST_PKG_CONFIG_PATH
 AG_GST_SET_PACKAGE_RELEASE_DATETIME_WITH_NANO([$PACKAGE_VERSION_NANO],
   ["${srcdir}/gstreamer.doap"],
   [$PACKAGE_VERSION_MAJOR.$PACKAGE_VERSION_MINOR.$PACKAGE_VERSION_MICRO])
+
+dnl check for bash completion
+AC_ARG_WITH([bash-completion-dir],
+    AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
+        [Install the bash auto-completion script in this directory. @<:@default=yes@:>@]),
+    [],
+    [with_bash_completion_dir=yes])
+
+if test "x$with_bash_completion_dir" = "xyes"
+then
+    extra_args=
+
+    if test "x$prefix" != "xNONE"
+    then
+        extra_args="--define-variable=prefix=\"$prefix\""
+    fi
+
+    PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+        [BASH_COMPLETION_DIR="`eval pkg-config $extra_args --variable=completionsdir bash-completion`"],
+        [BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
+    PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+        [BASH_HELPERS_DIR="`eval pkg-config $extra_args --variable=helpersdir bash-completion`"],
+        [BASH_HELPERS_DIR="$datadir/bash-completion/helpers"])
+else
+    BASH_COMPLETION_DIR="$with_bash_completion_dir/completions"
+    BASH_HELPERS_DIR="$with_bash_completion_dir/helpers"
+fi
+
+AC_SUBST([BASH_COMPLETION_DIR])
+AC_SUBST([BASH_HELPERS_DIR])
+AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
 
 dnl build static plugins or not
 AC_MSG_CHECKING([whether to build static plugins or not])
@@ -228,6 +257,143 @@ if test "x$USE_POISONING" = xyes; then
   AC_DEFINE(USE_POISONING, 1,
     [Define if we should poison deallocated memory])
 fi
+
+dnl PTP support parts
+AC_MSG_CHECKING([whether PTP support can be enabled])
+case "$host_os" in
+  *android*)
+    dnl Can't run on Android because of permissions
+    HAVE_PTP=no
+    ;;
+  mingw*|pw32*|cygwin*)
+    dnl Not ported to Windows yet
+    HAVE_PTP=no
+    ;;
+  darwin*)
+    dnl Can't run on iOS because of permissions
+    AC_CHECK_HEADER(MobileCoreServices/MobileCoreServices.h, HAVE_PTP="no", HAVE_PTP="yes", [-])
+    ;;
+  linux*|darwin*|solaris*|netbsd*|freebsd*|openbsd*|kfreebsd*|dragonfly*|gnu*)
+    HAVE_PTP=yes
+    ;;
+  *)
+    HAVE_PTP=no
+    ;;
+esac
+AC_MSG_RESULT([$HAVE_PTP])
+
+dnl user/group to change to in gst-ptp-helper
+AC_ARG_WITH([ptp-helper-setuid-user],
+  AS_HELP_STRING([--with-ptp-helper-setuid-user],[User to switch to when installing gst-ptp-helper setuid root]),
+  [
+    if test "x$withval" != "x"
+    then
+      AC_DEFINE_UNQUOTED(HAVE_PTP_HELPER_SETUID_USER, "$withval", [PTP helper setuid user])
+    fi
+  ], []
+)
+
+dnl group/group to change to in gst-ptp-helper
+AC_ARG_WITH([ptp-helper-setuid-group],
+  AS_HELP_STRING([--with-ptp-helper-setuid-group],[Group to switch to when installing gst-ptp-helper setuid root]),
+  [
+    if test "x$withval" != "x"
+    then
+      AC_DEFINE_UNQUOTED(HAVE_PTP_HELPER_SETUID_GROUP, "$withval", [PTP helper setuid group])
+    fi
+  ], []
+)
+
+AC_ARG_WITH(
+  ptp-helper-permissions,
+  AC_HELP_STRING(
+    [--with-ptp-helper-permissions],
+    [how to gain PTP permissions (none, setuid-root, capabilities, auto)]),
+    [],
+    [with_ptp_helper_permissions=auto])
+
+gst_ptp_have_cap=no
+AG_GST_CHECK_LIBHEADER(CAP, cap,
+                       cap_init, ,
+                       sys/capability.h,
+                       CAP_LIBS="-lcap"
+                       AC_SUBST(CAP_LIBS)
+                       gst_ptp_have_cap=yes)
+
+AC_PATH_PROG([SETCAP], [setcap], [no], [$PATH:/usr/bin:/bin:/usr/sbin:/sbin])
+
+if test "x$HAVE_PTP" = "xyes"; then
+AC_DEFINE(HAVE_PTP, 1, [PTP support available])
+
+AC_MSG_CHECKING([for SIOCGIFCONF, SIOCGIFFLAGS and SIOCGIFHWADDR])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[
+        #include <sys/ioctl.h>
+        #include <net/if.h>
+    ]],
+    [[
+        struct ifreq ifr;
+        struct ifconf ifc;
+        ioctl(0, SIOCGIFCONF, &ifc);
+        ioctl(0, SIOCGIFFLAGS, &ifr);
+        ioctl(0, SIOCGIFHWADDR, &ifr);
+        int dummy = ifr.ifr_hwaddr.sa_data[0];
+    ]])], [
+        AC_MSG_RESULT(yes)
+        AC_DEFINE(HAVE_SIOCGIFCONF_SIOCGIFFLAGS_SIOCGIFHWADDR, 1, [SIOCGIFCONF, SIOCGIFFLAGS and SIOCGIFHWADDR is available])
+    ], [
+        AC_MSG_RESULT(no)
+])
+
+AC_MSG_CHECKING([for getifaddrs() and AF_LINK])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+    [[
+        #include <ifaddrs.h>
+        #include <net/if.h>
+        #include <net/if_dl.h>
+    ]],
+    [[
+        struct ifaddrs *ifaddr;
+        getifaddrs(&ifaddr);
+        int dummy = (ifaddr->ifa_flags & IFF_LOOPBACK) && ifaddr->ifa_addr->sa_family != AF_LINK;
+    ]])], [
+        AC_MSG_RESULT(yes)
+        AC_DEFINE(HAVE_GETIFADDRS_AF_LINK, 1, [getifaddrs() and AF_LINK is available])
+    ], [
+        AC_MSG_RESULT(no)
+    ])
+
+AC_MSG_CHECKING([how to install gst-ptp-helper])
+if test "x$with_ptp_helper_permissions" = "xauto"; then
+    if test "x$gst_ptp_have_cap" = "xyes" -a "x$SETCAP" != "xno"; then
+        with_ptp_helper_permissions="capabilities"
+    else
+        with_ptp_helper_permissions="setuid-root"
+    fi
+fi
+AC_MSG_RESULT([$with_ptp_helper_permissions])
+
+case "$with_ptp_helper_permissions" in
+  none)
+    ;;
+  setuid-root)
+     AC_DEFINE(HAVE_PTP_HELPER_SETUID, 1,
+        [Use setuid-root for permissions in PTP helper])
+    ;;
+  capabilities)
+     AC_DEFINE(HAVE_PTP_HELPER_CAPABILITIES, 1,
+        [Use capabilities for permissions in PTP helper])
+    ;;
+  *)
+    AC_MSG_ERROR(Invalid parameter [$with_ptp_helper_permissions])
+    ;;
+esac
+
+fi
+
+AM_CONDITIONAL(HAVE_PTP, test "x$HAVE_PTP" = "xyes")
+AM_CONDITIONAL(HAVE_PTP_HELPER_SETUID, test "x$with_ptp_helper_permissions" = "xsetuid-root")
+AM_CONDITIONAL(HAVE_PTP_HELPER_CAPABILITIES, test "x$with_ptp_helper_permissions" = "xcapabilities")
 
 dnl *** checks for platform ***
 
@@ -338,11 +504,28 @@ dnl Check for stdio_ext.f for __fbufsize
 AC_CHECK_HEADERS([stdio_ext.h], [], [], [AC_INCLUDES_DEFAULT])
 
 dnl check for pthreads
-AX_PTHREAD([HAVE_PTHREAD=yes], [HAVE_PTHREAD=no])
-AM_CONDITIONAL(HAVE_PTHREAD, test "x$HAVE_PTHREAD" = "xyes")
+dnl without arguments AX_PTHREAD() will do AC_DEFINE(HAVE_PTHREAD)
+dnl which later checks use in their test code
+AX_PTHREAD()
+AM_CONDITIONAL(HAVE_PTHREAD, test "x$ax_pthread_ok" = "xyes")
 
 dnl check for sys/prctl for setting thread name on Linux
 AC_CHECK_HEADERS([sys/prctl.h], [], [], [AC_INCLUDES_DEFAULT])
+
+dnl check for pthread_setname_np(const char*)
+dnl which is present on OS X 10.6, iOS 3.2 and above
+AC_MSG_CHECKING(for pthread_setname_np(const char*))
+AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM(
+        [#include <pthread.h>],
+        [pthread_setname_np("example")])],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID,1,
+        [Have function pthread_setname_np(const char*)])],
+    [AC_MSG_RESULT(no)])
+
+dnl check for sys/uio.h for writev()
+AC_CHECK_HEADERS([sys/uio.h], [], [], [AC_INCLUDES_DEFAULT])
 
 dnl Check for valgrind.h
 dnl separate from HAVE_VALGRIND because you can have the program, but not
@@ -416,6 +599,8 @@ AC_MSG_RESULT($have_tm_gmtoff)
 
 dnl *** checks for library functions ***
 
+AC_CHECK_FUNCS([strcasestr])
+
 AC_CHECK_FUNCS([gmtime_r])
 AC_CHECK_FUNCS([localtime_r])
 AC_CHECK_FUNCS([sigaction])
@@ -434,6 +619,14 @@ AC_CHECK_HEADERS([poll.h], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_FUNCS([poll])
 AC_CHECK_FUNCS([ppoll])
 AC_CHECK_FUNCS([pselect])
+
+dnl check for socketpair()
+AC_CHECK_FUNC(socketpair, [], [
+  AC_CHECK_LIB(socket, socketpair, [
+    SOCKET_LIBS="-lsocket"
+    AC_SUBST(SOCKET_LIBS)
+  ])
+])
 
 dnl ****************************************
 dnl *** GLib POLL* compatibility defines ***
@@ -775,12 +968,19 @@ AC_DEFINE_UNQUOTED(GST_PLUGIN_SCANNER_INSTALLED,
     "$GST_PLUGIN_SCANNER_INSTALLED", [location of the installed gst-plugin-scanner])
 AC_SUBST(GST_PLUGIN_SCANNER_INSTALLED)
 
+dnl ptp helper locations
+AS_AC_EXPAND(GST_PTP_HELPER_INSTALLED,${libexecdir}/gstreamer-$GST_API_VERSION/gst-ptp-helper)
+AC_DEFINE_UNQUOTED(GST_PTP_HELPER_INSTALLED,
+    "$GST_PTP_HELPER_INSTALLED", [location of the installed gst-ptp-helper])
+AC_SUBST(GST_PTP_HELPER_INSTALLED)
+
 dnl things for our internal libcheck (must be called even if building
 dnl libcheck is disabled because it defines conditionals)
 AG_GST_CHECK_CHECKS()
 
 AC_CONFIG_FILES(
 Makefile
+data/Makefile
 gst/Makefile
 gst/gstconfig.h
 gst/gstversion.h
@@ -791,7 +991,7 @@ libs/gst/Makefile
 libs/gst/base/Makefile
 libs/gst/check/Makefile
 libs/gst/check/libcheck/Makefile
-libs/gst/check/libcheck/check.h
+libs/gst/check/internal-check.h:libs/gst/check/libcheck/check.h.in
 libs/gst/controller/Makefile
 libs/gst/helpers/Makefile
 libs/gst/net/Makefile
@@ -807,13 +1007,12 @@ tests/examples/adapter/Makefile
 tests/examples/controller/Makefile
 tests/examples/stepping/Makefile
 tests/examples/helloworld/Makefile
-tests/examples/launch/Makefile
 tests/examples/manual/Makefile
 tests/examples/memory/Makefile
-tests/examples/metadata/Makefile
-tests/examples/queue/Makefile
+tests/examples/netclock/Makefile
+tests/examples/ptp/Makefile
+tests/examples/streamiddemux/Makefile
 tests/examples/streams/Makefile
-tests/examples/typefind/Makefile
 tools/Makefile
 common/Makefile
 common/m4/Makefile
@@ -915,6 +1114,7 @@ Configuration
 	Plugin support	           : ${enable_plugin}
 	Static plugins             : ${enable_static_plugins}
 	Unit testing support       : ${BUILD_CHECK}
+	PTP clock support          : ${HAVE_PTP}
 
 	Debug                      : ${USE_DEBUG}
 	Profiling                  : ${USE_PROFILING}

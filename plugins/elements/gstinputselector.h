@@ -66,8 +66,8 @@ struct _GstInputSelector {
   GstPad *srcpad;
 
   GstPad *active_sinkpad;
-  guint n_pads;
-  guint padcount;
+  guint n_pads;           /* number of pads */
+  guint padcount;         /* sequence number for pads */
   gboolean sync_streams;
   GstInputSelectorSyncMode sync_mode;
   gboolean cache_buffers;
@@ -76,14 +76,13 @@ struct _GstInputSelector {
 
   GMutex lock;
   GCond cond;
-  gboolean blocked;
+  gboolean eos;
+  gboolean eos_sent;
   gboolean flushing;
 };
 
 struct _GstInputSelectorClass {
   GstElementClass parent_class;
-
-  gint64 (*block)	(GstInputSelector *self);
 };
 
 G_GNUC_INTERNAL GType gst_input_selector_get_type (void);

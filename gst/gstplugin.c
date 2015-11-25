@@ -80,8 +80,7 @@ static char *_gst_plugin_fault_handler_filename = NULL;
 
 /* list of valid licenses.
  * One of these must be specified or the plugin won't be loaded
- * Contact gstreamer-devel@lists.sourceforge.net if your license should be
- * added.
+ * Please file a bug to request any additional license be added.
  *
  * GPL: http://www.gnu.org/copyleft/gpl.html
  * LGPL: http://www.gnu.org/copyleft/lesser.html
@@ -480,16 +479,18 @@ gst_plugin_register_func (GstPlugin * plugin, const GstPluginDesc * desc,
 {
   if (!gst_plugin_check_version (desc->major_version, desc->minor_version)) {
     if (GST_CAT_DEFAULT)
-      GST_WARNING ("plugin \"%s\" has incompatible version, not loading",
-          GST_STR_NULL (plugin->filename));
+      GST_WARNING ("plugin \"%s\" has incompatible version "
+          "(plugin: %d.%d, gst: %d,%d), not loading",
+          GST_STR_NULL (plugin->filename), desc->major_version,
+          desc->minor_version, GST_VERSION_MAJOR, GST_VERSION_MINOR);
     return NULL;
   }
 
   if (!desc->license || !desc->description || !desc->source ||
       !desc->package || !desc->origin) {
     if (GST_CAT_DEFAULT)
-      GST_WARNING ("plugin \"%s\" has incorrect GstPluginDesc, not loading",
-          GST_STR_NULL (plugin->filename));
+      GST_WARNING ("plugin \"%s\" has missing detail in GstPluginDesc, not "
+          "loading", GST_STR_NULL (plugin->filename));
     return NULL;
   }
 
@@ -676,19 +677,27 @@ static GMutex gst_plugin_loading_mutex;
 GstPlugin *
 gst_plugin_load_file (const gchar * filename, GError ** error)
 {
+  return _priv_gst_plugin_load_file_for_registry (filename, NULL, error);
+}
+
+GstPlugin *
+_priv_gst_plugin_load_file_for_registry (const gchar * filename,
+    GstRegistry * registry, GError ** error)
+{
   GstPluginDesc *desc;
   GstPlugin *plugin;
   GModule *module;
   gboolean ret;
   gpointer ptr;
   GStatBuf file_status;
-  GstRegistry *registry;
   gboolean new_plugin = TRUE;
   GModuleFlags flags;
 
   g_return_val_if_fail (filename != NULL, NULL);
 
-  registry = gst_registry_get ();
+  if (registry == NULL)
+    registry = gst_registry_get ();
+
   g_mutex_lock (&gst_plugin_loading_mutex);
 
   plugin = gst_registry_lookup (registry, filename);
@@ -706,7 +715,7 @@ gst_plugin_load_file (const gchar * filename, GError ** error)
   GST_CAT_DEBUG (GST_CAT_PLUGIN_LOADING, "attempt to load plugin \"%s\"",
       filename);
 
-  if (g_module_supported () == FALSE) {
+  if (!g_module_supported ()) {
     GST_CAT_DEBUG (GST_CAT_PLUGIN_LOADING, "module loading not supported");
     g_set_error (error,
         GST_PLUGIN_ERROR,
@@ -834,7 +843,7 @@ gst_plugin_load_file (const gchar * filename, GError ** error)
 
   if (new_plugin) {
     gst_object_ref (plugin);
-    gst_registry_add_plugin (gst_registry_get (), plugin);
+    gst_registry_add_plugin (registry, plugin);
   }
 
   g_mutex_unlock (&gst_plugin_loading_mutex);

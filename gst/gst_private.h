@@ -133,6 +133,10 @@ G_GNUC_INTERNAL  void _priv_gst_registry_cleanup (void);
 
 gboolean _gst_plugin_loader_client_run (void);
 
+G_GNUC_INTERNAL  GstPlugin * _priv_gst_plugin_load_file_for_registry (const gchar *filename,
+                                                                      GstRegistry * registry,
+                                                                      GError** error);
+
 /* Used in GstBin for manual state handling */
 G_GNUC_INTERNAL  void _priv_gst_element_state_changed (GstElement *element,
                       GstState oldstate, GstState newstate, GstState pending);
@@ -179,6 +183,16 @@ gint __gst_date_time_compare (const GstDateTime * dt1, const GstDateTime * dt2);
 
 G_GNUC_INTERNAL
 gchar * __gst_date_time_serialize (GstDateTime * datetime, gboolean with_usecs);
+
+/* Non-static, for access from the testsuite, but not for external use */
+gboolean
+_priv_gst_do_linear_regression (GstClockTime *times, guint n,
+    GstClockTime * m_num, GstClockTime * m_denom, GstClockTime * b,
+    GstClockTime * xbase, gdouble * r_squared);
+
+/* For use in gstdebugutils */
+G_GNUC_INTERNAL
+GstCapsFeatures * __gst_caps_get_features_unchecked (const GstCaps * caps, guint idx);
 
 #ifndef GST_DISABLE_REGISTRY
 /* Secret variable to initialise gst without registry cache */
@@ -244,6 +258,11 @@ GST_EXPORT GstDebugCategory *GST_CAT_CONTEXT;
 #define GST_CAT_POLL _priv_GST_CAT_POLL
 extern GstDebugCategory *_priv_GST_CAT_POLL;
 
+#define GST_CAT_PROTECTION _priv_GST_CAT_PROTECTION
+extern GstDebugCategory *_priv_GST_CAT_PROTECTION;
+
+extern GstClockTime _priv_gst_info_start_time;
+
 #else
 
 #define GST_CAT_GST_INIT         NULL
@@ -281,6 +300,7 @@ extern GstDebugCategory *_priv_GST_CAT_POLL;
 #define GST_CAT_META             NULL
 #define GST_CAT_LOCKING          NULL
 #define GST_CAT_CONTEXT          NULL
+#define GST_CAT_PROTECTION       NULL
 
 #endif
 
@@ -417,6 +437,9 @@ struct _GstDeviceProviderFactoryClass {
 
   gpointer _gst_reserved[GST_PADDING];
 };
+
+/* privat flag used by GstBus / GstMessage */
+#define GST_MESSAGE_FLAG_ASYNC_DELIVERY (GST_MINI_OBJECT_FLAG_LAST << 0)
 
 G_END_DECLS
 #endif /* __GST_PRIVATE_H__ */

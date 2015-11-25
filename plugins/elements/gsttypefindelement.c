@@ -135,10 +135,6 @@ static void gst_type_find_element_set_property (GObject * object,
 static void gst_type_find_element_get_property (GObject * object,
     guint prop_id, GValue * value, GParamSpec * pspec);
 
-#if 0
-static const GstEventMask *gst_type_find_element_src_event_mask (GstPad * pad);
-#endif
-
 static gboolean gst_type_find_element_src_event (GstPad * pad,
     GstObject * parent, GstEvent * event);
 static gboolean gst_type_find_handle_src_query (GstPad * pad,
@@ -164,7 +160,7 @@ static gboolean gst_type_find_element_activate_src_mode (GstPad * pad,
     GstObject * parent, GstPadMode mode, gboolean active);
 static GstFlowReturn
 gst_type_find_element_chain_do_typefinding (GstTypeFindElement * typefind,
-    gboolean check_avail);
+    gboolean check_avail, gboolean at_eos);
 static void gst_type_find_element_send_cached_events (GstTypeFindElement *
     typefind);
 
@@ -223,7 +219,7 @@ gst_type_find_element_class_init (GstTypeFindElementClass * typefind_class)
    * been found.
    */
   gst_type_find_element_signals[HAVE_TYPE] = g_signal_new ("have-type",
-      G_TYPE_FROM_CLASS (typefind_class), G_SIGNAL_RUN_FIRST,
+      G_TYPE_FROM_CLASS (typefind_class), G_SIGNAL_RUN_LAST,
       G_STRUCT_OFFSET (GstTypeFindElementClass, have_type), NULL, NULL,
       g_cclosure_marshal_generic, G_TYPE_NONE, 2,
       G_TYPE_UINT, GST_TYPE_CAPS | G_SIGNAL_TYPE_STATIC_SCOPE);
@@ -504,17 +500,20 @@ gst_type_find_element_src_event (GstPad * pad, GstObject * parent,
     GstEvent * event)
 {
   GstTypeFindElement *typefind = GST_TYPE_FIND_ELEMENT (parent);
+  gboolean result;
 
   if (typefind->mode != MODE_NORMAL) {
     /* need to do more? */
-    gst_mini_object_unref (GST_MINI_OBJECT_CAST (event));
+    gst_event_unref (event);
     return FALSE;
   }
 
   /* Only handle seeks here if driving the pipeline */
   if (typefind->segment.format != GST_FORMAT_UNDEFINED &&
       GST_EVENT_TYPE (event) == GST_EVENT_SEEK) {
-    return gst_type_find_element_seek (typefind, event);
+    result = gst_type_find_element_seek (typefind, event);
+    gst_event_unref (event);
+    return result;
   } else {
     return gst_pad_push_event (typefind->sink, event);
   }
@@ -528,6 +527,7 @@ start_typefinding (GstTypeFindElement * typefind)
   GST_OBJECT_LOCK (typefind);
   if (typefind->caps)
     gst_caps_replace (&typefind->caps, NULL);
+  typefind->initial_offset = GST_BUFFER_OFFSET_NONE;
   GST_OBJECT_UNLOCK (typefind);
 
   typefind->mode = MODE_TYPEFIND;
@@ -563,6 +563,7 @@ stop_typefinding (GstTypeFindElement * typefind)
   buffer = gst_adapter_take_buffer (typefind->adapter, avail);
   GST_BUFFER_PTS (buffer) = pts;
   GST_BUFFER_DTS (buffer) = dts;
+  GST_BUFFER_OFFSET (buffer) = typefind->initial_offset;
   GST_OBJECT_UNLOCK (typefind);
 
   if (!push_cached_buffers) {
@@ -642,7 +643,7 @@ gst_type_find_element_sink_event (GstPad * pad, GstObject * parent,
         case GST_EVENT_EOS:
         {
           GST_INFO_OBJECT (typefind, "Got EOS and no type found yet");
-          gst_type_find_element_chain_do_typefinding (typefind, FALSE);
+          gst_type_find_element_chain_do_typefinding (typefind, FALSE, TRUE);
 
           res = gst_pad_push_event (typefind->src, event);
           break;
@@ -653,13 +654,12 @@ gst_type_find_element_sink_event (GstPad * pad, GstObject * parent,
           GST_OBJECT_LOCK (typefind);
 
           for (l = typefind->cached_events; l; l = l->next) {
-            if (!GST_EVENT_IS_STICKY (l->data) ||
-                GST_EVENT_TYPE (l->data) == GST_EVENT_SEGMENT ||
-                GST_EVENT_TYPE (l->data) == GST_EVENT_EOS) {
-              gst_event_unref (l->data);
-            } else {
+            if (GST_EVENT_IS_STICKY (l->data) &&
+                GST_EVENT_TYPE (l->data) != GST_EVENT_SEGMENT &&
+                GST_EVENT_TYPE (l->data) != GST_EVENT_EOS) {
               gst_pad_store_sticky_event (typefind->src, l->data);
             }
+            gst_event_unref (l->data);
           }
 
           g_list_free (typefind->cached_events);
@@ -844,10 +844,12 @@ gst_type_find_element_chain (GstPad * pad, GstObject * parent,
     case MODE_TYPEFIND:
     {
       GST_OBJECT_LOCK (typefind);
+      if (typefind->initial_offset == GST_BUFFER_OFFSET_NONE)
+        typefind->initial_offset = GST_BUFFER_OFFSET (buffer);
       gst_adapter_push (typefind->adapter, buffer);
       GST_OBJECT_UNLOCK (typefind);
 
-      res = gst_type_find_element_chain_do_typefinding (typefind, TRUE);
+      res = gst_type_find_element_chain_do_typefinding (typefind, TRUE, FALSE);
 
       if (typefind->mode == MODE_ERROR)
         res = GST_FLOW_ERROR;
@@ -864,7 +866,7 @@ gst_type_find_element_chain (GstPad * pad, GstObject * parent,
 
 static GstFlowReturn
 gst_type_find_element_chain_do_typefinding (GstTypeFindElement * typefind,
-    gboolean check_avail)
+    gboolean check_avail, gboolean at_eos)
 {
   GstTypeFindProbability probability;
   GstCaps *caps = NULL;
@@ -923,10 +925,17 @@ gst_type_find_element_chain_do_typefinding (GstTypeFindElement * typefind,
 
 not_enough_data:
   {
-    GST_DEBUG_OBJECT (typefind, "not enough data for typefinding yet "
-        "(%" G_GSIZE_FORMAT " bytes)", avail);
     GST_OBJECT_UNLOCK (typefind);
-    return GST_FLOW_OK;
+
+    if (at_eos) {
+      GST_ELEMENT_ERROR (typefind, STREAM, TYPE_NOT_FOUND,
+          (_("Stream contains not enough data.")), ("Can't typefind stream"));
+      return GST_FLOW_ERROR;
+    } else {
+      GST_DEBUG_OBJECT (typefind, "not enough data for typefinding yet "
+          "(%" G_GSIZE_FORMAT " bytes)", avail);
+      return GST_FLOW_OK;
+    }
   }
 no_type_found:
   {
@@ -937,11 +946,18 @@ no_type_found:
   }
 wait_for_data:
   {
-    GST_DEBUG_OBJECT (typefind,
-        "no caps found with %" G_GSIZE_FORMAT " bytes of data, "
-        "waiting for more data", avail);
     GST_OBJECT_UNLOCK (typefind);
-    return GST_FLOW_OK;
+
+    if (at_eos) {
+      GST_ELEMENT_ERROR (typefind, STREAM, TYPE_NOT_FOUND,
+          (_("Stream contains not enough data.")), ("Can't typefind stream"));
+      return GST_FLOW_ERROR;
+    } else {
+      GST_DEBUG_OBJECT (typefind,
+          "no caps found with %" G_GSIZE_FORMAT " bytes of data, "
+          "waiting for more data", avail);
+      return GST_FLOW_OK;
+    }
   }
 low_probability:
   {
@@ -1181,14 +1197,17 @@ gst_type_find_element_activate_sink_mode (GstPad * pad, GstObject * parent,
         res = TRUE;
       } else {
         res = gst_pad_stop_task (pad);
+        gst_segment_init (&typefind->segment, GST_FORMAT_UNDEFINED);
       }
       break;
     case GST_PAD_MODE_PUSH:
-      if (active)
+      if (active) {
+        gst_segment_init (&typefind->segment, GST_FORMAT_UNDEFINED);
         start_typefinding (typefind);
-      else
+      } else {
         stop_typefinding (typefind);
-
+        gst_segment_init (&typefind->segment, GST_FORMAT_UNDEFINED);
+      }
       res = TRUE;
       break;
     default:

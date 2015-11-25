@@ -32,7 +32,7 @@
  * <refsect2>
  * <title>Example launch line</title>
  * |[
- * gst-launch -v fakesrc num-buffers=5 ! fakesink
+ * gst-launch-1.0 -v fakesrc num-buffers=5 ! fakesink
  * ]| This pipeline will push 5 empty buffers to the fakesink element and then
  * sends an EOS.
  * </refsect2>
@@ -131,7 +131,7 @@ gst_fake_src_output_get_type (void)
 
   if (!fakesrc_output_type) {
     fakesrc_output_type =
-        g_enum_register_static ("GstFakeSrcOutput", fakesrc_output);
+        g_enum_register_static ("GstFakeSrcOutputType", fakesrc_output);
   }
   return fakesrc_output_type;
 }
@@ -183,7 +183,7 @@ gst_fake_src_filltype_get_type (void)
   static const GEnumValue fakesrc_filltype[] = {
     {FAKE_SRC_FILLTYPE_NOTHING, "Leave data as malloced", "nothing"},
     {FAKE_SRC_FILLTYPE_ZERO, "Fill buffers with zeros", "zero"},
-    {FAKE_SRC_FILLTYPE_RANDOM, "Fill buffers with random crap", "random"},
+    {FAKE_SRC_FILLTYPE_RANDOM, "Fill buffers with random data", "random"},
     {FAKE_SRC_FILLTYPE_PATTERN, "Fill buffers with pattern 0x00 -> 0xff",
         "pattern"},
     {FAKE_SRC_FILLTYPE_PATTERN_CONT,
@@ -279,9 +279,10 @@ gst_fake_src_class_init (GstFakeSrcClass * klass)
   g_object_class_install_property (gobject_class, PROP_SYNC,
       g_param_spec_boolean ("sync", "Sync", "Sync to the clock to the datarate",
           DEFAULT_SYNC, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /*  FIXME 2.0: Remove unused pattern property. Not implemented */
   g_object_class_install_property (gobject_class, PROP_PATTERN,
-      g_param_spec_string ("pattern", "pattern", "pattern", DEFAULT_PATTERN,
-          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+      g_param_spec_string ("pattern", "pattern", "Set the pattern (unused)",
+          DEFAULT_PATTERN, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
   pspec_last_message = g_param_spec_string ("last-message", "last-message",
       "The last status message", NULL,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
@@ -555,7 +556,6 @@ gst_fake_src_get_property (GObject * object, guint prop_id, GValue * value,
       g_value_set_boolean (value, src->sync);
       break;
     case PROP_PATTERN:
-      g_value_set_string (value, src->pattern);
       break;
     case PROP_SILENT:
       g_value_set_boolean (value, src->silent);

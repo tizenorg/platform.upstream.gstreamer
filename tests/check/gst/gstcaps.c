@@ -39,7 +39,7 @@ GST_START_TEST (test_from_string)
     to_str = gst_caps_to_string (caps);
     fail_if (to_str == NULL,
         "Could not convert caps back to string %s\n", caps_list[i]);
-    caps2 = gst_caps_from_string (caps_list[i]);
+    caps2 = gst_caps_from_string (to_str);
     fail_if (caps2 == NULL, "Could not create caps from string %s\n", to_str);
 
     fail_unless (gst_caps_is_equal (caps, caps));
@@ -934,6 +934,105 @@ GST_START_TEST (test_intersect_duplication)
 
 GST_END_TEST;
 
+GST_START_TEST (test_intersect_flagset)
+{
+  GstCaps *c1, *c2, *test;
+  GType test_flagset_type;
+  GstSeekFlags test_flags, test_mask;
+  gchar *test_string;
+
+  /* Test that matching bits inside the mask intersect,
+   * and bits outside the mask don't matter */
+  c1 = gst_caps_from_string ("test/x-caps,field=ffd81d:fffff0");
+  c2 = gst_caps_from_string ("test/x-caps,field=0fd81f:0ffff0");
+
+  test = gst_caps_intersect_full (c1, c2, GST_CAPS_INTERSECT_FIRST);
+  fail_unless_equals_int (gst_caps_get_size (test), 1);
+  fail_unless (gst_caps_is_equal (c1, test));
+  gst_caps_unref (c1);
+  gst_caps_unref (c2);
+  gst_caps_unref (test);
+
+  /* Test that non-matching bits in the mask don't intersect */
+  c1 = gst_caps_from_string ("test/x-caps,field=ff001d:0ffff0");
+  c2 = gst_caps_from_string ("test/x-caps,field=0fd81f:0ffff0");
+
+  test = gst_caps_intersect_full (c1, c2, GST_CAPS_INTERSECT_FIRST);
+  fail_unless (gst_caps_is_empty (test));
+  gst_caps_unref (c1);
+  gst_caps_unref (c2);
+  gst_caps_unref (test);
+
+  /* Check custom flags type serialisation and de-serialisation */
+  test_flagset_type = gst_flagset_register (GST_TYPE_SEEK_FLAGS);
+  fail_unless (g_type_is_a (test_flagset_type, GST_TYPE_FLAG_SET));
+
+  test_flags =
+      GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_TRICKMODE |
+      GST_SEEK_FLAG_TRICKMODE_KEY_UNITS;
+  test_mask =
+      GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_TRICKMODE |
+      GST_SEEK_FLAG_TRICKMODE_NO_AUDIO;
+
+  c1 = gst_caps_new_simple ("test/x-caps", "field", test_flagset_type,
+      test_flags, test_mask, NULL);
+
+  test_string = gst_caps_to_string (c1);
+  fail_if (test_string == NULL);
+
+  GST_DEBUG ("Serialised caps to %s", test_string);
+  c2 = gst_caps_from_string (test_string);
+  g_free (test_string);
+
+  fail_unless (gst_caps_is_equal (c1, c2));
+
+  gst_caps_unref (c1);
+  gst_caps_unref (c2);
+}
+
+GST_END_TEST;
+
+GST_START_TEST (test_union)
+{
+  GstCaps *c1, *c2, *test, *expect;
+
+  /* Test that matching bits inside the masks union OK, */
+  c1 = gst_caps_from_string ("test/x-caps,field=ffd81d:0ffff0");
+  c2 = gst_caps_from_string ("test/x-caps,field=0fd81f:0ffff0");
+
+  test = gst_caps_merge (c1, c2);
+  test = gst_caps_simplify (test);
+  /* c1, c2 now invalid */
+  fail_unless_equals_int (gst_caps_get_size (test), 1);
+  gst_caps_unref (test);
+
+  /* Test that non-intersecting sets of masked bits are OK */
+  c1 = gst_caps_from_string ("test/x-caps,field=ff001d:0ffff0");
+  c2 = gst_caps_from_string ("test/x-caps,field=4fd81f:f00000");
+  expect = gst_caps_from_string ("test/x-caps,field=4f001d:fffff0");
+  test = gst_caps_simplify (gst_caps_merge (c1, c2));
+  /* c1, c2 now invalid */
+  GST_LOG ("Expected caps %" GST_PTR_FORMAT " got %" GST_PTR_FORMAT "\n",
+      expect, test);
+  fail_unless (gst_caps_is_equal (test, expect));
+  gst_caps_unref (test);
+  gst_caps_unref (expect);
+
+  /* Test that partially-intersecting sets of masked bits that match are OK */
+  c1 = gst_caps_from_string ("test/x-caps,field=ff001d:0ffff0");
+  c2 = gst_caps_from_string ("test/x-caps,field=4fd81f:ff0000");
+  expect = gst_caps_from_string ("test/x-caps,field=4f001d:fffff0");
+  test = gst_caps_simplify (gst_caps_merge (c1, c2));
+  /* c1, c2 now invalid */
+  GST_LOG ("Expected caps %" GST_PTR_FORMAT " got %" GST_PTR_FORMAT "\n",
+      expect, test);
+  fail_unless (gst_caps_is_equal (test, expect));
+  gst_caps_unref (test);
+  gst_caps_unref (expect);
+}
+
+GST_END_TEST;
+
 static gboolean
 _caps_is_fixed_foreach (GQuark field_id, const GValue * value, gpointer unused)
 {
@@ -1122,6 +1221,7 @@ GST_START_TEST (test_features)
   gst_caps_features_add (f1, "memory:VASurface");
 
   fail_unless (gst_caps_features_is_equal (f1, gst_caps_get_features (c1, 0)));
+  fail_if (gst_caps_can_intersect (c1, c2));
 
   f2 = gst_caps_get_features (c2, 0);
   fail_unless (gst_caps_features_is_equal
@@ -1160,6 +1260,131 @@ GST_START_TEST (test_special_caps)
 }
 
 GST_END_TEST;
+
+static gboolean
+foreach_append_function (GstCapsFeatures * features, GstStructure * structure,
+    gpointer user_data)
+{
+  GstCaps *caps = user_data;
+
+  gst_caps_append_structure_full (caps, gst_structure_copy (structure),
+      features ? gst_caps_features_copy (features) : NULL);
+
+  return TRUE;
+}
+
+GST_START_TEST (test_foreach)
+{
+  GstCaps *caps, *caps2;
+
+  caps =
+      gst_caps_from_string
+      ("video/x-raw, format=I420; video/x-raw(foo:bar); video/x-h264");
+  caps2 = gst_caps_new_empty ();
+  fail_unless (gst_caps_foreach (caps, foreach_append_function, caps2));
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+
+  caps = gst_caps_new_empty ();
+  caps2 = gst_caps_new_empty ();
+  fail_unless (gst_caps_foreach (caps, foreach_append_function, caps2));
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+}
+
+GST_END_TEST;
+
+static gboolean
+map_function (GstCapsFeatures * features, GstStructure * structure,
+    gpointer user_data)
+{
+  /* Remove caps features if there are any, otherwise add some dummy */
+  if (gst_caps_features_contains (features, "foo:bar")) {
+    gst_caps_features_remove (features, "foo:bar");
+  } else {
+    gst_caps_features_add (features, "foo:bar");
+    gst_caps_features_remove (features, GST_CAPS_FEATURE_MEMORY_SYSTEM_MEMORY);
+  }
+
+  /* Set some dummy integer in the structure */
+  gst_structure_set (structure, "foo", G_TYPE_INT, 123, NULL);
+
+  return TRUE;
+}
+
+GST_START_TEST (test_map_in_place)
+{
+  GstCaps *caps, *caps2;
+
+  caps =
+      gst_caps_from_string
+      ("video/x-raw, format=I420; video/x-raw(foo:bar); video/x-h264");
+  caps2 =
+      gst_caps_from_string
+      ("video/x-raw(foo:bar), foo=(int)123, format=I420; video/x-raw, foo=(int)123; video/x-h264(foo:bar), foo=(int)123");
+  fail_unless (gst_caps_map_in_place (caps, map_function, NULL));
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+
+  caps = gst_caps_new_empty ();
+  caps2 = gst_caps_new_empty ();
+  fail_unless (gst_caps_map_in_place (caps, map_function, NULL));
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+}
+
+GST_END_TEST;
+
+static gboolean
+filter_map_function (GstCapsFeatures * features, GstStructure * structure,
+    gpointer user_data)
+{
+  if (!gst_structure_has_name (structure, "video/x-raw"))
+    return FALSE;
+
+  if (!gst_caps_features_contains (features, "foo:bar"))
+    return FALSE;
+
+  /* Set some dummy integer in the structure */
+  gst_structure_set (structure, "foo", G_TYPE_INT, 123, NULL);
+
+  return TRUE;
+}
+
+GST_START_TEST (test_filter_and_map_in_place)
+{
+  GstCaps *caps, *caps2;
+
+  caps =
+      gst_caps_from_string
+      ("video/x-raw, format=I420; video/x-raw(foo:bar); video/x-h264");
+  caps2 = gst_caps_from_string ("video/x-raw(foo:bar), foo=(int)123");
+  gst_caps_filter_and_map_in_place (caps, filter_map_function, NULL);
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+
+  caps = gst_caps_from_string ("video/x-raw, format=I420; video/x-h264");
+  caps2 = gst_caps_new_empty ();
+  gst_caps_filter_and_map_in_place (caps, filter_map_function, NULL);
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+
+  caps = gst_caps_new_empty ();
+  caps2 = gst_caps_new_empty ();
+  gst_caps_filter_and_map_in_place (caps, filter_map_function, NULL);
+  fail_unless (gst_caps_is_strictly_equal (caps, caps2));
+  gst_caps_unref (caps);
+  gst_caps_unref (caps2);
+}
+
+GST_END_TEST;
+
 static Suite *
 gst_caps_suite (void)
 {
@@ -1185,10 +1410,15 @@ gst_caps_suite (void)
   tcase_add_test (tc_chain, test_intersect_first);
   tcase_add_test (tc_chain, test_intersect_first2);
   tcase_add_test (tc_chain, test_intersect_duplication);
+  tcase_add_test (tc_chain, test_intersect_flagset);
+  tcase_add_test (tc_chain, test_union);
   tcase_add_test (tc_chain, test_normalize);
   tcase_add_test (tc_chain, test_broken);
   tcase_add_test (tc_chain, test_features);
   tcase_add_test (tc_chain, test_special_caps);
+  tcase_add_test (tc_chain, test_foreach);
+  tcase_add_test (tc_chain, test_map_in_place);
+  tcase_add_test (tc_chain, test_filter_and_map_in_place);
 
   return s;
 }

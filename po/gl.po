@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 1.0.3\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2012-12-15 03:29+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
@@ -932,6 +932,12 @@ msgstr ""
 "estabelecer esta propiedade obtense unha referencia do obxecto GstCaps "
 "fornecido."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Non se especificou un directorio temporal."
 
@@ -998,6 +1004,10 @@ msgstr "forzar as capacidades"
 msgid "force caps without doing a typefind"
 msgstr "forzar as capacidades sen facer un «typefind»"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "O fluxo non contén datos."
+
 msgid "Stream contains no data."
 msgstr "O fluxo non contén datos."
 
@@ -1009,6 +1019,9 @@ msgstr "lexíbel"
 
 msgid "writable"
 msgstr "escribíbel"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "controlábel"
@@ -1209,11 +1222,13 @@ msgstr "Non mostrar ningunha información de progreso"
 msgid "Output messages"
 msgstr "Mensaxes de saída"
 
-msgid "Do not output status information of TYPE"
-msgstr "Non sacar a saída da información de estado do TIPO"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
+msgstr ""
 
-msgid "TYPE1,TYPE2,..."
-msgstr "TIPO1,TIPO2,…"
+msgid "PROPERTY-NAME"
+msgstr ""
 
 msgid "Do not install a fault handler"
 msgstr "Non instalar un manexador predeterminado"
@@ -1291,6 +1306,12 @@ msgstr "Estabelecendo a tubería a NULL...\n"
 
 msgid "Freeing pipeline ...\n"
 msgstr "Liberando a tubería...\n"
+
+#~ msgid "Do not output status information of TYPE"
+#~ msgstr "Non sacar a saída da información de estado do TIPO"
+
+#~ msgid "TYPE1,TYPE2,..."
+#~ msgstr "TIPO1,TIPO2,…"
 
 #~ msgid "link without source element"
 #~ msgstr "ligazón sen elemento orixe"

@@ -71,6 +71,23 @@ typedef gboolean (*GstStructureMapFunc)     (GQuark   field_id,
                                              gpointer user_data);
 
 /**
+ * GstStructureFilterMapFunc:
+ * @field_id: the #GQuark of the field name
+ * @value: the #GValue of the field
+ * @user_data: user data
+ *
+ * A function that will be called in gst_structure_filter_and_map_in_place().
+ * The function may modify @value, and the value will be removed from
+ * the structure if %FALSE is returned.
+ *
+ * Returns: %TRUE if the field should be preserved, %FALSE if it
+ * should be removed.
+ */
+typedef gboolean (*GstStructureFilterMapFunc) (GQuark   field_id,
+                                               GValue * value,
+                                               gpointer user_data);
+
+/**
  * GstStructure:
  * @type: the GType of a structure
  *
@@ -198,6 +215,10 @@ gboolean              gst_structure_map_in_place         (GstStructure        * 
                                                           GstStructureMapFunc   func,
                                                           gpointer              user_data);
 
+void                  gst_structure_filter_and_map_in_place (GstStructure        * structure,
+                                                          GstStructureFilterMapFunc   func,
+                                                          gpointer              user_data);
+
 gint                  gst_structure_n_fields             (const GstStructure  * structure);
 
 const gchar *         gst_structure_nth_field_name       (const GstStructure  * structure,
@@ -266,6 +287,11 @@ gboolean              gst_structure_get_fraction         (const GstStructure  * 
                                                           const gchar         * fieldname,
                                                           gint                * value_numerator,
                                                           gint                * value_denominator);
+
+gboolean              gst_structure_get_flagset          (const GstStructure  * structure,
+                                                          const gchar         * fieldname,
+                                                          guint               * value_flags,
+                                                          guint               * value_mask);
 
 gchar *               gst_structure_to_string    (const GstStructure * structure) G_GNUC_MALLOC;
 

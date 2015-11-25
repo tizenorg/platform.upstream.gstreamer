@@ -28,6 +28,7 @@
 #include <gst/gst.h>
 
 #include "gstcapsfilter.h"
+#include "gstconcat.h"
 #include "gstdownloadbuffer.h"
 #include "gstfakesink.h"
 #include "gstfakesrc.h"
@@ -45,12 +46,16 @@
 #include "gsttee.h"
 #include "gsttypefindelement.h"
 #include "gstvalve.h"
+#include "gststreamiddemux.h"
 
 static gboolean
 plugin_init (GstPlugin * plugin)
 {
   if (!gst_element_register (plugin, "capsfilter", GST_RANK_NONE,
           gst_capsfilter_get_type ()))
+    return FALSE;
+  if (!gst_element_register (plugin, "concat", GST_RANK_NONE,
+          gst_concat_get_type ()))
     return FALSE;
   if (!gst_element_register (plugin, "downloadbuffer", GST_RANK_NONE,
           gst_download_buffer_get_type ()))
@@ -103,6 +108,10 @@ plugin_init (GstPlugin * plugin)
     return FALSE;
   if (!gst_element_register (plugin, "valve", GST_RANK_NONE,
           gst_valve_get_type ()))
+    return FALSE;
+
+  if (!gst_element_register (plugin, "streamiddemux", GST_RANK_PRIMARY,
+          gst_streamid_demux_get_type ()))
     return FALSE;
 
   return TRUE;

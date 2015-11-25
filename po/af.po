@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 0.9.7\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2005-12-05 11:45+0200\n"
 "Last-Translator: Petri Jooste <rkwjpj@puk.ac.za>\n"
 "Language-Team: Afrikaans <i18n@af.org.za>\n"
@@ -939,6 +939,12 @@ msgid ""
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr ""
 
@@ -1007,6 +1013,10 @@ msgid "force caps without doing a typefind"
 msgstr ""
 
 #, fuzzy
+msgid "Stream contains not enough data."
+msgstr "album wat hierdie data bevat"
+
+#, fuzzy
 msgid "Stream contains no data."
 msgstr "album wat hierdie data bevat"
 
@@ -1019,6 +1029,9 @@ msgstr ""
 #, fuzzy
 msgid "writable"
 msgstr "titel"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr ""
@@ -1213,11 +1226,13 @@ msgstr "Moenie statusinligting van TIPE wys nie"
 msgid "Output messages"
 msgstr "Afvoerboodskappe"
 
-msgid "Do not output status information of TYPE"
-msgstr "Moenie statusinligting van TIPE wys nie"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
+msgstr ""
 
-msgid "TYPE1,TYPE2,..."
-msgstr "TIPE1, TIPE2,..."
+msgid "PROPERTY-NAME"
+msgstr ""
 
 msgid "Do not install a fault handler"
 msgstr "Moenie 'n fouthanteerder installeer nie"
@@ -1298,6 +1313,12 @@ msgstr "Pyplyn word gestel na NULL ...\n"
 #, fuzzy
 msgid "Freeing pipeline ...\n"
 msgstr "Pyplyn word gestel na NULL ...\n"
+
+#~ msgid "Do not output status information of TYPE"
+#~ msgstr "Moenie statusinligting van TIPE wys nie"
+
+#~ msgid "TYPE1,TYPE2,..."
+#~ msgstr "TIPE1, TIPE2,..."
 
 #~ msgid "link without source element"
 #~ msgstr "verbinding sonder bron-element"

@@ -21,8 +21,8 @@
  */
 
 
-#ifndef __GST_CAPSFILTER_H__
-#define __GST_CAPSFILTER_H__
+#ifndef __GST_CAPS_FILTER_H__
+#define __GST_CAPS_FILTER_H__
 
 
 #include <gst/gst.h>
@@ -30,19 +30,31 @@
 
 G_BEGIN_DECLS
 
-#define GST_TYPE_CAPSFILTER \
+#define GST_TYPE_CAPS_FILTER \
   (gst_capsfilter_get_type())
-#define GST_CAPSFILTER(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_CAPSFILTER,GstCapsFilter))
-#define GST_CAPSFILTER_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_CAPSFILTER,GstCapsFilterClass))
-#define GST_IS_CAPSFILTER(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_CAPSFILTER))
-#define GST_IS_CAPSFILTER_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_CAPSFILTER))
+#define GST_CAPS_FILTER(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_CAPS_FILTER,GstCapsFilter))
+#define GST_CAPS_FILTER_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_CAPS_FILTER,GstCapsFilterClass))
+#define GST_IS_CAPS_FILTER(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_CAPS_FILTER))
+#define GST_IS_CAPS_FILTER_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_CAPS_FILTER))
 
 typedef struct _GstCapsFilter GstCapsFilter;
 typedef struct _GstCapsFilterClass GstCapsFilterClass;
+
+/**
+ * GstCapsFilterCapsChangeMode:
+ * @GST_CAPS_FILTER_CAPS_CHANGE_MODE_IMMEDIATE: Only accept the current filter caps
+ * @GST_CAPS_FILTER_CAPS_CHANGE_MODE_DELAYED: Temporarily accept previous filter caps
+ *
+ * Filter caps change behaviour
+ */
+typedef enum {
+  GST_CAPS_FILTER_CAPS_CHANGE_MODE_IMMEDIATE,
+  GST_CAPS_FILTER_CAPS_CHANGE_MODE_DELAYED
+} GstCapsFilterCapsChangeMode;
 
 /**
  * GstCapsFilter:
@@ -53,7 +65,11 @@ struct _GstCapsFilter {
   GstBaseTransform trans;
 
   GstCaps *filter_caps;
+  gboolean filter_caps_used;
+  GstCapsFilterCapsChangeMode caps_change_mode;
+
   GList *pending_events;
+  GList *previous_caps;
 };
 
 struct _GstCapsFilterClass {
@@ -64,5 +80,5 @@ G_GNUC_INTERNAL GType gst_capsfilter_get_type (void);
 
 G_END_DECLS
 
-#endif /* __GST_CAPSFILTER_H__ */
+#endif /* __GST_CAPS_FILTER_H__ */
 

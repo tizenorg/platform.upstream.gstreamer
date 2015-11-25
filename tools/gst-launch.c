@@ -35,6 +35,9 @@
 #ifdef G_OS_UNIX
 #include <glib-unix.h>
 #include <sys/wait.h>
+#elif defined (G_OS_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 #include <locale.h>             /* for LC_ALL */
 #include "tools.h"
@@ -368,6 +371,7 @@ print_tag (const GstTagList * list, const gchar * tag, gpointer unused)
         g_warning ("Couldn't fetch sample for %s tag", tag);
         g_assert_not_reached ();
       }
+      gst_sample_unref (sample);
     } else if (gst_tag_get_type (tag) == GST_TYPE_DATE_TIME) {
       GstDateTime *dt = NULL;
 
@@ -461,11 +465,14 @@ print_toc_entry (gpointer data, gpointer user_data)
   g_list_foreach (subentries, print_toc_entry, GUINT_TO_POINTER (indent));
 }
 
-#ifdef G_OS_UNIX
+#if defined(G_OS_UNIX) || defined(G_OS_WIN32)
 static guint signal_watch_id;
+#if defined(G_OS_WIN32)
+static GstElement *intr_pipeline;
+#endif
 #endif
 
-#ifdef G_OS_UNIX
+#if defined(G_OS_UNIX) || defined(G_OS_WIN32)
 /* As the interrupt handler is dispatched from GMainContext as a GSourceFunc
  * handler, we can react to this by posting a message. */
 static gboolean
@@ -486,6 +493,15 @@ intr_handler (gpointer user_data)
   return FALSE;
 }
 
+#if defined(G_OS_WIN32)         /* G_OS_UNIX */
+static BOOL WINAPI
+w32_intr_handler (DWORD dwCtrlType)
+{
+  intr_handler ((gpointer) intr_pipeline);
+  intr_pipeline = NULL;
+  return TRUE;
+}
+#endif /* G_OS_WIN32 */
 #endif /* G_OS_UNIX */
 
 /* returns ELR_ERROR if there was an error
@@ -506,6 +522,10 @@ event_loop (GstElement * pipeline, gboolean blocking, gboolean do_progress,
 #ifdef G_OS_UNIX
   signal_watch_id =
       g_unix_signal_add (SIGINT, (GSourceFunc) intr_handler, pipeline);
+#elif defined(G_OS_WIN32)
+  intr_pipeline = NULL;
+  if (SetConsoleCtrlHandler (w32_intr_handler, TRUE))
+    intr_pipeline = pipeline;
 #endif
 
   while (TRUE) {
@@ -713,7 +733,7 @@ event_loop (GstElement * pipeline, gboolean blocking, gboolean do_progress,
             goto exit;
         } else {
           /* buffering busy */
-          if (buffering == FALSE && target_state == GST_STATE_PLAYING) {
+          if (!buffering && target_state == GST_STATE_PLAYING) {
             /* we were not buffering but PLAYING, PAUSE  the pipeline. */
             PRINT (_("Buffering, setting pipeline to PAUSED ...\n"));
             gst_element_set_state (pipeline, GST_STATE_PAUSED);
@@ -831,6 +851,9 @@ exit:
 #ifdef G_OS_UNIX
     if (signal_watch_id > 0)
       g_source_remove (signal_watch_id);
+#elif defined(G_OS_WIN32)
+    intr_pipeline = NULL;
+    SetConsoleCtrlHandler (w32_intr_handler, FALSE);
 #endif
     return res;
   }
@@ -890,7 +913,7 @@ main (int argc, char *argv[])
   gboolean check_index = FALSE;
 #endif
   gchar *savefile = NULL;
-  gchar *exclude_args = NULL;
+  gchar **exclude_args = NULL;
 #ifndef GST_DISABLE_OPTION_PARSING
   GOptionEntry options[] = {
     {"tags", 't', 0, G_OPTION_ARG_NONE, &tags,
@@ -903,8 +926,10 @@ main (int argc, char *argv[])
         N_("Do not print any progress information"), NULL},
     {"messages", 'm', 0, G_OPTION_ARG_NONE, &messages,
         N_("Output messages"), NULL},
-    {"exclude", 'X', 0, G_OPTION_ARG_NONE, &exclude_args,
-        N_("Do not output status information of TYPE"), N_("TYPE1,TYPE2,...")},
+    {"exclude", 'X', 0, G_OPTION_ARG_STRING_ARRAY, &exclude_args,
+          N_("Do not output status information for the specified property "
+              "if verbose output is enabled (can be used multiple times)"),
+        N_("PROPERTY-NAME")},
     {"no-fault", 'f', 0, G_OPTION_ARG_NONE, &no_fault,
         N_("Do not install a fault handler"), NULL},
     {"eos-on-shutdown", 'e', 0, G_OPTION_ARG_NONE, &eos_on_shutdown,
@@ -1005,10 +1030,8 @@ main (int argc, char *argv[])
       pipeline = real_pipeline;
     }
     if (verbose) {
-      gchar **exclude_list =
-          exclude_args ? g_strsplit (exclude_args, ",", 0) : NULL;
       deep_notify_id = g_signal_connect (pipeline, "deep-notify",
-          G_CALLBACK (gst_object_default_deep_notify), exclude_list);
+          G_CALLBACK (gst_object_default_deep_notify), exclude_args);
     }
 #if 0
     if (check_index) {

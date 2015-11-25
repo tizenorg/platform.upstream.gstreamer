@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 0.10.30.3\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2010-10-24 21:36+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian Bokmaal <i18n-nb@lister.ping.uio.no>\n"
@@ -899,6 +899,12 @@ msgid ""
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr ""
 
@@ -966,6 +972,10 @@ msgstr ""
 msgid "force caps without doing a typefind"
 msgstr ""
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "Strømmen inneholder ikke data."
+
 msgid "Stream contains no data."
 msgstr "Strømmen inneholder ikke data."
 
@@ -977,6 +987,9 @@ msgstr "lesbar"
 
 msgid "writable"
 msgstr "skrivbar"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "kontrollerbar"
@@ -1168,11 +1181,13 @@ msgstr ""
 msgid "Output messages"
 msgstr ""
 
-msgid "Do not output status information of TYPE"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
 msgstr ""
 
-msgid "TYPE1,TYPE2,..."
-msgstr "TYPE1,TYPE2,..."
+msgid "PROPERTY-NAME"
+msgstr ""
 
 msgid "Do not install a fault handler"
 msgstr ""
@@ -1250,6 +1265,9 @@ msgstr ""
 
 msgid "Freeing pipeline ...\n"
 msgstr "Frigjør rør ...\n"
+
+#~ msgid "TYPE1,TYPE2,..."
+#~ msgstr "TYPE1,TYPE2,..."
 
 #~ msgid "FILE"
 #~ msgstr "FIL"

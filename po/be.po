@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 0.9.7\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2006-01-18 22:26+0200\n"
 "Last-Translator: Ales Nyakhaychyk <nab@mail.by>\n"
 "Language-Team: Belarusian <i18n@mova.org>\n"
@@ -896,6 +896,12 @@ msgid ""
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr ""
 
@@ -963,6 +969,10 @@ msgid "force caps without doing a typefind"
 msgstr ""
 
 #, fuzzy
+msgid "Stream contains not enough data."
+msgstr "альбом, якія зьмяшчае гэтыя даньі"
+
+#, fuzzy
 msgid "Stream contains no data."
 msgstr "альбом, якія зьмяшчае гэтыя даньі"
 
@@ -975,6 +985,9 @@ msgstr ""
 #, fuzzy
 msgid "writable"
 msgstr "загаловак"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr ""
@@ -1165,10 +1178,12 @@ msgstr ""
 msgid "Output messages"
 msgstr ""
 
-msgid "Do not output status information of TYPE"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
 msgstr ""
 
-msgid "TYPE1,TYPE2,..."
+msgid "PROPERTY-NAME"
 msgstr ""
 
 msgid "Do not install a fault handler"

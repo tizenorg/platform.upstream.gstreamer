@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 1.0.3\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2013-08-20 14:56+0900\n"
 "Last-Translator: Makoto Kato <makoto.kt@gmail.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -894,6 +894,12 @@ msgid ""
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr ""
 
@@ -960,6 +966,10 @@ msgstr ""
 msgid "force caps without doing a typefind"
 msgstr ""
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "ストリームでデータが含まれていません"
+
 msgid "Stream contains no data."
 msgstr "ストリームでデータが含まれていません"
 
@@ -971,6 +981,9 @@ msgstr "読み込み可能"
 
 msgid "writable"
 msgstr "書き込み可能"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "コントロール可能"
@@ -1165,11 +1178,13 @@ msgstr "TYPE のステータス情報を出力しない"
 msgid "Output messages"
 msgstr "出力メッセージ"
 
-msgid "Do not output status information of TYPE"
-msgstr "TYPE のステータス情報を出力しない"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
+msgstr ""
 
-msgid "TYPE1,TYPE2,..."
-msgstr "TYPE1,TYPE2,..."
+msgid "PROPERTY-NAME"
+msgstr ""
 
 msgid "Do not install a fault handler"
 msgstr "フォールトハンドラをインストールしない"
@@ -1250,6 +1265,12 @@ msgstr ""
 #, fuzzy
 msgid "Freeing pipeline ...\n"
 msgstr "パイプラインを解放 (FREEING) しています...\n"
+
+#~ msgid "Do not output status information of TYPE"
+#~ msgstr "TYPE のステータス情報を出力しない"
+
+#~ msgid "TYPE1,TYPE2,..."
+#~ msgstr "TYPE1,TYPE2,..."
 
 #~ msgid "Error re-scanning registry %s: %s"
 #~ msgstr "レジストリ %s の再スキャン中にエラーが発生しました: %s"

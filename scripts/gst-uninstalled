@@ -101,7 +101,7 @@ do
 done
 
 # GStreamer plugins bad libraries
-for path in basecamerabinsrc codecparsers uridownloader egl gl insertbin interfaces mpegts video base
+for path in adaptivedemux basecamerabinsrc codecparsers uridownloader egl gl insertbin interfaces mpegts video base
 do
   LD_LIBRARY_PATH=$GST/gst-plugins-bad/gst-libs/gst/$path/.libs:$LD_LIBRARY_PATH
   DYLD_LIBRARY_PATH=$GST/gst-plugins-bad/gst-libs/gst/$path/.libs:$DYLD_LIBRARY_PATH
@@ -157,7 +157,6 @@ $GST/gstreamer/plugins\
 :$GST/gst-plugins-bad/sys\
 :$GST/gst-libav/ext/\
 :$GST/gst-ffmpeg/ext/\
-:$GST/gnonlin/gnl/.libs\
 :$GST/gst-omx/omx/.libs\
 :$GST/clutter-gst/clutter-gst/.libs\
 :$GST/gstreamer-vaapi/gst/vaapi/.libs\
@@ -165,6 +164,8 @@ $GST/gstreamer/plugins\
 :$GST/farsight2/gst\
 :$GST/farsight2/transmitters\
 :$GST/libnice/gst\
+:$GST/gst-rpicamsrc/src/.libs\
+:$GST/gst-editing-services/plugins/nle/.libs\
 ${GST_PLUGIN_PATH:+:$GST_PLUGIN_PATH}"
 
 # don't use any system-installed plug-ins at all
@@ -180,9 +181,11 @@ export GST_PLUGIN_SCANNER=$GST/gstreamer/libs/gst/helpers/gst-plugin-scanner
 # in the system-configured man paths from man.config
 # this still doesn't make it work for the uninstalled case, since man goes
 # look for a man directory "nearby" instead of the directory I'm telling it to
-export MANPATH=$GST/gstreamer/tools:$GST_PREFIX/share/man:$MANPATH
-pythonver=`python -c "import sys; print (sys.version[:3])"`
-export PYTHONPATH=$GST/gst-python:$GST_PREFIX/lib/python$pythonver/site-packages${PYTHONPATH:+:$PYTHONPATH}
+export MANPATH=$GST/gstreamer/tools:$GST_PREFIX/share/man:$GST/gst-editing-services/docs/man/:$MANPATH
+if [ -z "$PYTHON" ]; then PYTHON="python"; fi
+pythonver=`$PYTHON -c "import sys; print (sys.version[:3])"`
+pythonsites=`$PYTHON -c "import site; print(':'.join(site.getsitepackages()))"`
+export PYTHONPATH="${PYTHONPATH}:${pythonsites}:${GST}/gst-python"
 
 # clutter-gst
 export PKG_CONFIG_PATH=$GST/clutter-gst:$PKG_CONFIG_PATH
@@ -205,7 +208,9 @@ export DYLD_LIBRARY_PATH=$GST/gstreamer-sharp/gstreamer-sharp/glue/.libs:$DYLD_L
 # gst-devtools/validate
 export PATH=$GST/gst-devtools/validate/tools:$PATH
 export PKG_CONFIG_PATH=$GST/gst-devtools/validate/pkgconfig:$PKG_CONFIG_PATH
-export GST_VALIDATE_SCENARIOS_PATH=$GST/gst-devtools/validate/data:$GST_VALIDATE_SCENARIOS_PATH
+export GST_VALIDATE_SCENARIOS_PATH=$GST/gst-devtools/validate/data/scenarios:$GST_VALIDATE_SCENARIOS_PATH
+export GST_VALIDATE_APPS_DIR=$GST_VALIDATE_APPS_DIR:$GST/gst-editing-services/tests/validate/
+export GST_VALIDATE_PLUGIN_PATH=$GST_VALIDATE_PLUGIN_PATH:$GST/gst-devtools/validate/plugins/
 
 if [ -d "$GST/gst-libav" -a -d "$GST/gst-ffmpeg" ]; then
   echo

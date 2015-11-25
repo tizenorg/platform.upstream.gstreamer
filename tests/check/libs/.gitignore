@@ -13,6 +13,7 @@ gdp
 collectpads
 controller
 flowcombiner
+gstharness
 gstlibscpp
 gstnetclientclock
 gstnettimeprovider
@@ -20,6 +21,7 @@ gsttestclock
 libsabi
 sparsefile
 transform1
+transform2
 typefindhelper
 queuearray
 *.check.xml

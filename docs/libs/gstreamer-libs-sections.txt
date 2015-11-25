@@ -37,6 +37,7 @@ gst_argb_control_binding_get_type
 <TITLE>GstDirectControlBinding</TITLE>
 <INCLUDE>libs/controller/gstdirectcontrolbinding.h</INCLUDE>
 gst_direct_control_binding_new
+gst_direct_control_binding_new_absolute
 <SUBSECTION Standard>
 GstDirectControlBindingConvertValue
 GstDirectControlBindingConvertGValue
@@ -58,6 +59,7 @@ gst_direct_control_binding_get_type
 <TITLE>GstTimedValueControlSource</TITLE>
 <INCLUDE>libs/controller/gsttimedvaluecontrolsource.h</INCLUDE>
 GstTimedValueControlSource
+GstControlPoint
 gst_timed_value_control_source_find_control_point_iter
 gst_timed_value_control_source_set
 gst_timed_value_control_source_set_from_list
@@ -164,8 +166,13 @@ gst_adapter_available
 gst_adapter_available_fast
 gst_adapter_take
 gst_adapter_take_buffer
+gst_adapter_get_buffer
 gst_adapter_take_buffer_fast
+gst_adapter_get_buffer_fast
 gst_adapter_take_list
+gst_adapter_get_list
+gst_adapter_take_buffer_list
+gst_adapter_get_buffer_list
 gst_adapter_prev_pts
 gst_adapter_prev_dts
 gst_adapter_prev_pts_at_offset
@@ -192,6 +199,7 @@ gst_adapter_get_type
 GstBaseParse
 GstBaseParseClass
 
+gst_base_parse_merge_tags
 gst_base_parse_set_duration
 gst_base_parse_set_average_bitrate
 gst_base_parse_set_min_frame_size
@@ -360,6 +368,7 @@ gst_base_transform_get_allocator
 gst_base_transform_get_buffer_pool
 gst_base_transform_reconfigure_sink
 gst_base_transform_reconfigure_src
+gst_base_transform_update_src_caps
 
 GST_BASE_TRANSFORM_SINK_NAME
 GST_BASE_TRANSFORM_SRC_NAME
@@ -442,6 +451,9 @@ gst_byte_reader_free
 
 gst_byte_reader_init
 
+gst_byte_reader_peek_sub_reader
+gst_byte_reader_get_sub_reader
+
 gst_byte_reader_get_pos
 gst_byte_reader_get_remaining
 gst_byte_reader_set_pos
@@ -504,6 +516,7 @@ gst_byte_reader_dup_data
 gst_byte_reader_peek_data
 
 gst_byte_reader_masked_scan_uint32
+gst_byte_reader_masked_scan_uint32_peek
 
 gst_byte_reader_get_string
 gst_byte_reader_get_string_utf8
@@ -704,6 +717,9 @@ GST_COLLECT_PADS_GET_STREAM_LOCK
 GST_COLLECT_PADS_STREAM_LOCK
 GST_COLLECT_PADS_STREAM_UNLOCK
 
+GST_COLLECT_PADS_DTS
+GST_COLLECT_PADS_DTS_IS_VALID
+
 gst_collect_pads_new
 
 gst_collect_pads_add_pad
@@ -755,11 +771,13 @@ gst_collect_pads_get_type
 <FILE>gstflowcombiner</FILE>
 <TITLE>GstFlowCombiner</TITLE>
 <INCLUDE>gst/base/gstflowcombiner.h</INCLUDE>
+GstFlowCombiner
 gst_flow_combiner_new
 gst_flow_combiner_free
 gst_flow_combiner_update_flow
 gst_flow_combiner_add_pad
 gst_flow_combiner_remove_pad
+gst_flow_combiner_clear
 <SUBSECTION Standard>
 GST_TYPE_FLOW_COMBINER
 <SUBSECTION Private>
@@ -844,6 +862,11 @@ gst_queue_array_push_tail
 gst_queue_array_is_empty
 gst_queue_array_drop_element
 gst_queue_array_find
+gst_queue_array_new_for_struct
+gst_queue_array_push_tail_struct
+gst_queue_array_peek_head_struct
+gst_queue_array_pop_head_struct
+gst_queue_array_drop_struct
 </SECTION>
 
 # net
@@ -863,13 +886,29 @@ GST_NET_ADDRESS_META_INFO
 gst_net_address_meta_api_get_type
 </SECTION>
 
+<SECTION>
+<FILE>gstnetcontrolmessagemeta</FILE>
+<TITLE>GstNetControlMessageMeta</TITLE>
+<INCLUDE>gst/net/gstnetcontrolmessagemeta.h</INCLUDE>
+GstNetControlMessageMeta
+gst_buffer_add_net_control_message_meta
+gst_buffer_get_net_control_message_meta
+gst_net_control_message_meta_get_info
+<SUBSECTION Standard>
+GST_NET_CONTROL_MESSAGE_META_API_TYPE
+GST_NET_CONTROL_MESSAGE_META_INFO
+<SUBSECTION Private>
+gst_net_control_message_meta_api_get_type
+</SECTION>
 
 <SECTION>
 <FILE>gstnetclientclock</FILE>
 <TITLE>GstNetClientClock</TITLE>
 <INCLUDE>gst/net/gstnet.h</INCLUDE>
 GstNetClientClock
+GstNtpClock
 gst_net_client_clock_new
+gst_ntp_clock_new
 <SUBSECTION Standard>
 GstNetClientClockClass
 GstNetClientClockPrivate
@@ -878,8 +917,15 @@ GST_IS_NET_CLIENT_CLOCK
 GST_TYPE_NET_CLIENT_CLOCK
 GST_NET_CLIENT_CLOCK_CLASS
 GST_IS_NET_CLIENT_CLOCK_CLASS
+GstNtpClockClass
+GST_NTP_CLOCK
+GST_IS_NTP_CLOCK
+GST_TYPE_NTP_CLOCK
+GST_NTP_CLOCK_CLASS
+GST_IS_NTP_CLOCK_CLASS
 <SUBSECTION Private>
 gst_net_client_clock_get_type
+gst_ntp_clock_get_type
 </SECTION>
 
 
@@ -918,6 +964,35 @@ GST_NET_TIME_PROVIDER_CLASS
 GST_IS_NET_TIME_PROVIDER_CLASS
 <SUBSECTION Private>
 gst_net_time_provider_get_type
+</SECTION>
+
+<SECTION>
+<FILE>gstptpclock</FILE>
+<TITLE>GstPtpClock</TITLE>
+<INCLUDE>gst/net/net.h</INCLUDE>
+GST_PTP_CLOCK_ID_NONE
+
+gst_ptp_init
+gst_ptp_deinit
+gst_ptp_is_initialized
+gst_ptp_is_supported
+
+GstPtpClock
+gst_ptp_clock_new
+
+GstPtpStatisticsCallback
+gst_ptp_statistics_callback_add
+gst_ptp_statistics_callback_remove
+<SUBSECTION Standard>
+GstPtpClockClass
+GstPtpClockPrivate
+GST_PTP_CLOCK
+GST_IS_PTP_CLOCK
+GST_TYPE_PTP_CLOCK
+GST_PTP_CLOCK_CLASS
+GST_IS_PTP_CLOCK_CLASS
+<SUBSECTION Private>
+gst_ptp_clock_get_type
 </SECTION>
 
 <SECTION>
@@ -982,6 +1057,8 @@ gst_check_setup_sink_pad_by_name_from_template
 gst_check_setup_sink_pad_from_template
 gst_check_setup_src_pad_by_name_from_template
 gst_check_setup_src_pad_from_template
+gst_check_objects_destroyed_on_unref
+gst_check_object_destroyed_on_unref
 
 <SUBSECTION Private>
 MAIN_INIT
@@ -1121,6 +1198,119 @@ gst_consistency_checker_new
 gst_consistency_checker_reset
 gst_consistency_checker_free
 gst_consistency_checker_add_pad
+</SECTION>
+
+<SECTION>
+<FILE>gstharness</FILE>
+<TITLE>GstHarness</TITLE>
+<INCLUDE>gst/check/check.h</INCLUDE>
+GstHarness
+
+gst_harness_new_full
+gst_harness_new_with_element
+gst_harness_new_with_padnames
+gst_harness_new_with_templates
+gst_harness_new
+gst_harness_new_parse
+gst_harness_teardown
+
+gst_harness_add_element_src_pad
+gst_harness_add_element_sink_pad
+
+gst_harness_set_src_caps
+gst_harness_set_sink_caps
+gst_harness_set_caps
+gst_harness_set_src_caps_str
+gst_harness_set_sink_caps_str
+gst_harness_set_caps_str
+
+gst_harness_use_systemclock
+gst_harness_use_testclock
+gst_harness_get_testclock
+gst_harness_set_time
+gst_harness_wait_for_clock_id_waits
+gst_harness_crank_single_clock_wait
+gst_harness_crank_multiple_clock_waits
+
+gst_harness_play
+gst_harness_set_blocking_push_mode
+gst_harness_set_forwarding
+
+gst_harness_create_buffer
+gst_harness_push
+gst_harness_pull
+gst_harness_try_pull
+gst_harness_push_and_pull
+gst_harness_buffers_received
+gst_harness_buffers_in_queue
+gst_harness_set_drop_buffers
+gst_harness_dump_to_file
+gst_harness_get_last_pushed_timestamp
+
+gst_harness_push_event
+gst_harness_pull_event
+gst_harness_try_pull_event
+gst_harness_events_received
+gst_harness_events_in_queue
+
+gst_harness_push_upstream_event
+gst_harness_pull_upstream_event
+gst_harness_try_pull_upstream_event
+gst_harness_upstream_events_received
+gst_harness_upstream_events_in_queue
+
+gst_harness_query_latency
+gst_harness_set_upstream_latency
+
+gst_harness_set_propose_allocator
+gst_harness_get_allocator
+
+gst_harness_add_src
+gst_harness_add_src_harness
+gst_harness_add_src_parse
+gst_harness_push_from_src
+gst_harness_src_crank_and_push_many
+gst_harness_src_push_event
+
+gst_harness_add_sink
+gst_harness_add_sink_harness
+gst_harness_add_sink_parse
+gst_harness_push_to_sink
+gst_harness_sink_push_many
+
+gst_harness_find_element
+gst_harness_set
+gst_harness_get
+gst_harness_add_probe
+
+GstHarnessThread
+
+gst_harness_stress_thread_stop
+gst_harness_stress_custom_start
+
+gst_harness_stress_statechange_start
+gst_harness_stress_statechange_start_full
+
+gst_harness_stress_push_buffer_start
+gst_harness_stress_push_buffer_start_full
+
+GstHarnessPrepareBufferFunc
+gst_harness_stress_push_buffer_with_cb_start
+gst_harness_stress_push_buffer_with_cb_start_full
+
+gst_harness_stress_push_event_start
+gst_harness_stress_push_event_start_full
+
+gst_harness_stress_send_upstream_event_start
+gst_harness_stress_push_upstream_event_start_full
+
+gst_harness_stress_property_start
+gst_harness_stress_property_start_full
+
+gst_harness_stress_requestpad_start
+gst_harness_stress_requestpad_start_full
+<SUBSECTION Standard>
+GstHarnessPrivate
 </SECTION>
 
 <SECTION>

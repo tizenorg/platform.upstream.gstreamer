@@ -58,6 +58,7 @@
 #include <string.h>
 
 #include "gstfdsink.h"
+#include "gstelements_private.h"
 
 #ifdef G_OS_WIN32
 #include <io.h>                 /* lseek, open, close, read */
@@ -107,6 +108,8 @@ static void gst_fd_sink_dispose (GObject * obj);
 static gboolean gst_fd_sink_query (GstBaseSink * bsink, GstQuery * query);
 static GstFlowReturn gst_fd_sink_render (GstBaseSink * sink,
     GstBuffer * buffer);
+static GstFlowReturn gst_fd_sink_render_list (GstBaseSink * bsink,
+    GstBufferList * buffer_list);
 static gboolean gst_fd_sink_start (GstBaseSink * basesink);
 static gboolean gst_fd_sink_stop (GstBaseSink * basesink);
 static gboolean gst_fd_sink_unlock (GstBaseSink * basesink);
@@ -138,6 +141,7 @@ gst_fd_sink_class_init (GstFdSinkClass * klass)
       gst_static_pad_template_get (&sinktemplate));
 
   gstbasesink_class->render = GST_DEBUG_FUNCPTR (gst_fd_sink_render);
+  gstbasesink_class->render_list = GST_DEBUG_FUNCPTR (gst_fd_sink_render_list);
   gstbasesink_class->start = GST_DEBUG_FUNCPTR (gst_fd_sink_start);
   gstbasesink_class->stop = GST_DEBUG_FUNCPTR (gst_fd_sink_stop);
   gstbasesink_class->unlock = GST_DEBUG_FUNCPTR (gst_fd_sink_unlock);
@@ -228,107 +232,69 @@ gst_fd_sink_query (GstBaseSink * bsink, GstQuery * query)
 }
 
 static GstFlowReturn
-gst_fd_sink_render (GstBaseSink * sink, GstBuffer * buffer)
+gst_fd_sink_render_buffers (GstFdSink * sink, GstBuffer ** buffers,
+    guint num_buffers, guint8 * mem_nums, guint total_mems)
 {
-  GstFdSink *fdsink;
-  GstMapInfo info;
-  guint8 *ptr;
-  gsize left;
-  gint written;
+  return gst_writev_buffers (GST_OBJECT_CAST (sink), sink->fd, sink->fdset,
+      buffers, num_buffers, mem_nums, total_mems, &sink->bytes_written,
+      &sink->current_pos);
+}
 
-#ifndef HAVE_WIN32
-  gint retval;
-#endif
+static GstFlowReturn
+gst_fd_sink_render_list (GstBaseSink * bsink, GstBufferList * buffer_list)
+{
+  GstFlowReturn flow;
+  GstBuffer **buffers;
+  GstFdSink *sink;
+  guint8 *mem_nums;
+  guint total_mems;
+  guint i, num_buffers;
 
-  fdsink = GST_FD_SINK (sink);
+  sink = GST_FD_SINK_CAST (bsink);
 
-  g_return_val_if_fail (fdsink->fd >= 0, GST_FLOW_ERROR);
+  num_buffers = gst_buffer_list_length (buffer_list);
+  if (num_buffers == 0)
+    goto no_data;
 
-  gst_buffer_map (buffer, &info, GST_MAP_READ);
-
-  ptr = info.data;
-  left = info.size;
-
-again:
-#ifndef HAVE_WIN32
-  do {
-    GST_DEBUG_OBJECT (fdsink, "going into select, have %" G_GSIZE_FORMAT
-        " bytes to write", info.size);
-    retval = gst_poll_wait (fdsink->fdset, GST_CLOCK_TIME_NONE);
-  } while (retval == -1 && (errno == EINTR || errno == EAGAIN));
-
-  if (retval == -1) {
-    if (errno == EBUSY)
-      goto stopped;
-    else
-      goto select_error;
-  }
-#endif
-
-  GST_DEBUG_OBJECT (fdsink, "writing %" G_GSIZE_FORMAT " bytes to"
-      " file descriptor %d", info.size, fdsink->fd);
-
-  written = write (fdsink->fd, ptr, left);
-
-  /* check for errors */
-  if (G_UNLIKELY (written < 0)) {
-    /* try to write again on non-fatal errors */
-    if (errno == EAGAIN || errno == EINTR)
-      goto again;
-
-    /* else go to our error handler */
-    goto write_error;
+  /* extract buffers from list and count memories */
+  buffers = g_newa (GstBuffer *, num_buffers);
+  mem_nums = g_newa (guint8, num_buffers);
+  for (i = 0, total_mems = 0; i < num_buffers; ++i) {
+    buffers[i] = gst_buffer_list_get (buffer_list, i);
+    mem_nums[i] = gst_buffer_n_memory (buffers[i]);
+    total_mems += mem_nums[i];
   }
 
-  /* all is fine when we get here */
-  left -= written;
-  ptr += written;
-  fdsink->bytes_written += written;
-  fdsink->current_pos += written;
+  flow =
+      gst_fd_sink_render_buffers (sink, buffers, num_buffers, mem_nums,
+      total_mems);
 
-  GST_DEBUG_OBJECT (fdsink, "wrote %d bytes, %" G_GSIZE_FORMAT " left", written,
-      left);
+  return flow;
 
-  /* short write, select and try to write the remainder */
-  if (G_UNLIKELY (left > 0))
-    goto again;
-
-  gst_buffer_unmap (buffer, &info);
-
-  return GST_FLOW_OK;
-
-#ifndef HAVE_WIN32
-select_error:
+no_data:
   {
-    GST_ELEMENT_ERROR (fdsink, RESOURCE, READ, (NULL),
-        ("select on file descriptor: %s.", g_strerror (errno)));
-    GST_DEBUG_OBJECT (fdsink, "Error during select");
-    gst_buffer_unmap (buffer, &info);
-    return GST_FLOW_ERROR;
+    GST_LOG_OBJECT (sink, "empty buffer list");
+    return GST_FLOW_OK;
   }
-stopped:
-  {
-    GST_DEBUG_OBJECT (fdsink, "Select stopped");
-    gst_buffer_unmap (buffer, &info);
-    return GST_FLOW_FLUSHING;
-  }
-#endif
+}
 
-write_error:
-  {
-    switch (errno) {
-      case ENOSPC:
-        GST_ELEMENT_ERROR (fdsink, RESOURCE, NO_SPACE_LEFT, (NULL), (NULL));
-        break;
-      default:{
-        GST_ELEMENT_ERROR (fdsink, RESOURCE, WRITE, (NULL),
-            ("Error while writing to file descriptor %d: %s",
-                fdsink->fd, g_strerror (errno)));
-      }
-    }
-    gst_buffer_unmap (buffer, &info);
-    return GST_FLOW_ERROR;
-  }
+static GstFlowReturn
+gst_fd_sink_render (GstBaseSink * bsink, GstBuffer * buffer)
+{
+  GstFlowReturn flow;
+  GstFdSink *sink;
+  guint8 n_mem;
+
+  sink = GST_FD_SINK_CAST (bsink);
+
+  n_mem = gst_buffer_n_memory (buffer);
+
+  if (n_mem > 0)
+    flow = gst_fd_sink_render_buffers (sink, &buffer, 1, &n_mem, n_mem);
+  else
+    flow = GST_FLOW_OK;
+
+  return flow;
 }
 
 static gboolean

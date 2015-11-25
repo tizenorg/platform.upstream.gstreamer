@@ -34,6 +34,8 @@ gstpipeline
 gstplugin
 gstpoll
 gstpreset
+gstprintf
+gstprotection
 gstregistry
 gstsegment
 gststructure

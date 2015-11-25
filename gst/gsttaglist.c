@@ -468,7 +468,7 @@ gst_tag_lookup (const gchar * tag_name)
  * @type: the type this data is in
  * @nick: human-readable name
  * @blurb: a human-readable description about this tag
- * @func: (allow-none): function for merging multiple values of this tag, or %NULL
+ * @func: (allow-none) (scope call): function for merging multiple values of this tag, or %NULL
  *
  * Registers a new tag type for the use with GStreamer's type system. If a type
  * with that name is already registered, that one is used.
@@ -512,7 +512,7 @@ gst_tag_register (const gchar * name, GstTagFlag flag, GType type,
  * @type: the type this data is in
  * @nick: human-readable name or short description (string constant)
  * @blurb: a human-readable description for this tag (string constant)
- * @func: (allow-none): function for merging multiple values of this tag, or %NULL
+ * @func: (allow-none) (scope call): function for merging multiple values of this tag, or %NULL
  *
  * Registers a new tag type for the use with GStreamer's type system.
  *
@@ -673,7 +673,7 @@ gst_tag_is_fixed (const gchar * tag)
 
 /* takes ownership of the structure */
 static GstTagList *
-gst_tag_list_new_internal (GstStructure * s)
+gst_tag_list_new_internal (GstStructure * s, GstTagScope scope)
 {
   GstTagList *tag_list;
 
@@ -686,7 +686,7 @@ gst_tag_list_new_internal (GstStructure * s)
       (GstMiniObjectFreeFunction) __gst_tag_list_free);
 
   GST_TAG_LIST_STRUCTURE (tag_list) = s;
-  GST_TAG_LIST_SCOPE (tag_list) = GST_TAG_SCOPE_STREAM;
+  GST_TAG_LIST_SCOPE (tag_list) = scope;
 
 #ifdef DEBUG_REFCOUNT
   GST_CAT_TRACE (GST_CAT_TAGS, "created taglist %p", tag_list);
@@ -717,7 +717,8 @@ __gst_tag_list_copy (const GstTagList * list)
   g_return_val_if_fail (GST_IS_TAG_LIST (list), NULL);
 
   s = GST_TAG_LIST_STRUCTURE (list);
-  return gst_tag_list_new_internal (gst_structure_copy (s));
+  return gst_tag_list_new_internal (gst_structure_copy (s),
+      GST_TAG_LIST_SCOPE (list));
 }
 
 /**
@@ -736,7 +737,7 @@ gst_tag_list_new_empty (void)
   GstTagList *tag_list;
 
   s = gst_structure_new_id_empty (GST_QUARK (TAGLIST));
-  tag_list = gst_tag_list_new_internal (s);
+  tag_list = gst_tag_list_new_internal (s, GST_TAG_SCOPE_STREAM);
   return tag_list;
 }
 
@@ -878,7 +879,7 @@ gst_tag_list_new_from_string (const gchar * str)
   if (s == NULL)
     return NULL;
 
-  tag_list = gst_tag_list_new_internal (s);
+  tag_list = gst_tag_list_new_internal (s, GST_TAG_SCOPE_STREAM);
 
   return tag_list;
 }
@@ -1499,7 +1500,7 @@ gst_tag_list_copy_value (GValue * dest, const GstTagList * list,
   return TRUE;
 }
 
-/* FIXME 0.11: this whole merge function business is overdesigned, and the
+/* FIXME 2.0: this whole merge function business is overdesigned, and the
  * _get_foo() API is misleading as well - how many application developers will
  * expect gst_tag_list_get_string (list, GST_TAG_ARTIST, &val) might return a
  * string with multiple comma-separated artists? _get_foo() should just be
@@ -1798,7 +1799,7 @@ _gst_strdup0 (const gchar * s)
 TAG_MERGE_FUNCS (string, gchar *, (*value != NULL));
 
 /*
- *FIXME 0.11: Instead of _peek (non-copy) and _get (copy), we could have
+ *FIXME 2.0: Instead of _peek (non-copy) and _get (copy), we could have
  *            _get (non-copy) and _dup (copy) for strings, seems more
  *            widely used
  */

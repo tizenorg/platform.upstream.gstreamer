@@ -2,19 +2,18 @@ lib_LTLIBRARIES = libgstcheck-@GST_API_VERSION@.la
 
 SYMBOLS_FILE = exports.sym
 
-BUILT_SOURCES = internal-check.h
-
 libgstcheck_@GST_API_VERSION@_la_DEPENDENCIES = \
 	$(top_builddir)/gst/libgstreamer-@GST_API_VERSION@.la \
-	internal-check.h \
 	$(SYMBOLS_FILE)
 libgstcheck_@GST_API_VERSION@_la_SOURCES =	\
 	gstbufferstraw.c			\
 	gstcheck.c				\
 	gstconsistencychecker.c			\
+	gstharness.c				\
 	gsttestclock.c
 
 libgstcheck_@GST_API_VERSION@_la_CFLAGS = $(GST_OBJ_CFLAGS) \
+	-UG_DISABLE_ASSERT \
 	-I$(top_builddir)/libs \
 	-I$(top_builddir)/libs/gst/check \
 	-I$(top_builddir)/libs/gst/check/libcheck
@@ -32,15 +31,13 @@ libgstcheck_@GST_API_VERSION@include_HEADERS =	\
 	gstbufferstraw.h			\
 	gstcheck.h				\
 	gstconsistencychecker.h			\
+	gstharness.h				\
 	gsttestclock.h
 
 nodist_libgstcheck_@GST_API_VERSION@include_HEADERS =	\
-	internal-check.h	
+	internal-check.h
 
-CLEANFILES = *.gcno *.gcda *.gcov internal-check.h $(SYMBOLS_FILE)
-
-internal-check.h: $(top_builddir)/libs/gst/check/libcheck/check.h
-	$(AM_V_GEN)cp $(top_builddir)/libs/gst/check/libcheck/check.h internal-check.h
+CLEANFILES = *.gcno *.gcda *.gcov $(SYMBOLS_FILE)
 
 %.c.gcov: .libs/libgstcheck_@GST_API_VERSION@_la-%.gcda %.c
 	$(GCOV) -b -f -o $^ > $@.out
@@ -93,10 +90,84 @@ LIBGSTCHECK_EXPORTED_FUNCS = \
 	gst_check_teardown_pad_by_name \
 	gst_check_teardown_sink_pad \
 	gst_check_teardown_src_pad \
+	gst_check_objects_destroyed_on_unref \
+	gst_check_object_destroyed_on_unref \
 	gst_consistency_checker_add_pad \
 	gst_consistency_checker_new \
 	gst_consistency_checker_reset \
 	gst_consistency_checker_free \
+	gst_harness_add_element_src_pad \
+	gst_harness_add_probe \
+	gst_harness_add_sink \
+	gst_harness_add_sink_harness \
+	gst_harness_add_sink_parse \
+	gst_harness_add_src \
+	gst_harness_add_src_harness \
+	gst_harness_add_src_parse \
+	gst_harness_buffers_received \
+	gst_harness_buffers_in_queue \
+	gst_harness_crank_multiple_clock_waits \
+	gst_harness_crank_single_clock_wait \
+	gst_harness_create_buffer \
+	gst_harness_dump_to_file \
+	gst_harness_events_received \
+	gst_harness_events_in_queue \
+	gst_harness_find_element \
+	gst_harness_get \
+	gst_harness_get_allocator \
+	gst_harness_get_last_pushed_timestamp \
+	gst_harness_get_testclock \
+	gst_harness_new \
+	gst_harness_new_full \
+	gst_harness_new_parse \
+	gst_harness_new_with_element \
+	gst_harness_new_with_padnames \
+	gst_harness_new_with_templates \
+	gst_harness_play \
+	gst_harness_pull \
+	gst_harness_pull_event \
+	gst_harness_pull_upstream_event \
+	gst_harness_push \
+	gst_harness_push_and_pull \
+	gst_harness_push_event \
+	gst_harness_push_from_src \
+	gst_harness_push_to_sink \
+	gst_harness_query_latency \
+	gst_harness_push_upstream_event \
+	gst_harness_set \
+	gst_harness_set_caps \
+	gst_harness_set_caps_str \
+	gst_harness_set_drop_buffers \
+	gst_harness_set_blocking_push_mode \
+	gst_harness_set_forwarding \
+	gst_harness_set_propose_allocator \
+	gst_harness_set_sink_caps \
+	gst_harness_set_src_caps \
+	gst_harness_set_src_caps_str \
+	gst_harness_set_sink_caps_str \
+	gst_harness_set_time \
+	gst_harness_set_upstream_latency \
+	gst_harness_sink_push_many \
+	gst_harness_src_crank_and_push_many \
+	gst_harness_src_push_event \
+	gst_harness_stress_custom_start \
+	gst_harness_stress_property_start_full \
+	gst_harness_stress_push_buffer_start_full \
+	gst_harness_stress_push_buffer_with_cb_start_full \
+	gst_harness_stress_push_event_start_full \
+	gst_harness_stress_push_upstream_event_start_full \
+	gst_harness_stress_requestpad_start_full \
+	gst_harness_stress_statechange_start_full \
+	gst_harness_stress_thread_stop \
+	gst_harness_teardown \
+	gst_harness_try_pull \
+	gst_harness_try_pull_event \
+	gst_harness_try_pull_upstream_event \
+	gst_harness_upstream_events_received \
+	gst_harness_upstream_events_in_queue \
+	gst_harness_use_systemclock \
+	gst_harness_use_testclock \
+	gst_harness_wait_for_clock_id_waits \
 	gst_test_clock_get_type \
 	gst_test_clock_new \
 	gst_test_clock_new_with_start_time \
@@ -113,10 +184,14 @@ LIBGSTCHECK_EXPORTED_FUNCS = \
 	gst_test_clock_process_id_list \
 	gst_test_clock_id_list_get_latest_time
 
+# For backwards compatibility with GStreamer < 1.5
+LIBGSTCHECK_EXPORTED_COMPAT_FUNCS = \
+	_fail_unless
 
 LIBGSTCHECK_EXPORTED_SYMBOLS = \
 	$(LIBGSTCHECK_EXPORTED_VARS) \
-	$(LIBGSTCHECK_EXPORTED_FUNCS)
+	$(LIBGSTCHECK_EXPORTED_FUNCS) \
+	$(LIBGSTCHECK_EXPORTED_COMPAT_FUNCS)
 
 # Please do not even think about changing the alphabet below into A-Za-z.
 # It is there for purpose. (Bug #602093)
@@ -126,7 +201,7 @@ print-check-symbols:
 	  echo $$s; \
 	done;
 
-$(SYMBOLS_FILE): $(libgstcheck_@GST_API_VERSION@include_HEADERS) libcheck/check.h
+$(SYMBOLS_FILE): $(libgstcheck_@GST_API_VERSION@include_HEADERS) internal-check.h
 	$(AM_V_GEN)rm -f $(SYMBOLS_FILE) 2>/dev/null; \
 	for s in $(LIBGSTCHECK_EXPORTED_SYMBOLS) $(CHECK_SYMS); do \
 	  echo $$s >> $(SYMBOLS_FILE); \
@@ -139,7 +214,7 @@ gir_headers=$(patsubst %,$(srcdir)/%, $(libgstcheck_@GST_API_VERSION@include_HEA
 gir_sources=$(patsubst %,$(srcdir)/%, $(libgstcheck_@GST_API_VERSION@_la_SOURCES))
 
 GstCheck-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstcheck-@GST_API_VERSION@.la
-	$(AM_V_GEN)PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" \
+	$(AM_V_GEN)PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" GI_SCANNER_DISABLE_CACHE=yes\
 		GST_PLUGIN_SYSTEM_PATH_1_0="" GST_PLUGIN_PATH_1_0="" GST_REGISTRY_UPDATE=no \
 		$(INTROSPECTION_SCANNER) -v --namespace GstCheck \
 		--nsversion=@GST_API_VERSION@ \
@@ -157,7 +232,7 @@ GstCheck-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstcheck-@GST_API_VE
 		--libtool="${LIBTOOL}" \
 		--pkg gstreamer-@GST_API_VERSION@ \
 		--pkg-export gstreamer-check-@GST_API_VERSION@ \
-		--add-init-section="gst_init(NULL,NULL);" \
+		--add-init-section="$(INTROSPECTION_INIT)" \
 		--output $@ \
 		$(gir_headers) \
 		$(gir_sources)

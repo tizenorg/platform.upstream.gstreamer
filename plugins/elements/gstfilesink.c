@@ -29,7 +29,7 @@
  * <refsect2>
  * <title>Example launch line</title>
  * |[
- * gst-launch v4l2src num-buffers=1 ! jpegenc ! filesink location=capture1.jpeg
+ * gst-launch-1.0 v4l2src num-buffers=1 ! jpegenc ! filesink location=capture1.jpeg
  * ]| Capture one frame from a v4l2 camera and save as jpeg image.
  * </refsect2>
  */
@@ -58,6 +58,8 @@
 #define off_t guint64
 #undef ftruncate
 #define ftruncate _chsize
+#undef fsync
+#define fsync _commit
 #ifdef _MSC_VER                 /* Check if we are using MSVC, fileno is deprecated in favour */
 #define fileno _fileno          /* of _fileno */
 #endif
@@ -68,21 +70,24 @@
 #include <unistd.h>
 #endif
 
+#include "gstelements_private.h"
+#include "gstfilesink.h"
+
 static GstStaticPadTemplate sinktemplate = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
     GST_PAD_ALWAYS,
     GST_STATIC_CAPS_ANY);
 
-#define GST_TYPE_BUFFER_MODE (buffer_mode_get_type ())
+#define GST_TYPE_FILE_SINK_BUFFER_MODE (gst_file_sink_buffer_mode_get_type ())
 static GType
-buffer_mode_get_type (void)
+gst_file_sink_buffer_mode_get_type (void)
 {
   static GType buffer_mode_type = 0;
   static const GEnumValue buffer_mode[] = {
-    {-1, "Default buffering", "default"},
-    {_IOFBF, "Fully buffered", "full"},
-    {_IOLBF, "Line buffered", "line"},
-    {_IONBF, "Unbuffered", "unbuffered"},
+    {GST_FILE_SINK_BUFFER_MODE_DEFAULT, "Default buffering", "default"},
+    {GST_FILE_SINK_BUFFER_MODE_FULL, "Fully buffered", "full"},
+    {GST_FILE_SINK_BUFFER_MODE_LINE, "Line buffered", "line"},
+    {GST_FILE_SINK_BUFFER_MODE_UNBUFFERED, "Unbuffered", "unbuffered"},
     {0, NULL, NULL},
   };
 
@@ -97,7 +102,7 @@ GST_DEBUG_CATEGORY_STATIC (gst_file_sink_debug);
 #define GST_CAT_DEFAULT gst_file_sink_debug
 
 #define DEFAULT_LOCATION 	NULL
-#define DEFAULT_BUFFER_MODE 	-1
+#define DEFAULT_BUFFER_MODE 	GST_FILE_SINK_BUFFER_MODE_DEFAULT
 #define DEFAULT_BUFFER_SIZE 	64 * 1024
 #define DEFAULT_APPEND		FALSE
 
@@ -167,6 +172,8 @@ static gboolean gst_file_sink_stop (GstBaseSink * sink);
 static gboolean gst_file_sink_event (GstBaseSink * sink, GstEvent * event);
 static GstFlowReturn gst_file_sink_render (GstBaseSink * sink,
     GstBuffer * buffer);
+static GstFlowReturn gst_file_sink_render_list (GstBaseSink * sink,
+    GstBufferList * list);
 
 static gboolean gst_file_sink_do_seek (GstFileSink * filesink,
     guint64 new_offset);
@@ -204,7 +211,7 @@ gst_file_sink_class_init (GstFileSinkClass * klass)
 
   g_object_class_install_property (gobject_class, PROP_BUFFER_MODE,
       g_param_spec_enum ("buffer-mode", "Buffering mode",
-          "The buffering mode to use", GST_TYPE_BUFFER_MODE,
+          "The buffering mode to use", GST_TYPE_FILE_SINK_BUFFER_MODE,
           DEFAULT_BUFFER_MODE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (gobject_class, PROP_BUFFER_SIZE,
@@ -241,6 +248,8 @@ gst_file_sink_class_init (GstFileSinkClass * klass)
   gstbasesink_class->stop = GST_DEBUG_FUNCPTR (gst_file_sink_stop);
   gstbasesink_class->query = GST_DEBUG_FUNCPTR (gst_file_sink_query);
   gstbasesink_class->render = GST_DEBUG_FUNCPTR (gst_file_sink_render);
+  gstbasesink_class->render_list =
+      GST_DEBUG_FUNCPTR (gst_file_sink_render_list);
   gstbasesink_class->event = GST_DEBUG_FUNCPTR (gst_file_sink_event);
 
   if (sizeof (off_t) < 8) {
@@ -293,8 +302,8 @@ gst_file_sink_set_location (GstFileSink * sink, const gchar * location,
      * this should be in UTF8 */
     sink->filename = g_strdup (location);
     sink->uri = gst_filename_to_uri (location, NULL);
-    GST_INFO ("filename : %s", sink->filename);
-    GST_INFO ("uri      : %s", sink->uri);
+    GST_INFO_OBJECT (sink, "filename : %s", sink->filename);
+    GST_INFO_OBJECT (sink, "uri      : %s", sink->uri);
   } else {
     sink->filename = NULL;
     sink->uri = NULL;
@@ -662,45 +671,94 @@ gst_file_sink_get_current_offset (GstFileSink * filesink, guint64 * p_pos)
 }
 
 static GstFlowReturn
+gst_file_sink_render_buffers (GstFileSink * sink, GstBuffer ** buffers,
+    guint num_buffers, guint8 * mem_nums, guint total_mems)
+{
+  GST_DEBUG_OBJECT (sink,
+      "writing %u buffers (%u memories) at position %" G_GUINT64_FORMAT,
+      num_buffers, total_mems, sink->current_pos);
+
+  return gst_writev_buffers (GST_OBJECT_CAST (sink), fileno (sink->file), NULL,
+      buffers, num_buffers, mem_nums, total_mems, NULL, &sink->current_pos);
+}
+
+static GstFlowReturn
+gst_file_sink_render_list (GstBaseSink * bsink, GstBufferList * buffer_list)
+{
+  GstFlowReturn flow;
+  GstBuffer **buffers;
+  GstFileSink *sink;
+  guint8 *mem_nums;
+  guint total_mems;
+  guint i, num_buffers;
+  gboolean sync_after = FALSE;
+
+  sink = GST_FILE_SINK_CAST (bsink);
+
+  num_buffers = gst_buffer_list_length (buffer_list);
+  if (num_buffers == 0)
+    goto no_data;
+
+  /* extract buffers from list and count memories */
+  buffers = g_newa (GstBuffer *, num_buffers);
+  mem_nums = g_newa (guint8, num_buffers);
+  for (i = 0, total_mems = 0; i < num_buffers; ++i) {
+    buffers[i] = gst_buffer_list_get (buffer_list, i);
+    mem_nums[i] = gst_buffer_n_memory (buffers[i]);
+    total_mems += mem_nums[i];
+    if (GST_BUFFER_FLAG_IS_SET (buffers[i], GST_BUFFER_FLAG_SYNC_AFTER))
+      sync_after = TRUE;
+  }
+
+  flow =
+      gst_file_sink_render_buffers (sink, buffers, num_buffers, mem_nums,
+      total_mems);
+
+  if (flow == GST_FLOW_OK && sync_after) {
+    if (fflush (sink->file) || fsync (fileno (sink->file))) {
+      GST_ELEMENT_ERROR (sink, RESOURCE, WRITE,
+          (_("Error while writing to file \"%s\"."), sink->filename),
+          ("%s", g_strerror (errno)));
+      flow = GST_FLOW_ERROR;
+    }
+  }
+
+  return flow;
+
+no_data:
+  {
+    GST_LOG_OBJECT (sink, "empty buffer list");
+    return GST_FLOW_OK;
+  }
+}
+
+static GstFlowReturn
 gst_file_sink_render (GstBaseSink * sink, GstBuffer * buffer)
 {
   GstFileSink *filesink;
-  GstMapInfo info;
+  GstFlowReturn flow;
+  guint8 n_mem;
 
-  filesink = GST_FILE_SINK (sink);
+  filesink = GST_FILE_SINK_CAST (sink);
 
-  gst_buffer_map (buffer, &info, GST_MAP_READ);
+  n_mem = gst_buffer_n_memory (buffer);
 
-  GST_DEBUG_OBJECT (filesink,
-      "writing %" G_GSIZE_FORMAT " bytes at %" G_GUINT64_FORMAT,
-      info.size, filesink->current_pos);
+  if (n_mem > 0)
+    flow = gst_file_sink_render_buffers (filesink, &buffer, 1, &n_mem, n_mem);
+  else
+    flow = GST_FLOW_OK;
 
-  if (info.size > 0 && info.data != NULL) {
-    if (fwrite (info.data, info.size, 1, filesink->file) != 1)
-      goto handle_error;
-
-    filesink->current_pos += info.size;
-  }
-  gst_buffer_unmap (buffer, &info);
-
-  return GST_FLOW_OK;
-
-handle_error:
-  {
-    switch (errno) {
-      case ENOSPC:{
-        GST_ELEMENT_ERROR (filesink, RESOURCE, NO_SPACE_LEFT, (NULL), (NULL));
-        break;
-      }
-      default:{
-        GST_ELEMENT_ERROR (filesink, RESOURCE, WRITE,
-            (_("Error while writing to file \"%s\"."), filesink->filename),
-            ("%s", g_strerror (errno)));
-      }
+  if (flow == GST_FLOW_OK &&
+      GST_BUFFER_FLAG_IS_SET (buffer, GST_BUFFER_FLAG_SYNC_AFTER)) {
+    if (fflush (filesink->file) || fsync (fileno (filesink->file))) {
+      GST_ELEMENT_ERROR (filesink, RESOURCE, WRITE,
+          (_("Error while writing to file \"%s\"."), filesink->filename),
+          ("%s", g_strerror (errno)));
+      flow = GST_FLOW_ERROR;
     }
-    gst_buffer_unmap (buffer, &info);
-    return GST_FLOW_ERROR;
   }
+
+  return flow;
 }
 
 static gboolean

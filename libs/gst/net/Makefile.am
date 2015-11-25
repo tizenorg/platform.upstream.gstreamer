@@ -6,18 +6,38 @@ libgstnet_@GST_API_VERSION@_include_HEADERS = \
     gstnet.h \
     gstnetaddressmeta.h \
     gstnetclientclock.h \
+    gstnetcontrolmessagemeta.h \
     gstnettimepacket.h \
-    gstnettimeprovider.h
+    gstnettimeprovider.h \
+    gstptpclock.h
 
 libgstnet_@GST_API_VERSION@_la_SOURCES = \
     gstnetaddressmeta.c \
     gstnetclientclock.c \
+    gstnetcontrolmessagemeta.c \
     gstnettimepacket.c \
-    gstnettimeprovider.c
+    gstnettimeprovider.c \
+    gstptpclock.c \
+    gstntppacket.c
+
+noinst_HEADERS = gstptp_private.h gstntppacket.h
 
 libgstnet_@GST_API_VERSION@_la_CFLAGS = $(GST_OBJ_CFLAGS) $(GIO_CFLAGS)
-libgstnet_@GST_API_VERSION@_la_LIBADD = $(GST_OBJ_LIBS) $(GIO_LIBS)
+libgstnet_@GST_API_VERSION@_la_LIBADD = $(GST_OBJ_LIBS) $(GIO_LIBS) \
+	$(top_builddir)/libs/gst/base/libgstbase-@GST_API_VERSION@.la
 libgstnet_@GST_API_VERSION@_la_LDFLAGS = $(GST_LIB_LDFLAGS) $(GST_ALL_LDFLAGS) $(GST_LT_LDFLAGS)
+
+# try to prevent packaging errors
+check-libexecdir-consistency:
+	@if test "${GST_PTP_HELPER_INSTALLED}" != "${libexecdir}/gstreamer-$(GST_API_VERSION)/gst-ptp-helper"; then \
+	  echo "*** Inconsistent libexecdir! Please use ./configure --libexecdir=/foo/bar"; \
+	  echo "*** to set the libexecdir and not make libexecdir=/foo/bar or the like."; \
+	  echo "*** The same goes for prefix, libdir etc."; \
+	  echo "*** ${GST_PTP_HELPER_INSTALLED} != ${libexecdir}/gstreamer-$(GST_API_VERSION)/gst-ptp-helper"; \
+	  exit 1; \
+	fi
+
+all-local: check-libexecdir-consistency
 
 CLEANFILES = *.gcno *.gcda *.gcov
 
@@ -25,18 +45,6 @@ CLEANFILES = *.gcno *.gcda *.gcov
 	$(GCOV) -b -f -o $^ > $@.out
 
 gcov: $(libgstnet_@GST_API_VERSION@_la_SOURCES:=.gcov)
-
-Android.mk: Makefile.am
-	androgenizer -:PROJECT gstreamer -:SHARED libgstnet-@GST_API_VERSION@ -:TAGS eng debug \
-	 -:REL_TOP $(top_srcdir) -:ABS_TOP $(abs_top_srcdir) \
-	 -:SOURCES $(libgstnet_@GST_API_VERSION@_la_SOURCES) \
-	 -:CFLAGS $(libgstnet_@GST_API_VERSION@_la_CFLAGS) \
-	 -:LDFLAGS $(libgstnet_@GST_API_VERSION@_la_LDFLAGS) \
-	           $(libgstnet_@GST_API_VERSION@_la_LIBADD) \
-	 -:HEADER_TARGET gstreamer-@GST_API_VERSION@/gst/net \
-	 -:HEADERS $(libgstnet_@GST_API_VERSION@_include_HEADERS) \
-	 -:PASSTHROUGH LOCAL_ARM_MODE:=arm \
-	> $@
 
 
 if HAVE_INTROSPECTION
@@ -47,7 +55,7 @@ gir_sources=$(patsubst %,$(srcdir)/%, $(libgstnet_@GST_API_VERSION@_la_SOURCES))
 gir_cincludes=--c-include="gst/net/net.h"
 
 GstNet-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstnet-@GST_API_VERSION@.la
-	$(AM_V_GEN)PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" \
+	$(AM_V_GEN)PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" GI_SCANNER_DISABLE_CACHE=yes\
 		GST_PLUGIN_SYSTEM_PATH_1_0="" GST_PLUGIN_PATH_1_0="" GST_REGISTRY_UPDATE=no \
 		$(INTROSPECTION_SCANNER) -v --namespace GstNet \
 		--strip-prefix=Gst \
@@ -67,7 +75,7 @@ GstNet-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstnet-@GST_API_VERSIO
 		--pkg gstreamer-@GST_API_VERSION@ \
 		--pkg gio-2.0 \
 		--pkg-export="gstreamer-net-@GST_API_VERSION@" \
-		--add-init-section="gst_init(NULL,NULL);" \
+		--add-init-section="$(INTROSPECTION_INIT)" \
 		--output $@ \
 		$(gir_headers) \
 		$(gir_sources)

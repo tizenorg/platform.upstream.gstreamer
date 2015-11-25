@@ -1,7 +1,7 @@
 <SIGNAL>
 <NAME>GstTypeFindElement::have-type</NAME>
 <RETURNS>void</RETURNS>
-<FLAGS>f</FLAGS>
+<FLAGS>l</FLAGS>
 GstTypeFindElement *gsttypefindelement
 guint  arg1
 GstCaps *arg2
@@ -47,13 +47,6 @@ GstMultiQueue *gstmultiqueue
 <RETURNS>void</RETURNS>
 <FLAGS>f</FLAGS>
 GstMultiQueue *gstmultiqueue
-</SIGNAL>
-
-<SIGNAL>
-<NAME>GstInputSelector::block</NAME>
-<RETURNS>gint64</RETURNS>
-<FLAGS>la</FLAGS>
-GstInputSelector *gstinputselector
 </SIGNAL>
 
 <SIGNAL>

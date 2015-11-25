@@ -87,6 +87,7 @@ gst_bin_recalculate_latency
 gst_bin_add_many
 gst_bin_remove_many
 gst_bin_find_unlinked_pad
+gst_bin_sync_children_states
 
 <SUBSECTION>
 GstBinFlags
@@ -135,6 +136,7 @@ gst_bus_sync_signal_handler
 gst_bus_create_watch
 gst_bus_add_watch_full
 gst_bus_add_watch
+gst_bus_remove_watch
 gst_bus_disable_sync_message_emission
 gst_bus_enable_sync_message_emission
 gst_bus_async_signal_func
@@ -237,6 +239,7 @@ GST_BUFFER_COPY_ALL
 gst_buffer_copy
 gst_buffer_copy_into
 gst_buffer_copy_region
+gst_buffer_copy_deep
 
 gst_buffer_is_writable
 gst_buffer_make_writable
@@ -252,6 +255,10 @@ gst_buffer_iterate_meta
 GstBufferForeachMetaFunc
 gst_buffer_foreach_meta
 
+GstParentBufferMeta
+gst_buffer_add_parent_buffer_meta
+gst_buffer_get_parent_buffer_meta
+
 <SUBSECTION Standard>
 GstBufferClass
 GST_BUFFER
@@ -260,10 +267,14 @@ GST_TYPE_BUFFER
 GST_TYPE_BUFFER_FLAGS
 GST_TYPE_BUFFER_COPY_FLAGS
 GST_BUFFER_CAST
+GST_PARENT_BUFFER_META_INFO
+GST_TYPE_PARENT_BUFFER_META_API_TYPE
+gst_parent_buffer_meta_get_info
 <SUBSECTION Private>
 gst_buffer_get_type
 gst_buffer_flags_get_type
 gst_buffer_copy_flags_get_type
+gst_parent_buffer_meta_api_get_type
 GST_BUFFER_TIMESTAMP
 GST_BUFFER_TIMESTAMP_IS_VALID
 </SECTION>
@@ -361,6 +372,7 @@ gst_buffer_list_remove
 gst_buffer_list_ref
 gst_buffer_list_unref
 gst_buffer_list_copy
+gst_buffer_list_copy_deep
 gst_buffer_list_is_writable
 gst_buffer_list_make_writable
 
@@ -398,6 +410,10 @@ GST_CAPS_FLAG_IS_SET
 GST_CAPS_FLAG_SET
 GST_CAPS_FLAG_UNSET
 
+GstCapsForeachFunc
+GstCapsMapFunc
+GstCapsFilterMapFunc
+
 gst_caps_new_empty
 gst_caps_new_empty_simple
 gst_caps_new_any
@@ -424,6 +440,9 @@ gst_caps_set_features
 gst_caps_set_value
 gst_caps_set_simple
 gst_caps_set_simple_valist
+gst_caps_foreach
+gst_caps_map_in_place
+gst_caps_filter_and_map_in_place
 gst_caps_is_any
 gst_caps_is_empty
 gst_caps_is_fixed
@@ -514,9 +533,11 @@ gst_caps_features_get_type
 <TITLE>GstSample</TITLE>
 GstSample
 gst_sample_get_buffer
+gst_sample_get_buffer_list
 gst_sample_get_caps
 gst_sample_get_info
 gst_sample_get_segment
+gst_sample_set_buffer_list
 gst_sample_new
 gst_sample_ref
 gst_sample_unref
@@ -566,6 +587,8 @@ GstClockTimeDiff
 GstClockID
 GST_CLOCK_TIME_NONE
 GST_CLOCK_TIME_IS_VALID
+GST_CLOCK_STIME_NONE
+GST_CLOCK_STIME_IS_VALID
 GST_SECOND
 GST_MSECOND
 GST_USECOND
@@ -592,6 +615,7 @@ GstClockReturn
 GstClockFlags
 GST_CLOCK_FLAGS
 gst_clock_add_observation
+gst_clock_add_observation_unapplied
 gst_clock_set_master
 gst_clock_get_master
 gst_clock_set_resolution
@@ -604,10 +628,14 @@ gst_clock_periodic_id_reinit
 gst_clock_get_internal_time
 gst_clock_adjust_unlocked
 gst_clock_unadjust_unlocked
+gst_clock_adjust_with_calibration
 gst_clock_get_calibration
 gst_clock_set_calibration
 gst_clock_get_timeout
 gst_clock_set_timeout
+gst_clock_wait_for_sync
+gst_clock_is_synced
+gst_clock_set_synced
 gst_clock_id_get_time
 gst_clock_id_wait
 gst_clock_id_wait_async
@@ -665,6 +693,7 @@ gst_adapter_prev_timestamp
 
 <SECTION>
 <FILE>gstconfig</FILE>
+<TITLE>GstConfig</TITLE>
 GST_DISABLE_GST_DEBUG
 GST_DISABLE_PARSE
 GST_DISABLE_TRACE
@@ -936,9 +965,11 @@ GST_ELEMENT_FACTORY_TYPE_AUDIOVIDEO_SINKS
 GST_ELEMENT_FACTORY_TYPE_AUDIO_ENCODER
 GST_ELEMENT_FACTORY_TYPE_DECODABLE
 GST_ELEMENT_FACTORY_TYPE_DECODER
+GST_ELEMENT_FACTORY_TYPE_DECRYPTOR
 GST_ELEMENT_FACTORY_TYPE_DEMUXER
 GST_ELEMENT_FACTORY_TYPE_DEPAYLOADER
 GST_ELEMENT_FACTORY_TYPE_ENCODER
+GST_ELEMENT_FACTORY_TYPE_ENCRYPTOR
 GST_ELEMENT_FACTORY_TYPE_FORMATTER
 GST_ELEMENT_FACTORY_TYPE_MAX_ELEMENTS
 GST_ELEMENT_FACTORY_TYPE_MEDIA_AUDIO
@@ -967,9 +998,11 @@ GST_TYPE_ELEMENT_FACTORY
 <SUBSECTION Private>
 gst_element_factory_get_type
 GST_ELEMENT_FACTORY_KLASS_DECODER
+GST_ELEMENT_FACTORY_KLASS_DECRYPTOR
 GST_ELEMENT_FACTORY_KLASS_DEMUXER
 GST_ELEMENT_FACTORY_KLASS_DEPAYLOADER
 GST_ELEMENT_FACTORY_KLASS_ENCODER
+GST_ELEMENT_FACTORY_KLASS_ENCRYPTOR
 GST_ELEMENT_FACTORY_KLASS_FORMATTER
 GST_ELEMENT_FACTORY_KLASS_MEDIA_AUDIO
 GST_ELEMENT_FACTORY_KLASS_MEDIA_IMAGE
@@ -1120,6 +1153,9 @@ gst_event_parse_toc_select
 
 gst_event_new_segment_done
 gst_event_parse_segment_done
+
+gst_event_new_protection
+gst_event_parse_protection
 <SUBSECTION Standard>
 GstEventClass
 GST_EVENT
@@ -1227,6 +1263,7 @@ gst_ghost_pad_get_type
 <TITLE>GstInfo</TITLE>
 GstDebugLevel
 GST_LEVEL_DEFAULT
+GST_LEVEL_MAX
 GstDebugColorFlags
 GstDebugColorMode
 GstDebugCategory
@@ -1312,6 +1349,9 @@ GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS
 gst_debug_print_stack_trace
 GST_TIME_FORMAT
 GST_TIME_ARGS
+GST_STIME_FORMAT
+GST_STIME_ARGS
+gst_debug_bin_to_dot_data
 gst_debug_bin_to_dot_file
 gst_debug_bin_to_dot_file_with_ts
 <SUBSECTION Standard>
@@ -1443,7 +1483,9 @@ GstMapInfo
 GST_MAP_INFO_INIT
 
 GstMemoryMapFunction
+GstMemoryMapFullFunction
 GstMemoryUnmapFunction
+GstMemoryUnmapFullFunction
 GstMemoryCopyFunction
 GstMemoryShareFunction
 GstMemoryIsSpanFunction
@@ -1697,10 +1739,12 @@ gst_object_set_name
 gst_object_get_name
 gst_object_set_parent
 gst_object_get_parent
+gst_object_has_as_parent
 gst_object_unparent
 gst_object_default_deep_notify
 gst_object_default_error
 gst_object_check_uniqueness
+gst_object_has_as_ancestor
 gst_object_has_ancestor
 gst_object_ref
 gst_object_unref
@@ -1969,6 +2013,9 @@ GST_PAD_IS_PROXY_SCHEDULING
 GST_PAD_IS_ACCEPT_INTERSECT
 GST_PAD_SET_ACCEPT_INTERSECT
 GST_PAD_UNSET_ACCEPT_INTERSECT
+GST_PAD_IS_ACCEPT_TEMPLATE
+GST_PAD_SET_ACCEPT_TEMPLATE
+GST_PAD_UNSET_ACCEPT_TEMPLATE
 
 <SUBSECTION Standard>
 GstPadClass
@@ -2117,6 +2164,7 @@ gst_pipeline_new
 gst_pipeline_get_bus
 
 gst_pipeline_set_clock
+gst_pipeline_get_pipeline_clock
 gst_pipeline_get_clock
 
 gst_pipeline_use_clock
@@ -2127,6 +2175,9 @@ gst_pipeline_get_auto_flush_bus
 
 gst_pipeline_set_delay
 gst_pipeline_get_delay
+
+gst_pipeline_set_latency
+gst_pipeline_get_latency
 
 <SUBSECTION Standard>
 GstPipelineClass
@@ -2284,12 +2335,29 @@ gst_preset_set_meta
 gst_preset_get_meta
 gst_preset_set_app_dir
 gst_preset_get_app_dir
+gst_preset_is_editable
 <SUBSECTION Standard>
 GST_PRESET
 GST_IS_PRESET
 GST_TYPE_PRESET
 GST_PRESET_GET_INTERFACE
 gst_preset_get_type
+</SECTION>
+
+<SECTION>
+<FILE>gstprotection</FILE>
+<TITLE>GstProtectionMeta</TITLE>
+<INCLUDE>gst/gstprotection.h</INCLUDE>
+GstProtectionMeta
+gst_buffer_add_protection_meta
+gst_buffer_get_protection_meta
+gst_protection_select_system
+GST_PROTECTION_SYSTEM_ID_CAPS_FIELD
+<SUBSECTION Standard>
+GST_PROTECTION_META_API_TYPE
+GST_PROTECTION_META_INFO
+gst_protection_meta_get_info
+gst_protection_meta_api_get_type
 </SECTION>
 
 <SECTION>
@@ -2498,11 +2566,13 @@ gst_segment_copy
 gst_segment_free
 gst_segment_do_seek
 gst_segment_to_running_time
+gst_segment_to_running_time_full
 gst_segment_to_stream_time
 gst_segment_to_position
 gst_segment_set_running_time
 gst_segment_copy_into
 gst_segment_offset_running_time
+gst_segment_is_equal
 <SUBSECTION Standard>
 GST_TYPE_SEGMENT
 GST_TYPE_SEGMENT_FLAGS
@@ -2518,6 +2588,7 @@ gst_segment_flags_get_type
 GstStructure
 GstStructureForeachFunc
 GstStructureMapFunc
+GstStructureFilterMapFunc
 gst_structure_new_empty
 gst_structure_new_id_empty
 gst_structure_new
@@ -2549,7 +2620,6 @@ gst_structure_remove_fields
 gst_structure_remove_fields_valist
 gst_structure_remove_all_fields
 gst_structure_get_field_type
-gst_structure_foreach
 gst_structure_n_fields
 gst_structure_has_field
 gst_structure_has_field_typed
@@ -2571,7 +2641,9 @@ gst_structure_get_date_time
 gst_structure_get_clock_time
 gst_structure_get_enum
 gst_structure_get_fraction
+gst_structure_foreach
 gst_structure_map_in_place
+gst_structure_filter_and_map_in_place
 gst_structure_nth_field_name
 gst_structure_set_parent_refcount
 gst_structure_to_string
@@ -3017,6 +3089,7 @@ GstURIType
 GstURIError
 gst_uri_error_quark
 GST_URI_TYPE_IS_VALID
+GST_URI_NO_PORT
 gst_uri_protocol_is_valid
 gst_uri_protocol_is_supported
 gst_uri_is_valid
@@ -3044,6 +3117,60 @@ gst_uri_handler_get_type
 gst_uri_type_get_type
 </SECTION>
 
+<SECTION>
+<FILE>gsturi</FILE>
+<TITLE>GstUri</TITLE>
+GST_URI_CAST
+GST_URI_CONST_CAST
+GstUri
+gst_uri_new
+gst_uri_new_with_base
+gst_uri_from_string
+gst_uri_from_string_with_base
+gst_uri_copy
+gst_uri_equal
+gst_uri_join
+gst_uri_join_strings
+gst_uri_is_writable
+gst_uri_make_writable
+gst_uri_to_string
+gst_uri_ref
+gst_uri_unref
+gst_uri_is_normalized
+gst_uri_normalize
+gst_uri_get_scheme
+gst_uri_set_scheme
+gst_uri_get_userinfo
+gst_uri_set_userinfo
+gst_uri_get_host
+gst_uri_set_host
+gst_uri_get_port
+gst_uri_set_port
+gst_uri_get_path
+gst_uri_set_path
+gst_uri_get_path_string
+gst_uri_set_path_string
+gst_uri_get_path_segments
+gst_uri_set_path_segments
+gst_uri_append_path
+gst_uri_append_path_segment
+gst_uri_get_query_string
+gst_uri_set_query_string
+gst_uri_get_query_table
+gst_uri_set_query_table
+gst_uri_get_query_value
+gst_uri_set_query_value
+gst_uri_remove_query_key
+gst_uri_query_has_key
+gst_uri_get_query_keys
+gst_uri_get_fragment
+gst_uri_set_fragment
+<SUBSECTION Standard>
+GST_IS_URI
+GST_TYPE_URI
+GST_URI
+gst_uri_get_type
+</SECTION>
 
 <SECTION>
 <FILE>gstutils</FILE>
@@ -3199,6 +3326,15 @@ GST_TYPE_BITMASK
 gst_value_set_bitmask
 gst_value_get_bitmask
 
+<SUBSECTION flagset>
+GST_VALUE_HOLDS_FLAG_SET
+GST_TYPE_FLAG_SET
+gst_structure_get_flagset
+gst_value_get_flagset_flags
+gst_value_get_flagset_mask
+gst_value_set_flagset
+GST_FLAG_SET_MASK_EXACT
+
 <SUBSECTION int64range>
 GST_VALUE_HOLDS_INT64_RANGE
 GST_TYPE_INT64_RANGE
@@ -3307,6 +3443,7 @@ gst_value_array_get_value
 gst_value_array_prepend_value
 gst_value_fixate
 
+gst_flagset_register
 
 <SUBSECTION Standard>
 GST_TYPE_G_THREAD
@@ -3322,6 +3459,7 @@ gst_int64_range_get_type
 gst_value_array_get_type
 gst_value_list_get_type
 gst_bitmask_get_type
+gst_flagset_get_type
 </SECTION>
 
 <SECTION>
@@ -3348,6 +3486,7 @@ gst_device_get_display_name
 gst_device_has_classes
 gst_device_has_classesv
 gst_device_reconfigure_element
+gst_device_get_properties
 
 <SUBSECTION Standard>
 GST_DEVICE

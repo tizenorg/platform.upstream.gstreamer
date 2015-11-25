@@ -3,7 +3,7 @@
   <description>GStreamer core elements</description>
   <filename>../../plugins/elements/.libs/libgstcoreelements.so</filename>
   <basename>libgstcoreelements.so</basename>
-  <version>1.4.1</version>
+  <version>1.6.1</version>
   <license>LGPL</license>
   <source>gstreamer</source>
   <package>GStreamer source release</package>
@@ -20,6 +20,27 @@
           <name>sink</name>
           <direction>sink</direction>
           <presence>always</presence>
+          <details>ANY</details>
+        </caps>
+        <caps>
+          <name>src</name>
+          <direction>source</direction>
+          <presence>always</presence>
+          <details>ANY</details>
+        </caps>
+      </pads>
+    </element>
+    <element>
+      <name>concat</name>
+      <longname>Concat</longname>
+      <class>Generic</class>
+      <description>Concatenate multiple streams</description>
+      <author>Sebastian Dröge &lt;sebastian@centricular.com&gt;</author>
+      <pads>
+        <caps>
+          <name>sink_%u</name>
+          <direction>sink</direction>
+          <presence>request</presence>
           <details>ANY</details>
         </caps>
         <caps>
@@ -284,6 +305,27 @@
           <name>src</name>
           <direction>source</direction>
           <presence>always</presence>
+          <details>ANY</details>
+        </caps>
+      </pads>
+    </element>
+    <element>
+      <name>streamiddemux</name>
+      <longname>Streamid Demux</longname>
+      <class>Generic</class>
+      <description>1-to-N output stream by stream-id</description>
+      <author>HoonHee Lee &lt;hoonhee.lee@lge.com&gt;</author>
+      <pads>
+        <caps>
+          <name>sink</name>
+          <direction>sink</direction>
+          <presence>always</presence>
+          <details>ANY</details>
+        </caps>
+        <caps>
+          <name>src_%u</name>
+          <direction>source</direction>
+          <presence>sometimes</presence>
           <details>ANY</details>
         </caps>
       </pads>

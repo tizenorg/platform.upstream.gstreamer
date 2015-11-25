@@ -52,7 +52,7 @@ static GType
 gst_output_selector_pad_negotiation_mode_get_type (void)
 {
   static GType pad_negotiation_mode_type = 0;
-  static GEnumValue pad_negotiation_modes[] = {
+  static const GEnumValue pad_negotiation_modes[] = {
     {GST_OUTPUT_SELECTOR_PAD_NEGOTIATION_MODE_NONE, "None", "none"},
     {GST_OUTPUT_SELECTOR_PAD_NEGOTIATION_MODE_ALL, "All", "all"},
     {GST_OUTPUT_SELECTOR_PAD_NEGOTIATION_MODE_ACTIVE, "Active", "active"},
@@ -119,7 +119,8 @@ gst_output_selector_class_init (GstOutputSelectorClass * klass)
   g_object_class_install_property (gobject_class, PROP_ACTIVE_PAD,
       g_param_spec_object ("active-pad", "Active pad",
           "Currently active src pad", GST_TYPE_PAD,
-          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+          G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
+          G_PARAM_STATIC_STRINGS));
   g_object_class_install_property (gobject_class, PROP_RESEND_LATEST,
       g_param_spec_boolean ("resend-latest", "Resend latest buffer",
           "Resend latest buffer after a switch to a new pad", FALSE,
@@ -534,29 +535,26 @@ gst_output_selector_event (GstPad * pad, GstObject * parent, GstEvent * event)
   sel = GST_OUTPUT_SELECTOR (parent);
 
   switch (GST_EVENT_TYPE (event)) {
-    case GST_EVENT_SEGMENT:
+    case GST_EVENT_EOS:
     {
-      gst_event_copy_segment (event, &sel->segment);
-
-      GST_DEBUG_OBJECT (sel, "configured SEGMENT %" GST_SEGMENT_FORMAT,
-          &sel->segment);
-
       res = gst_output_selector_forward_event (sel, event);
       break;
     }
+    case GST_EVENT_SEGMENT:
+    {
+      gst_event_copy_segment (event, &sel->segment);
+      GST_DEBUG_OBJECT (sel, "configured SEGMENT %" GST_SEGMENT_FORMAT,
+          &sel->segment);
+      /* fall through */
+    }
     default:
     {
-      if (GST_EVENT_IS_STICKY (event)) {
-        res = gst_output_selector_forward_event (sel, event);
+      active = gst_output_selector_get_active (sel);
+      if (active) {
+        res = gst_pad_push_event (active, event);
+        gst_object_unref (active);
       } else {
-        /* Send other events to pending or active src pad */
-        active = gst_output_selector_get_active (sel);
-        if (active) {
-          res = gst_pad_push_event (active, event);
-          gst_object_unref (active);
-        } else {
-          gst_event_unref (event);
-        }
+        gst_event_unref (event);
       }
       break;
     }
@@ -597,9 +595,16 @@ gst_output_selector_query (GstPad * pad, GstObject * parent, GstQuery * query)
       }
       break;
     }
+    case GST_QUERY_DRAIN:
+      if (sel->latest_buffer) {
+        gst_buffer_unref (sel->latest_buffer);
+        sel->latest_buffer = NULL;
+      }
+      /* fall through */
     default:
       res = gst_pad_query_default (pad, parent, query);
       break;
   }
+
   return res;
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer 1.2.1\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/\n"
-"POT-Creation-Date: 2014-08-27 14:17+0300\n"
+"POT-Creation-Date: 2015-10-30 14:08+0200\n"
 "PO-Revision-Date: 2014-01-30 10:24+0100\n"
 "Last-Translator: Peter Tuhársky <tuharsky@misbb.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -932,6 +932,12 @@ msgstr ""
 "Obmedziť možné povolené schopnosti (NULOVÉ znamená ĽUBOVOĽNÉ). Nastavenie "
 "tejto vlastnosti berie referenciu na zadaný objekt GstCaps."
 
+msgid "Caps Change Mode"
+msgstr ""
+
+msgid "Filter caps change behaviour"
+msgstr ""
+
 msgid "No Temp directory specified."
 msgstr "Nebol určený dočasný priečinok (Temp)."
 
@@ -998,6 +1004,10 @@ msgstr "vynútiť veľké písmená"
 msgid "force caps without doing a typefind"
 msgstr "vynútiť veľké písmená bez kontroly"
 
+#, fuzzy
+msgid "Stream contains not enough data."
+msgstr "Prúd neobsahuje údaje."
+
 msgid "Stream contains no data."
 msgstr "Prúd neobsahuje údaje."
 
@@ -1009,6 +1019,9 @@ msgstr "čitateľné"
 
 msgid "writable"
 msgstr "zapisovateľné"
+
+msgid "deprecated"
+msgstr ""
 
 msgid "controllable"
 msgstr "ovládateľné"
@@ -1211,11 +1224,13 @@ msgstr "Nevypisovať informácie o stave"
 msgid "Output messages"
 msgstr "Vypísať správy"
 
-msgid "Do not output status information of TYPE"
-msgstr "Nevypisovať informácie o stave TYPU"
+msgid ""
+"Do not output status information for the specified property if verbose "
+"output is enabled (can be used multiple times)"
+msgstr ""
 
-msgid "TYPE1,TYPE2,..."
-msgstr "TYP1,TYP2,..."
+msgid "PROPERTY-NAME"
+msgstr ""
 
 msgid "Do not install a fault handler"
 msgstr "Neinštalovať obsluhu výnimiek"
@@ -1296,6 +1311,12 @@ msgstr "Nastavujem rúru na NULOVÚ ...\n"
 
 msgid "Freeing pipeline ...\n"
 msgstr "Uvoľňujem rúru ...\n"
+
+#~ msgid "Do not output status information of TYPE"
+#~ msgstr "Nevypisovať informácie o stave TYPU"
+
+#~ msgid "TYPE1,TYPE2,..."
+#~ msgstr "TYP1,TYP2,..."
 
 #~ msgid "link without source element"
 #~ msgstr "pripojenie bez zdrojového prvku"

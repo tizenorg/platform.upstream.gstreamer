@@ -59,10 +59,10 @@ G_BEGIN_DECLS
  *  An example would be notifications about state changes or receiving/sending
  *  of events.
  * @GST_LEVEL_LOG: Log messages are messages that are very common but might be
- *  useful to know. As a rule of thumb a pipeline that is iterating as expected
- *  should never output anything else but LOG messages. Use this log level to
- *  log recurring information in chain functions and loop functions, for
- *  example.
+ *  useful to know. As a rule of thumb a pipeline that is running as expected
+ *  should never output anything else but LOG messages whilst processing data.
+ *  Use this log level to log recurring information in chain functions and
+ *  loop functions, for example.
  * @GST_LEVEL_TRACE: Tracing-related messages.
  *  Examples for this are referencing/dereferencing of objects.
  * @GST_LEVEL_MEMDUMP: memory dump messages are used to log (small) chunks of
@@ -100,6 +100,22 @@ typedef enum {
  */
 #ifndef GST_LEVEL_DEFAULT
 #define GST_LEVEL_DEFAULT GST_LEVEL_NONE
+#endif
+
+/**
+ * GST_LEVEL_MAX:
+ *
+ * Defines the maximum debugging level to be enabled at compilation time. By default
+ * it is set such that all debugging statements will be enabled.
+ *
+ * If you wish to compile GStreamer and plugins with only some debugging statements
+ * (Such as just warnings and errors), you can define it at compile time to the
+ * maximum debug level. Any debug statements above that level will be compiled out.
+ *
+ * Since: 1.6
+ */
+#ifndef GST_LEVEL_MAX
+#define GST_LEVEL_MAX GST_LEVEL_COUNT
 #endif
 
 /* defines for format (colors etc)
@@ -338,7 +354,7 @@ void            gst_debug_log_default    (GstDebugCategory * category,
                                           gint               line,
                                           GObject          * object,
                                           GstDebugMessage  * message,
-                                          gpointer           unused) G_GNUC_NO_INSTRUMENT;
+                                          gpointer           user_data) G_GNUC_NO_INSTRUMENT;
 
 const gchar *   gst_debug_level_get_name (GstDebugLevel level);
 
@@ -520,7 +536,7 @@ GST_EXPORT GstDebugLevel            _gst_debug_min;
  */
 #ifdef G_HAVE_ISO_VARARGS
 #define GST_CAT_LEVEL_LOG(cat,level,object,...) G_STMT_START{		\
-  if (G_UNLIKELY (level <= _gst_debug_min)) {						\
+  if (G_UNLIKELY (level <= GST_LEVEL_MAX && level <= _gst_debug_min)) {						\
     gst_debug_log ((cat), (level), __FILE__, GST_FUNCTION, __LINE__,	\
         (GObject *) (object), __VA_ARGS__);				\
   }									\
@@ -528,7 +544,7 @@ GST_EXPORT GstDebugLevel            _gst_debug_min;
 #else /* G_HAVE_GNUC_VARARGS */
 #ifdef G_HAVE_GNUC_VARARGS
 #define GST_CAT_LEVEL_LOG(cat,level,object,args...) G_STMT_START{	\
-  if (G_UNLIKELY (level <= _gst_debug_min)) {						\
+  if (G_UNLIKELY (level <= GST_LEVEL_MAX && level <= _gst_debug_min)) {						\
     gst_debug_log ((cat), (level), __FILE__, GST_FUNCTION, __LINE__,	\
         (GObject *) (object), ##args );					\
   }									\
@@ -538,7 +554,7 @@ static inline void
 GST_CAT_LEVEL_LOG_valist (GstDebugCategory * cat,
     GstDebugLevel level, gpointer object, const char *format, va_list varargs)
 {
-  if (G_UNLIKELY (level <= _gst_debug_min)) {
+  if (G_UNLIKELY (level <= GST_LEVEL_MAX && level <= _gst_debug_min)) {
     gst_debug_log_valist (cat, level, "", "", 0, (GObject *) object, format,
         varargs);
   }
@@ -561,7 +577,8 @@ GST_CAT_LEVEL_LOG (GstDebugCategory * cat, GstDebugLevel level,
  * other macros and hence in a separate block right here. Docs chunks are
  * with the other doc chunks below though. */
 #define __GST_CAT_MEMDUMP_LOG(cat,object,msg,data,length) G_STMT_START{       \
-  if (G_UNLIKELY (GST_LEVEL_MEMDUMP <= _gst_debug_min)) {                    \
+    if (G_UNLIKELY (GST_LEVEL_MEMDUMP <= GST_LEVEL_MAX &&		      \
+		    GST_LEVEL_MEMDUMP <= _gst_debug_min)) {		      \
     _gst_debug_dump_mem ((cat), __FILE__, GST_FUNCTION, __LINE__,             \
         (GObject *) (object), (msg), (data), (length));                       \
   }                                                                           \

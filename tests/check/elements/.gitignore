@@ -1,5 +1,6 @@
 .dirstamp
 capsfilter
+concat
 fakesrc
 fakesink
 fdsrc
@@ -11,6 +12,7 @@ multiqueue
 queue
 queue2
 selector
+streamiddemux
 tee
 valve
 *.check.xml

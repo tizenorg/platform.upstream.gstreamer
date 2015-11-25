@@ -265,6 +265,9 @@ static gboolean gst_queue2_is_filled (GstQueue2 * queue);
 static void update_cur_level (GstQueue2 * queue, GstQueue2Range * range);
 static void update_in_rates (GstQueue2 * queue);
 static void gst_queue2_post_buffering (GstQueue2 * queue);
+#ifdef GST_QUEUE2_MODIFICATION
+static gboolean change_current_range(GstQueue2 * queue, GstQueue2Range *req_range, guint64 offset, guint length);
+#endif
 
 typedef enum
 {
@@ -953,6 +956,14 @@ static void
 update_buffering (GstQueue2 * queue)
 {
   gint percent;
+#ifdef GST_QUEUE2_MODIFICATION
+  GstQueue2Range *range;
+
+  if (queue->read)
+    range = queue->read;
+  else
+    range = queue->current;
+#endif
 
   /* Ensure the variables used to calculate buffering state are up-to-date. */
 #ifdef GST_QUEUE2_MODIFICATION
@@ -3203,8 +3214,11 @@ gst_queue2_handle_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
     {
       gboolean pull_mode;
       GstSchedulingFlags flags = 0;
-
+#ifdef GST_QUEUE2_MODIFICATION
       if ((!QUEUE_IS_USING_QUEUE (queue)) && !gst_pad_peer_query (queue->sinkpad, query))
+#else
+      if (!gst_pad_peer_query (queue->sinkpad, query))
+#endif
         goto peer_failed;
 
       gst_query_parse_scheduling (query, &flags, NULL, NULL, NULL);

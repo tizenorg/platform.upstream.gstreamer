@@ -135,9 +135,9 @@ AG_GST_SET_PACKAGE_RELEASE_DATETIME_WITH_NANO([$PACKAGE_VERSION_NANO],
 dnl check for bash completion
 AC_ARG_WITH([bash-completion-dir],
     AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
-        [Install the bash auto-completion script in this directory. @<:@default=yes@:>@]),
+        [Install the bash auto-completion script in this directory. @<:@default=no@:>@]),
     [],
-    [with_bash_completion_dir=yes])
+    [with_bash_completion_dir=no])
 
 if test "x$with_bash_completion_dir" = "xyes"
 then

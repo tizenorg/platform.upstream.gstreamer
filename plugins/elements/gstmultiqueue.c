@@ -602,6 +602,13 @@ gst_multi_queue_set_property (GObject * object, guint prop_id,
       break;
     case PROP_HIGH_PERCENT:
       mq->high_percent = g_value_get_int (value);
+
+#ifdef GST_TIZEN_MODIFICATION
+      if (mq->buffering) {
+        mq->percent_changed = TRUE;
+        gst_multi_queue_post_buffering (mq);
+      }
+#endif
       break;
     case PROP_SYNC_BY_RUNNING_TIME:
       mq->sync_by_running_time = g_value_get_boolean (value);

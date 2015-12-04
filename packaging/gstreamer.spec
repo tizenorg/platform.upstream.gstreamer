@@ -2,7 +2,7 @@
 
 Name:           gstreamer
 Version:        1.6.1
-Release:        2
+Release:        3
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.1+
 Group:          Multimedia/Framework
@@ -153,7 +153,6 @@ mkdir -p %{buildroot}%{_datadir}/gstreamer-%{gst_branch}/presets
 %files devel
 %manifest %{name}.manifest
 
-%{_lib_gstreamer_dir}/libgstcoreelements.so
 %{_libdir}/libgstbase-%{gst_branch}.so
 %{_libdir}/libgstcheck-%{gst_branch}.so
 %{_libdir}/libgstcontroller-%{gst_branch}.so

@@ -2278,7 +2278,11 @@ gst_base_parse_push_frame (GstBaseParse * parse, GstBaseParseFrame * frame)
   if (parse->priv->update_interval < 0)
     parse->priv->update_interval = 50;
   else if (parse->priv->update_interval > 0 &&
+#ifdef GST_BASEPARSE_MODIFICATION
+      ((parse->priv->framecount - 1) % parse->priv->update_interval) == 0)
+#else
       (parse->priv->framecount % parse->priv->update_interval) == 0)
+#endif
     gst_base_parse_update_duration (parse);
 
   if (GST_BUFFER_PTS_IS_VALID (buffer))

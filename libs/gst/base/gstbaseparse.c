@@ -366,6 +366,9 @@ struct _GstBaseParsePrivate
   GstTagList *parser_tags;
   GstTagMergeMode parser_tags_merge_mode;
   gboolean tags_changed;
+#ifdef GST_BASEPARSE_MODIFICATION
+  gboolean accurate_index_seek;
+#endif
 };
 
 typedef struct _GstBaseParseSeek
@@ -889,6 +892,9 @@ gst_base_parse_reset (GstBaseParse * parse)
   g_list_free (parse->priv->detect_buffers);
   parse->priv->detect_buffers = NULL;
   parse->priv->detect_buffers_size = 0;
+#ifdef GST_BASEPARSE_MODIFICATION
+  parse->priv->accurate_index_seek = TRUE;
+#endif
   GST_OBJECT_UNLOCK (parse);
 }
 
@@ -4383,10 +4389,22 @@ gst_base_parse_handle_seek (GstBaseParse * parse, GstEvent * event)
 
   /* maybe we can be accurate for (almost) free */
   gst_base_parse_find_offset (parse, seeksegment.position, TRUE, &start_ts);
+#ifdef GST_BASEPARSE_MODIFICATION
+  if (parse->priv->accurate_index_seek) {
+    if (seeksegment.position <= start_ts + TARGET_DIFFERENCE) {
+      GST_DEBUG_OBJECT (parse, "accurate seek possible");
+      accurate = TRUE;
+    }
+  } else {
+    GST_DEBUG_OBJECT (parse, "accurate seek NOT possible");
+    accurate = FALSE;
+  }
+#else
   if (seeksegment.position <= start_ts + TARGET_DIFFERENCE) {
     GST_DEBUG_OBJECT (parse, "accurate seek possible");
     accurate = TRUE;
   }
+#endif
 
   if (accurate) {
     GstClockTime startpos;
@@ -4792,3 +4810,19 @@ gst_base_parse_merge_tags (GstBaseParse * parse, GstTagList * tags,
 
   GST_OBJECT_UNLOCK (parse);
 }
+
+#ifdef GST_BASEPARSE_MODIFICATION
+/*
+ * Checks if accurate seek mode are avilable from sub-parse
+ */
+void
+gst_base_parse_set_seek_mode (GstBaseParse * parse, gboolean seek_mode)
+{
+  g_return_if_fail (parse != NULL);
+  parse->priv->accurate_index_seek = seek_mode;
+  if (seek_mode)
+    GST_INFO_OBJECT (parse, "accurate seek mode ON");
+  else
+    GST_INFO_OBJECT (parse, "accurate seek mode OFF - for HTTP SEEK");
+}
+#endif

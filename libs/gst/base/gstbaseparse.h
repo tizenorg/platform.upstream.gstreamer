@@ -348,7 +348,10 @@ void            gst_base_parse_set_ts_at_offset (GstBaseParse *parse,
 void            gst_base_parse_merge_tags       (GstBaseParse  * parse,
                                                  GstTagList    * tags,
                                                  GstTagMergeMode mode);
-
+#ifdef GST_BASEPARSE_MODIFICATION
+void            gst_base_parse_set_seek_mode (GstBaseParse * parse,
+                                              gboolean       seek_mode);
+#endif
 G_END_DECLS
 
 #endif /* __GST_BASE_PARSE_H__ */

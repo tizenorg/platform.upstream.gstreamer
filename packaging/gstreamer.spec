@@ -14,10 +14,10 @@ BuildRequires:  gettext-tools
 BuildRequires:  check-devel
 BuildRequires:  fdupes
 BuildRequires:  flex
-BuildRequires:  glib2-devel >= 2.32.0
+BuildRequires:  pkgconfig(glib-2.0) >= 2.32.0
 BuildRequires:  libtool
-BuildRequires:  libxml2-devel
-BuildRequires:  gobject-introspection-devel >= 1.31.1
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(gobject-introspection-1.0) >= 1.31.1
 BuildRequires:  pkgconfig(dlog)
 
 %description

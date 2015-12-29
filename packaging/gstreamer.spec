@@ -4,7 +4,7 @@ Name:           gstreamer
 Version:        1.6.1
 Release:        3
 Summary:        Streaming-Media Framework Runtime
-License:        LGPL-2.1+
+License:        LGPL-2.0+
 Group:          Multimedia/Framework
 Url:            http://gstreamer.freedesktop.org/
 Source0:        http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-%{version}.tar.xz

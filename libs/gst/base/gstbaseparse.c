@@ -367,6 +367,12 @@ struct _GstBaseParsePrivate
   GstTagMergeMode parser_tags_merge_mode;
   gboolean tags_changed;
 #ifdef GST_BASEPARSE_MODIFICATION
+  /* to get pad mode early */
+  GstPadMode expected_pad_mode;
+  /* check first frame in base parser */
+  gboolean first_frame;
+  /* remove zero padding */
+  gint64 remove_from_total;
   gboolean accurate_index_seek;
 #endif
 };
@@ -645,6 +651,10 @@ gst_base_parse_init (GstBaseParse * parse, GstBaseParseClass * bclass)
 
   parse->priv->pad_mode = GST_PAD_MODE_NONE;
 
+#ifdef GST_BASEPARSE_MODIFICATION
+  parse->priv->expected_pad_mode = GST_PAD_MODE_NONE;
+#endif
+
   g_mutex_init (&parse->priv->index_lock);
 
   /* init state */
@@ -858,6 +868,12 @@ gst_base_parse_reset (GstBaseParse * parse)
   parse->priv->last_offset = 0;
 
   parse->priv->skip = 0;
+
+#ifdef GST_BASEPARSE_MODIFICATION
+  parse->priv->first_frame = TRUE;
+  parse->priv->remove_from_total = 0;
+  parse->priv->accurate_index_seek = TRUE;
+#endif
 
   g_list_foreach (parse->priv->pending_events, (GFunc) gst_mini_object_unref,
       NULL);
@@ -1607,6 +1623,9 @@ gst_base_parse_convert_default (GstBaseParse * parse,
     if (dest_format == GST_FORMAT_TIME) {
       /* BYTES -> TIME conversion */
       GST_DEBUG_OBJECT (parse, "converting bytes -> time");
+#ifdef GST_BASEPARSE_MODIFICATION
+      src_value = src_value - parse->priv->remove_from_total;
+#endif
       *dest_value = gst_util_uint64_scale (src_value, duration, bytes);
       *dest_value *= GST_MSECOND;
       GST_DEBUG_OBJECT (parse, "conversion result: %" G_GINT64_FORMAT " ms",
@@ -2044,6 +2063,14 @@ gst_base_parse_handle_buffer (GstBaseParse * parse, GstBuffer * buffer,
     gst_adapter_push (parse->priv->adapter, buffer);
   }
 
+#ifdef GST_BASEPARSE_MODIFICATION
+  /* some one-time start-up */
+  if (G_UNLIKELY (parse->priv->framecount == 0)) {
+    gst_base_parse_check_seekability (parse);
+    gst_base_parse_check_upstream (parse);
+  }
+#endif
+
   frame = gst_base_parse_prepare_frame (parse, buffer);
   ret = klass->handle_frame (parse, frame, skip);
 
@@ -2197,6 +2224,15 @@ gst_base_parse_handle_and_push_frame (GstBaseParse * parse,
   /* again use default handler to add missing metadata;
    * we may have new information on frame properties */
   gst_base_parse_parse_frame (parse, frame);
+
+#ifdef GST_BASEPARSE_MODIFICATION
+  if (parse->priv->first_frame) {
+    parse->priv->remove_from_total = GST_BUFFER_OFFSET (buffer);
+    GST_DEBUG_OBJECT (parse, "first frame has offset %" G_GINT64_FORMAT ". remove from total",
+        parse->priv->remove_from_total);
+    parse->priv->first_frame = FALSE;
+  }
+#endif
 
   parse->priv->next_pts = GST_CLOCK_TIME_NONE;
   if (GST_BUFFER_DTS_IS_VALID (buffer) && GST_BUFFER_DURATION_IS_VALID (buffer)) {
@@ -3569,6 +3605,11 @@ gst_base_parse_sink_activate_mode (GstPad * pad, GstObject * parent,
   GST_DEBUG_OBJECT (parse, "sink %sactivate in %s mode",
       (active) ? "" : "de", gst_pad_mode_get_name (mode));
 
+#ifdef GST_BASEPARSE_MODIFICATION
+    /* to know early what is the mode */
+    parse->priv->expected_pad_mode = active ? mode : GST_PAD_MODE_NONE;
+#endif
+
   if (!gst_base_parse_activate (parse, active))
     goto activate_failed;
 
@@ -4812,6 +4853,49 @@ gst_base_parse_merge_tags (GstBaseParse * parse, GstTagList * tags,
 }
 
 #ifdef GST_BASEPARSE_MODIFICATION
+void
+gst_base_parse_get_upstream_size (GstBaseParse * parse,
+    gint64 * upstream_size)
+{
+  GST_BASE_PARSE_INDEX_LOCK (parse);
+  *upstream_size = parse->priv->upstream_size;
+  GST_INFO_OBJECT (parse, "get upstream_size for child parser : (%"G_GUINT64_FORMAT")",
+    parse->priv->upstream_size);
+  GST_BASE_PARSE_INDEX_UNLOCK (parse);
+}
+
+void
+gst_base_parse_get_index_last_offset (GstBaseParse * parse,
+    gint64 * index_last_offset)
+{
+  GST_BASE_PARSE_INDEX_LOCK (parse);
+  *index_last_offset = parse->priv->index_last_offset;
+  GST_INFO_OBJECT (parse, "get index_last_offset for child parser : (%"G_GUINT64_FORMAT")",
+    parse->priv->index_last_offset);
+  GST_BASE_PARSE_INDEX_UNLOCK (parse);
+}
+
+void
+gst_base_parse_get_index_last_ts (GstBaseParse * parse,
+    GstClockTime * index_last_ts)
+{
+  GST_BASE_PARSE_INDEX_LOCK (parse);
+  *index_last_ts = parse->priv->index_last_ts;
+  GST_INFO_OBJECT (parse, "get index_last_ts for child parser : (%"GST_TIME_FORMAT")",
+    GST_TIME_ARGS(parse->priv->index_last_ts));
+  GST_BASE_PARSE_INDEX_UNLOCK (parse);
+}
+
+void
+gst_base_parse_get_pad_mode (GstBaseParse * parse,
+    GstPadMode * pad_mode)
+{
+  GST_BASE_PARSE_INDEX_LOCK (parse);
+  *pad_mode = parse->priv->expected_pad_mode;
+  GST_INFO_OBJECT (parse, "get pad_mode for child parse: mode num (%d)",
+    parse->priv->expected_pad_mode);
+  GST_BASE_PARSE_INDEX_UNLOCK (parse);
+}
 /*
  * Checks if accurate seek mode are avilable from sub-parse
  */

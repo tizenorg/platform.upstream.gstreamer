@@ -349,6 +349,18 @@ void            gst_base_parse_merge_tags       (GstBaseParse  * parse,
                                                  GstTagList    * tags,
                                                  GstTagMergeMode mode);
 #ifdef GST_BASEPARSE_MODIFICATION
+void            gst_base_parse_get_upstream_size (GstBaseParse * parse,
+                                                  gint64 * upstream_size);
+
+void            gst_base_parse_get_index_last_offset (GstBaseParse * parse,
+                                                      gint64 * index_last_offset);
+
+void            gst_base_parse_get_index_last_ts (GstBaseParse * parse,
+                                                  GstClockTime * index_last_ts);
+
+void            gst_base_parse_get_pad_mode (GstBaseParse * parse,
+                                             GstPadMode * pad_mode);
+
 void            gst_base_parse_set_seek_mode (GstBaseParse * parse,
                                               gboolean       seek_mode);
 #endif

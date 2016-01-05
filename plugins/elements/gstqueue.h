@@ -107,6 +107,11 @@ struct _GstQueue {
   gboolean      unexpected;
   gboolean      eos;
 
+#ifdef GST_QUEUE_MODIFICATION
+  /* drop incomming buffers and flush buffers in queue */
+  gboolean empty_buffers;
+#endif /* GST_QUEUE_MODIFICATION */
+
   /* the queue of data we're keeping our grubby hands on */
   GstQueueArray *queue;
 

@@ -2,7 +2,7 @@
 
 Name:           gstreamer
 Version:        1.6.1
-Release:        3
+Release:        4
 Summary:        Streaming-Media Framework Runtime
 License:        LGPL-2.0+
 Group:          Multimedia/Framework
@@ -70,6 +70,7 @@ export CFLAGS="%{optflags} \
 	-DGST_EXT_CURRENT_BYTES\
 	-DGST_TIZEN_MODIFICATION\
 	-DGST_BASEPARSE_MODIFICATION\
+	-DGST_QUEUE_MODIFICATION\
 	-fno-strict-aliasing"
 
 %configure\

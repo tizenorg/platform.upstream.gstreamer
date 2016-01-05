@@ -120,6 +120,9 @@ enum
   PROP_MIN_THRESHOLD_TIME,
   PROP_LEAKY,
   PROP_SILENT,
+#ifdef GST_QUEUE_MODIFICATION
+  PROP_EMPTY_BUFFERS,
+#endif /* GST_QUEUE_MODIFICATION */
   PROP_FLUSH_ON_EOS
 };
 
@@ -381,6 +384,13 @@ gst_queue_class_init (GstQueueClass * klass)
           G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
           G_PARAM_STATIC_STRINGS));
 
+#ifdef GST_QUEUE_MODIFICATION
+  g_object_class_install_property (gobject_class, PROP_EMPTY_BUFFERS,
+      g_param_spec_boolean ("empty-buffers", "empty_buffers",
+          "Drop all the incomming buffers and flush buffers in queue",
+         FALSE, G_PARAM_READWRITE));
+#endif /* GST_QUEUE_MODIFICATION */
+
   /**
    * GstQueue:flush-on-eos
    *
@@ -474,6 +484,10 @@ gst_queue_init (GstQueue * queue)
   queue->src_tainted = TRUE;
 
   queue->newseg_applied_to_src = FALSE;
+
+#ifdef GST_QUEUE_MODIFICATION
+  queue->empty_buffers = FALSE;
+#endif /* GST_QUEUE_MODIFICATION */
 
   GST_DEBUG_OBJECT (queue,
       "initialized queue's not_empty & not_full conditions");
@@ -1142,6 +1156,16 @@ gst_queue_chain_buffer_or_list (GstPad * pad, GstObject * parent,
   if (queue->unexpected)
     goto out_unexpected;
 
+#ifdef GST_QUEUE_MODIFICATION
+  /* Added to not enqueue buffers in the queue while paused */
+  if (queue->empty_buffers) {
+    GST_CAT_LOG_OBJECT(queue_dataflow, queue, "drop buffer %p", obj);
+    gst_mini_object_unref(obj);
+    GST_QUEUE_MUTEX_UNLOCK(queue);
+    return GST_FLOW_OK;
+  }
+#endif /* GST_QUEUE_MODIFICATION */
+
   if (!is_list) {
     GstClockTime duration, timestamp;
     GstBuffer *buffer = GST_BUFFER_CAST (obj);
@@ -1781,6 +1805,16 @@ gst_queue_set_property (GObject * object,
     case PROP_SILENT:
       queue->silent = g_value_get_boolean (value);
       break;
+#ifdef GST_QUEUE_MODIFICATION
+    case PROP_EMPTY_BUFFERS:
+      queue->empty_buffers = g_value_get_boolean (value);
+      GST_INFO_OBJECT(queue, "set empty buffer : %d", queue->empty_buffers);
+      if (queue->empty_buffers) {
+        gst_queue_locked_flush(queue, FALSE);
+      }
+      GST_INFO_OBJECT(queue, "done");
+      break;
+#endif /* GST_QUEUE_MODIFICATION */
     case PROP_FLUSH_ON_EOS:
       queue->flush_on_eos = g_value_get_boolean (value);
       break;
@@ -1834,6 +1868,11 @@ gst_queue_get_property (GObject * object,
     case PROP_SILENT:
       g_value_set_boolean (value, queue->silent);
       break;
+#ifdef GST_QUEUE_MODIFICATION
+    case PROP_EMPTY_BUFFERS:
+      g_value_set_boolean(value, queue->empty_buffers);
+      break;
+#endif /* GST_QUEUE_MODIFICATION */
     case PROP_FLUSH_ON_EOS:
       g_value_set_boolean (value, queue->flush_on_eos);
       break;

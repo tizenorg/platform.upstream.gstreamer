@@ -91,7 +91,7 @@
  * <para>
  *   The default queue size limits are 5 buffers, 10MB of data, or
  *   two second worth of data, whichever is reached first. Note that the number
- *   of buffers will dynamically grow depending on the fill level of 
+ *   of buffers will dynamically grow depending on the fill level of
  *   other queues.
  * </para>
  * <para>
@@ -258,6 +258,9 @@ enum
   PROP_MAX_SIZE_BYTES,
   PROP_MAX_SIZE_BUFFERS,
   PROP_MAX_SIZE_TIME,
+#ifdef GST_MQ_MODIFICATION
+  PROP_CURR_SIZE_BYTES,
+#endif
   PROP_USE_BUFFERING,
   PROP_LOW_PERCENT,
   PROP_HIGH_PERCENT,
@@ -337,7 +340,7 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
    * size) is higher than the boundary values which can be set through the
    * GObject properties.
    *
-   * This can be used as an indicator of pre-roll. 
+   * This can be used as an indicator of pre-roll.
    */
   gst_multi_queue_signals[SIGNAL_OVERRUN] =
       g_signal_new ("overrun", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST,
@@ -363,7 +366,13 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
           "Max. amount of data in the queue (in ns, 0=disable)", 0, G_MAXUINT64,
           DEFAULT_MAX_SIZE_TIME, G_PARAM_READWRITE | GST_PARAM_MUTABLE_PLAYING |
           G_PARAM_STATIC_STRINGS));
-
+#ifdef GST_MQ_MODIFICATION
+  g_object_class_install_property (gobject_class, PROP_CURR_SIZE_BYTES,
+      g_param_spec_uint ("curr-size-bytes", "Current buffered size (kB)",
+          "buffered amount of data in the queue (bytes)", 0, G_MAXUINT,
+		  0, G_PARAM_READABLE | GST_PARAM_MUTABLE_PLAYING |
+		  G_PARAM_STATIC_STRINGS));
+#endif
   g_object_class_install_property (gobject_class, PROP_EXTRA_SIZE_BYTES,
       g_param_spec_uint ("extra-size-bytes", "Extra Size (kB)",
           "Amount of data the queues can grow if one of them is empty (bytes, 0=disable)"
@@ -385,7 +394,7 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
 
   /**
    * GstMultiQueue:use-buffering
-   * 
+   *
    * Enable the buffering option in multiqueue so that BUFFERING messages are
    * emitted based on low-/high-percent thresholds.
    */
@@ -396,7 +405,7 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
           G_PARAM_STATIC_STRINGS));
   /**
    * GstMultiQueue:low-percent
-   * 
+   *
    * Low threshold percent for buffering to start.
    */
   g_object_class_install_property (gobject_class, PROP_LOW_PERCENT,
@@ -405,7 +414,7 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
           DEFAULT_LOW_PERCENT, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
   /**
    * GstMultiQueue:high-percent
-   * 
+   *
    * High threshold percent for buffering to finish.
    */
   g_object_class_install_property (gobject_class, PROP_HIGH_PERCENT,
@@ -415,7 +424,7 @@ gst_multi_queue_class_init (GstMultiQueueClass * klass)
 
   /**
    * GstMultiQueue:sync-by-running-time
-   * 
+   *
    * If enabled multiqueue will synchronize deactivated or not-linked streams
    * to the activated and linked streams by taking the running time.
    * Otherwise multiqueue will synchronize the deactivated or not-linked
@@ -619,6 +628,35 @@ gst_multi_queue_set_property (GObject * object, guint prop_id,
   }
 }
 
+#ifdef GST_MQ_MODIFICATION
+static guint
+get_current_size_bytes (GstMultiQueue * mq)
+{
+  GList *tmp;
+  GstClockTime highest = GST_CLOCK_TIME_NONE;
+  GstClockTime lowest = GST_CLOCK_TIME_NONE;
+  guint current_size_bytes = 0;
+
+  for (tmp = mq->queues; tmp; tmp = g_list_next (tmp)) {
+    GstSingleQueue *sq = (GstSingleQueue *) tmp->data;
+    GstDataQueueSize size;
+
+    gst_data_queue_get_level (sq->queue, &size);
+
+    current_size_bytes += size.bytes;
+
+    GST_DEBUG_OBJECT (mq,
+        "queue %d: bytes %u/%u, time %" G_GUINT64_FORMAT "/%"
+        G_GUINT64_FORMAT, sq->id, size.bytes, sq->max_size.bytes,
+        sq->cur_time, sq->max_size.time);
+  }
+
+  GST_INFO_OBJECT (mq, "current_size_bytes : %u", current_size_bytes);
+
+  return current_size_bytes;
+}
+#endif
+
 static void
 gst_multi_queue_get_property (GObject * object, guint prop_id,
     GValue * value, GParamSpec * pspec)
@@ -646,6 +684,11 @@ gst_multi_queue_get_property (GObject * object, guint prop_id,
     case PROP_MAX_SIZE_TIME:
       g_value_set_uint64 (value, mq->max_size.time);
       break;
+#ifdef GST_MQ_MODIFICATION
+    case PROP_CURR_SIZE_BYTES:
+      g_value_set_uint (value, get_current_size_bytes(mq));
+      break;
+#endif
     case PROP_USE_BUFFERING:
       g_value_set_boolean (value, mq->use_buffering);
       break;
@@ -992,7 +1035,7 @@ gst_multi_queue_post_buffering (GstMultiQueue * mq)
 }
 
 /* calculate the diff between running time on the sink and src of the queue.
- * This is the total amount of time in the queue. 
+ * This is the total amount of time in the queue.
  * WITH LOCK TAKEN */
 static void
 update_time_level (GstMultiQueue * mq, GstSingleQueue * sq)
@@ -1099,7 +1142,7 @@ apply_buffer (GstMultiQueue * mq, GstSingleQueue * sq, GstClockTime timestamp,
 {
   GST_MULTI_QUEUE_MUTEX_LOCK (mq);
 
-  /* if no timestamp is set, assume it's continuous with the previous 
+  /* if no timestamp is set, assume it's continuous with the previous
    * time */
   if (timestamp == GST_CLOCK_TIME_NONE)
     timestamp = segment->position;
@@ -2096,7 +2139,7 @@ compute_high_id (GstMultiQueue * mq)
         lowest = sq->nextid;
     } else if (sq->srcresult != GST_FLOW_EOS) {
       /* If we don't have a global highid, or the global highid is lower than
-       * this single queue's last outputted id, store the queue's one, 
+       * this single queue's last outputted id, store the queue's one,
        * unless the singlequeue is at EOS (srcresult = EOS) */
       if ((highid == G_MAXUINT32) || (sq->oldid > highid))
         highid = sq->oldid;
@@ -2141,7 +2184,7 @@ compute_high_time (GstMultiQueue * mq)
         lowest = sq->next_time;
     } else if (sq->srcresult != GST_FLOW_EOS) {
       /* If we don't have a global highid, or the global highid is lower than
-       * this single queue's last outputted id, store the queue's one, 
+       * this single queue's last outputted id, store the queue's one,
        * unless the singlequeue is at EOS (srcresult = EOS) */
       if (highest == GST_CLOCK_TIME_NONE || sq->last_time > highest)
         highest = sq->last_time;

@@ -71,6 +71,7 @@ export CFLAGS="%{optflags} \
 	-DGST_TIZEN_MODIFICATION\
 	-DGST_BASEPARSE_MODIFICATION\
 	-DGST_QUEUE_MODIFICATION\
+	-DGST_MQ_MODIFICATION\
 	-fno-strict-aliasing"
 
 %configure\
